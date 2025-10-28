@@ -1,0 +1,190 @@
+[gd_scene load_steps=12 format=3 uid="uid://c2cdbk2ehc4o3"]
+
+[ext_resource type="Script" uid="uid://b6fhwc8seiost" path="res://LevelManager.gd" id="1_0hol4"]
+[ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="1_wtcfe"]
+[ext_resource type="Texture2D" uid="uid://b57q1eub2wvc5" path="res://Group 1000007244.png" id="2_epypp"]
+[ext_resource type="Texture2D" uid="uid://bpdan0od4twig" path="res://earth.png" id="3_0hol4"]
+[ext_resource type="LabelSettings" uid="uid://u2by8jd7hk8g" path="res://ScoreText.tres" id="5_q6r6c"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_y32ns"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0hol4"]
+radius = 24.083189
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_q6r6c"]
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_kdubu"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_q6r6c"]
+radius = 16.492422
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kdubu"]
+radius = 50.039986
+
+[node name="level1" type="Node2D"]
+script = ExtResource("1_0hol4")
+
+[node name="ball" type="RigidBody2D" parent="."]
+position = Vector2(88, 83)
+physics_material_override = SubResource("PhysicsMaterial_y32ns")
+
+[node name="Sprite2D" type="Sprite2D" parent="ball"]
+texture = ExtResource("1_wtcfe")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ball"]
+shape = SubResource("CircleShape2D_0hol4")
+
+[node name="track" type="StaticBody2D" parent="."]
+position = Vector2(0, 257)
+
+[node name="RigidBody2D" type="RigidBody2D" parent="track"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="track/RigidBody2D"]
+shape = SubResource("SegmentShape2D_q6r6c")
+
+[node name="Line2D" type="Line2D" parent="track"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="track"]
+shape = SubResource("SegmentShape2D_kdubu")
+
+[node name="stars" type="Node" parent="."]
+
+[node name="star1" type="Area2D" parent="stars"]
+position = Vector2(165, 196)
+
+[node name="Sprite2D" type="Sprite2D" parent="stars/star1"]
+texture = ExtResource("2_epypp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="stars/star1"]
+position = Vector2(-1, 1)
+shape = SubResource("CircleShape2D_q6r6c")
+
+[node name="star2" type="Area2D" parent="stars"]
+position = Vector2(429, 317)
+
+[node name="Sprite2D" type="Sprite2D" parent="stars/star2"]
+texture = ExtResource("2_epypp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="stars/star2"]
+position = Vector2(-1, 1)
+shape = SubResource("CircleShape2D_q6r6c")
+
+[node name="star3" type="Area2D" parent="stars"]
+position = Vector2(643, 406)
+
+[node name="Sprite2D" type="Sprite2D" parent="stars/star3"]
+texture = ExtResource("2_epypp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="stars/star3"]
+position = Vector2(-1, 1)
+shape = SubResource("CircleShape2D_q6r6c")
+
+[node name="exit" type="Area2D" parent="."]
+position = Vector2(825, 498)
+
+[node name="Sprite2D" type="Sprite2D" parent="exit"]
+texture = ExtResource("3_0hol4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="exit"]
+shape = SubResource("CircleShape2D_kdubu")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Button" type="Button" parent="UI"]
+offset_left = 831.0
+offset_top = 47.0
+offset_right = 839.0
+offset_bottom = 55.0
+text = "y = -0.5*x + 2"
+metadata/_edit_use_anchors_ = true
+
+[node name="Button2" type="Button" parent="UI"]
+offset_left = 834.0
+offset_top = 103.0
+offset_right = 935.0
+offset_bottom = 134.0
+text = "y = -0.2*x + 1"
+metadata/_edit_use_anchors_ = true
+
+[node name="Button3" type="Button" parent="UI"]
+offset_left = 831.0
+offset_top = 171.0
+offset_right = 901.0
+offset_bottom = 202.0
+text = "y = -x"
+metadata/_edit_use_anchors_ = true
+
+[node name="ScoreLabel" type="Label" parent="UI"]
+offset_right = 40.0
+offset_bottom = 23.0
+label_settings = ExtResource("5_q6r6c")
+
+[node name="LevelCompletePopup" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 482.0
+offset_top = 240.0
+offset_right = 522.0
+offset_bottom = 280.0
+
+[node name="ColorRect" type="ColorRect" parent="UI/LevelCompletePopup"]
+layout_mode = 0
+offset_left = -118.0
+offset_top = -67.99999
+offset_right = -78.0
+offset_bottom = -27.999992
+scale = Vector2(7.549019, 3.873584)
+color = Color(0, 0, 0, 1)
+
+[node name="Label" type="Label" parent="UI/LevelCompletePopup"]
+layout_mode = 0
+offset_left = -30.0
+offset_top = -38.0
+offset_right = 118.0
+offset_bottom = -15.0
+text = "Уровень пройден!"
+
+[node name="RetryButton" type="Button" parent="UI/LevelCompletePopup"]
+layout_mode = 0
+offset_left = 56.0
+offset_right = 149.0
+offset_bottom = 31.0
+text = "Заново"
+
+[node name="NextButton" type="Button" parent="UI/LevelCompletePopup"]
+layout_mode = 0
+offset_left = -97.0
+offset_right = 31.0
+offset_bottom = 31.0
+text = "Следующий"
+
+[node name="FailPopup" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ColorRect" type="ColorRect" parent="UI/FailPopup"]
+layout_mode = 0
+offset_left = 364.0
+offset_top = 172.0
+offset_right = 404.0
+offset_bottom = 212.0
+scale = Vector2(7.512697, 3.8536258)
+color = Color(0.20606223, 0.1515562, 0.55811036, 1)
+
+[node name="Label" type="Label" parent="UI/FailPopup"]
+layout_mode = 0
+offset_left = 482.0
+offset_top = 196.0
+offset_right = 555.0
+offset_bottom = 219.0
+text = "Неудача!"
+
+[node name="RetryButton" type="Button" parent="UI/FailPopup"]
+layout_mode = 0
+offset_left = 482.0
+offset_top = 257.0
+offset_right = 549.0
+offset_bottom = 288.0
+text = "Заново"

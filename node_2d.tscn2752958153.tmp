@@ -1,0 +1,94 @@
+[gd_scene load_steps=8 format=3 uid="uid://c2cdbk2ehc4o3"]
+
+[ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="1_wtcfe"]
+[ext_resource type="Texture2D" uid="uid://b57q1eub2wvc5" path="res://Group 1000007244.png" id="2_epypp"]
+[ext_resource type="Texture2D" uid="uid://bpdan0od4twig" path="res://earth.png" id="3_0hol4"]
+[ext_resource type="Script" uid="uid://b6fhwc8seiost" path="res://LevelManager.gd" id="4_0hol4"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_y32ns"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_q6r6c"]
+radius = 16.492422
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kdubu"]
+radius = 50.039986
+
+[node name="level1" type="Node2D"]
+
+[node name="ball" type="RigidBody2D" parent="."]
+position = Vector2(88, 83)
+physics_material_override = SubResource("PhysicsMaterial_y32ns")
+
+[node name="Sprite2D" type="Sprite2D" parent="ball"]
+texture = ExtResource("1_wtcfe")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="ball"]
+
+[node name="Line2D" type="Line2D" parent="."]
+
+[node name="stars" type="Node" parent="."]
+
+[node name="star1" type="Area2D" parent="stars"]
+position = Vector2(165, 196)
+
+[node name="Sprite2D" type="Sprite2D" parent="stars/star1"]
+texture = ExtResource("2_epypp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="stars/star1"]
+position = Vector2(-1, 1)
+shape = SubResource("CircleShape2D_q6r6c")
+
+[node name="star2" type="Area2D" parent="stars"]
+position = Vector2(429, 317)
+
+[node name="Sprite2D" type="Sprite2D" parent="stars/star2"]
+texture = ExtResource("2_epypp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="stars/star2"]
+position = Vector2(-1, 1)
+shape = SubResource("CircleShape2D_q6r6c")
+
+[node name="star3" type="Area2D" parent="stars"]
+position = Vector2(643, 406)
+
+[node name="Sprite2D" type="Sprite2D" parent="stars/star3"]
+texture = ExtResource("2_epypp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="stars/star3"]
+position = Vector2(-1, 1)
+shape = SubResource("CircleShape2D_q6r6c")
+
+[node name="exit" type="Area2D" parent="."]
+position = Vector2(825, 498)
+
+[node name="Sprite2D" type="Sprite2D" parent="exit"]
+texture = ExtResource("3_0hol4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="exit"]
+shape = SubResource("CircleShape2D_kdubu")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Button" type="Button" parent="UI"]
+offset_left = 831.0
+offset_top = 47.0
+offset_right = 839.0
+offset_bottom = 55.0
+text = "y = 0.5*x + 2"
+
+[node name="Button2" type="Button" parent="UI"]
+offset_left = 834.0
+offset_top = 103.0
+offset_right = 935.0
+offset_bottom = 134.0
+text = "y = 0.2*x + 1"
+
+[node name="Button3" type="Button" parent="UI"]
+offset_left = 831.0
+offset_top = 171.0
+offset_right = 901.0
+offset_bottom = 202.0
+text = "y = x"
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("4_0hol4")

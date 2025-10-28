@@ -1,0 +1,37 @@
+[gd_scene load_steps=4 format=3 uid="uid://c8huq6fjbx6vf"]
+
+[ext_resource type="Texture2D" uid="uid://b57q1eub2wvc5" path="res://Group 1000007244.png" id="2_5hkdb"]
+
+[sub_resource type="GDScript" id="GDScript_nwsn3"]
+script/source = "extends Area2D
+
+@export var collect_radius: float = 8.0   # в world-пикселях, подгоняй под коллайдер
+signal collected()
+
+func _ready():
+	# Сигнал при попадании тела (например шарик — RigidBody2D)
+	body_entered.connect(_on_body_entered)
+
+func _on_body_entered(body: Node) -> void:
+	# Если это наш шар — эмитим сигнал и удаляем/скрываем звезду
+	# Подставь условие под имя/тип твоего шарика, например: body.name == \"Ball\" или body is RigidBody2D
+	if body == null:
+		return
+	# Пример: если шар — RigidBody2D (или по имени)
+	if body is RigidBody2D:
+		emit_signal(\"collected\")
+		queue_free()
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5hkdb"]
+
+[node name="StarScene" type="Node2D"]
+
+[node name="Star" type="Area2D" parent="."]
+script = SubResource("GDScript_nwsn3")
+
+[node name="Sprite2D" type="Sprite2D" parent="Star"]
+texture = ExtResource("2_5hkdb")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Star"]
+shape = SubResource("CircleShape2D_5hkdb")
