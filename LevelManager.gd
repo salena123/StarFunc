@@ -17,15 +17,37 @@ var options = []
 var correct_index = 0
 var score = 0
 var level = 1
-
 var x_scale = 10.0
 var y_scale = 10.0
 var first_selection_done = false
 var current_correct_func = ""
+var top_margin = 50
+var bottom_margin = 50
 
 enum FuncType { LINEAR, QUADRATIC, SIN, COS }
 
+#var screen_size = get_viewport_rect().size
+var x_min = 0
+var x_max = 100
+var y_min = -50
+var y_max = 50
+var vertical_offset_pixels = 35
+
+func fx_to_screen(x):
+	return lerp(0.0, float(screen_size.x), (x - x_min) / (x_max - x_min))
+
+func fy_to_screen(y):
+	return lerp(float(screen_size.y), 0.0, (y - y_min) / (y_max - y_min))
+
+func fy_to_screen_track(fy_val):
+	var track_height = get_viewport_rect().size.y - top_margin - bottom_margin
+	var t = (fy_val - y_min) / (y_max - y_min)
+	return get_viewport_rect().size.y - bottom_margin - t * track_height
+
+var screen_size: Vector2
+
 func _ready():
+	screen_size = get_viewport_rect().size
 	randomize()
 	setup_ui()
 	generate_new_level()
@@ -37,15 +59,20 @@ func _ready():
 	ball.continuous_cd = true
 	set_process(true)
 	update_score_label()
-
+	
 func setup_ui():
 	if $UI/Button:
-		$UI/Button.pressed.connect(func() -> void: select_option(0))
+		$UI/Button.pressed.connect(func() -> void:
+			select_option(0)
+		)
 	if $UI/Button2:
-		$UI/Button2.pressed.connect(func() -> void: select_option(1))
+		$UI/Button2.pressed.connect(func() -> void:
+			select_option(1)
+		)
 	if $UI/Button3:
-		$UI/Button3.pressed.connect(func() -> void: select_option(2))
-
+		$UI/Button3.pressed.connect(func() -> void:
+			select_option(2)
+		)
 	if retry_button:
 		retry_button.pressed.connect(func() -> void:
 			level_complete_popup.hide()
@@ -57,28 +84,18 @@ func setup_ui():
 			level += 1
 			generate_new_level()
 		)
-
 	if fail_retry_button:
 		fail_retry_button.pressed.connect(func() -> void:
 			fail_popup.hide()
 			reset_current_level()
 		)
-
 	level_complete_popup.hide()
 	fail_popup.hide()
 
-
-func _process(delta):
+func _process(_delta):
 	check_star_collection()
 	check_exit_reached()
 	check_ball_fall_off_screen()
-	
-#func _physics_process(delta):
-	#if not ball.freeze:
-		#if ball.linear_velocity.y < 0:
-			#var boost = Vector2(0, -860)
-			#ball.apply_central_impulse(boost * delta)
-
 
 func select_option(index):
 	draw_track(options[index])
@@ -87,6 +104,7 @@ func select_option(index):
 		ball.freeze = false
 		first_selection_done = true
 		ball.apply_impulse(Vector2.ZERO, Vector2(0, 50))
+
 
 func draw_track(input_str: String):
 	for child in track_static.get_children():
@@ -98,12 +116,12 @@ func draw_track(input_str: String):
 		return
 
 	var points = []
-	for i in range(-50, 101):
-		var fx = i
-		var fy = expr.execute([fx])
-		var x = fx * x_scale
-		var y = -fy * y_scale
-		points.append(Vector2(x, y))
+	var screen_height = get_viewport_rect().size.y
+
+	for i in range(101):
+		var x_val = lerp(x_min, x_max, i / 100.0)
+		var y_val = expr.execute([x_val])
+		points.append(Vector2(fx_to_screen(x_val), fy_to_screen_track(y_val)))
 
 	if line2d:
 		line2d.points = points
@@ -115,71 +133,102 @@ func draw_track(input_str: String):
 		var col = CollisionShape2D.new()
 		col.shape = seg
 		track_static.add_child(col)
-
-func random_function():
-	var type = randi() % 4
+		
+func random_function(allowed_types: Array = []) -> String:
+	if allowed_types.is_empty():
+		allowed_types = [FuncType.LINEAR, FuncType.QUADRATIC, FuncType.SIN, FuncType.COS]
+	var type = allowed_types[randi() % allowed_types.size()]
 	var func_str = ""
 	match type:
 		FuncType.LINEAR:
 			var k = 0.0
-			while k == 0.0:
-				k = round(randf_range(-1.0, 1.0) * 10) / 10.0
+			while k == 0.0 || abs(k) < 0.4:
+				k = round(randf_range(-2.0, 2.0) * 10) / 10.0
 			var b = round(randf_range(-15.0, 5.0) * 10) / 10.0
 			func_str = str(k) + "*x + " + str(b)
 		FuncType.QUADRATIC:
 			var a = 0.0
 			while a == 0.0:
-				a = round(randf_range(-0.5, 0.5) * 10) / 10.0 
+				a = round(randf_range(-0.5, 0.5) * 10) / 10.0
 			var b = round(randf_range(-1.0, 1.0) * 10) / 10.0
 			var c = round(randf_range(-5.0, 5.0) * 10) / 10.0
 			func_str = str(a) + "*x*x + " + str(b) + "*x + " + str(c)
 		FuncType.SIN:
 			var A = round(randf_range(1.0, 3.0) * 10) / 10.0
 			var f = round(randf_range(0.1, 0.5) * 10) / 10.0
-			var phi = round(randf_range(0.0, PI*2) * 10) / 10.0
+			var phi = round(randf_range(0.0, PI * 2) * 10) / 10.0
 			func_str = str(A) + "*sin(" + str(f) + "*x + " + str(phi) + ")"
 		FuncType.COS:
 			var A = round(randf_range(1.0, 3.0) * 10) / 10.0
 			var f = round(randf_range(0.1, 0.5) * 10) / 10.0
-			var phi = round(randf_range(0.0, PI*2) * 10) / 10.0
+			var phi = round(randf_range(0.0, PI * 2) * 10) / 10.0
 			func_str = str(A) + "*cos(" + str(f) + "*x + " + str(phi) + ")"
 	return func_str
 
+func setup_level_positions(expr: Expression):
+	var control_x_frac = [0.2, 0.5, 0.8]
+	var vertical_offset_frac = 0.05
+
+	for i in range(stars.size()):
+		var fx_val = control_x_frac[i] * (x_max - x_min) + x_min
+		var fy_val = expr.execute([fx_val])
+		stars[i].visible = true
+		stars[i].position = Vector2(fx_to_screen(fx_val), fy_to_screen_track(fy_val) - vertical_offset_pixels)
+
+	var y_start = expr.execute([x_min])
+	var y_end = expr.execute([x_max])
+	var k = y_end - y_start
+	var ball_x = x_max if k > 0 else x_min
+	var exit_x = x_min if k > 0 else x_max
+	var ball_y = expr.execute([ball_x])
+	var exit_y = expr.execute([exit_x])
+
+	ball.position = Vector2(fx_to_screen(ball_x), fy_to_screen_track(ball_y) - vertical_offset_pixels)
+	exit.position = Vector2(fx_to_screen(exit_x), fy_to_screen_track(exit_y) - vertical_offset_pixels)
+	
 func generate_new_level():
-	setup_ui()
 	$track.visible = false
 	score = 0
 	update_score_label()
+	first_selection_done = false
 
-	while true:
-		ball.position = Vector2(100, 100)
-		first_selection_done = false
+	for s in stars:
+		s.visible = true
 
-		for s in stars:
-			s.visible = true
-
-		options.clear()
-		for i in range(3):
-			options.append(random_function())
-
-		correct_index = randi() % options.size()
-		current_correct_func = options[correct_index]
-
-		var expr = Expression.new()
-		expr.parse(current_correct_func, ["x"])
-
-		var control_x = [20, 50, 80]
-		for i in range(stars.size()):
-			var fx = control_x[i]
-			var fy = expr.execute([fx])
-			stars[i].position = track_static.position + Vector2(fx * x_scale, -fy * y_scale - 35)
-
-		var exit_x = 100
-		var exit_y = expr.execute([exit_x])
-		exit.position = track_static.position + Vector2(exit_x * x_scale, -exit_y * y_scale - 35)
-
-		if is_level_valid():
+	var max_attempts = 1000
+	var attempts = 0
+	var valid_correct_func = ""
+	while attempts < max_attempts:
+		attempts += 1
+		var candidate = random_function([FuncType.LINEAR]) if level < 10 else random_function()
+		print("Попытка ", attempts, ": пробуем ", candidate)
+		if is_level_valid_for_edges(candidate):
+			valid_correct_func = candidate
+			print("Последний валидный график: " + valid_correct_func)
 			break
+
+	if valid_correct_func == "":
+		print("Не найден валидный график за", max_attempts, "попыток. Использую fallback.")
+		valid_correct_func = "0.5 * x - 4"
+
+	current_correct_func = valid_correct_func
+
+	options.clear()
+	options.append(valid_correct_func)
+	while options.size() < 3:
+		var candidate2 = random_function([FuncType.LINEAR]) if level < 10 else random_function()
+		# избегаем дубликатов
+		if candidate2 != valid_correct_func and not options.has(candidate2):
+			options.append(candidate2)
+
+	correct_index = randi() % options.size()
+	var temp = options[0]
+	options[0] = options[correct_index]
+	options[correct_index] = temp
+
+	var expr = Expression.new()
+	if expr.parse(valid_correct_func, ["x"]) == OK:
+		setup_level_positions(expr)
 
 	if $UI/Button:
 		$UI/Button.text = options[0]
@@ -189,6 +238,22 @@ func generate_new_level():
 		$UI/Button3.text = options[2]
 
 	draw_track(current_correct_func)
+
+func reset_current_level():
+	for child in track_static.get_children():
+		if child is CollisionShape2D:
+			child.queue_free()
+	$track.visible = false
+	ball.linear_velocity = Vector2.ZERO
+	ball.angular_velocity = 0
+	ball.freeze = true
+	score = 0
+	update_score_label()
+	first_selection_done = false
+	var expr = Expression.new()
+	if expr.parse(current_correct_func, ["x"]) == OK:
+		setup_level_positions(expr)
+		draw_track(current_correct_func)
 
 func check_star_collection():
 	for star in stars:
@@ -203,7 +268,9 @@ func check_exit_reached():
 
 func check_ball_fall_off_screen():
 	var screen_rect = get_viewport_rect()
-	if ball.global_position.y > screen_rect.size.y + 100 || ball.global_position.x > screen_rect.size.x + 50 || ball.global_position.x < -50:
+	if ball.global_position.y > screen_rect.size.y + 100 \
+	or ball.global_position.x > screen_rect.size.x + 50 \
+	or ball.global_position.x < -50:
 		ball.freeze = true
 		fail_popup.show()
 
@@ -212,35 +279,6 @@ func show_level_complete_popup():
 	level_label.text = "Уровень " + str(level) + " пройден!"
 	level_complete_popup.show()
 
-func reset_current_level():
-	for child in track_static.get_children():
-		if child is CollisionShape2D:
-			child.queue_free()
-
-	$track.visible = false
-	ball.position = Vector2(100, 100)
-	ball.linear_velocity = Vector2.ZERO
-	ball.angular_velocity = 0
-	ball.freeze = true
-	first_selection_done = false
-	score = 0
-	update_score_label()
-
-	var expr = Expression.new()
-	if expr.parse(current_correct_func, ["x"]) == OK:
-		var control_x = [20, 50, 80]
-		for i in range(stars.size()):
-			var fx = control_x[i]
-			var fy = expr.execute([fx])
-			stars[i].visible = true
-			stars[i].position = track_static.position + Vector2(fx * x_scale, -fy * y_scale - 35)
-
-		var exit_x = 100
-		var exit_y = expr.execute([exit_x])
-		exit.position = track_static.position + Vector2(exit_x * x_scale, -exit_y * y_scale - 35)
-
-	draw_track(current_correct_func)
-
 func update_score_label():
 	if score_label:
 		score_label.text = "Звёзды: " + str(score)
@@ -248,7 +286,6 @@ func update_score_label():
 func print_scene_info():
 	var screen_rect = get_viewport_rect()
 	print("Размер экрана: ", screen_rect.size)
-
 	print("---Шар и выход ---")
 	if ball:
 		print("Ball: ", ball.global_position)
@@ -260,7 +297,6 @@ func print_scene_info():
 	if track_static:
 		print("Track: ", track_static.global_position)
 	print("")
-
 	print("--- UI ---")
 	if $UI:
 		for child in $UI.get_children():
@@ -269,23 +305,55 @@ func print_scene_info():
 	else:
 		print("UI не найден")
 
+func is_level_valid_for_edges(func_str: String) -> bool:
+	var expr = Expression.new()
+	if expr.parse(func_str, ["x"]) != OK:
+		return false
 
-func is_level_valid() -> bool:
-	var screen_rect = get_viewport_rect()
-	var margin_x = 100
-	var margin_y = 50
-	
-	if ball.global_position.x < -margin_x or ball.global_position.x > screen_rect.size.x + margin_x \
-	or ball.global_position.y < -margin_y or ball.global_position.y > screen_rect.size.y + margin_y:
+	var min_x = 0
+	var max_x = 100
+	var y_start = expr.execute([min_x])
+	var y_end = expr.execute([max_x])
+	if typeof(y_start) != TYPE_FLOAT or typeof(y_end) != TYPE_FLOAT:
 		return false
-	
-	if exit.global_position.x < -margin_x or exit.global_position.x > screen_rect.size.x + margin_x \
-	or exit.global_position.y < -margin_y or exit.global_position.y > screen_rect.size.y + margin_y:
+
+	var k = y_end - y_start
+	if abs(k) < 0.04:
 		return false
-	
-	for star in stars:
-		if star.global_position.x < -margin_x or star.global_position.x > screen_rect.size.x + margin_x \
-		or star.global_position.y < -margin_y or star.global_position.y > screen_rect.size.y + margin_y:
-			return false
-	
-	return true
+
+	var screen_height = get_viewport_rect().size.y
+	var base_y = screen_height * 0.6
+	var start_y_screen = base_y - y_start * y_scale
+	var end_y_screen = base_y - y_end * y_scale
+
+	var margin = 20
+	if start_y_screen < -margin or start_y_screen > screen_height + margin:
+		return false
+	if end_y_screen < -margin or end_y_screen > screen_height + margin:
+		return false
+
+	var ball_x = 0
+	var exit_x = 100
+	if k > 0:
+		ball_x = 100
+		exit_x = 0
+	else:
+		ball_x = 0
+		exit_x = 100
+	var ball_y = expr.execute([ball_x])
+	var exit_y = expr.execute([exit_x])
+	var ball_y_screen = base_y - ball_y * y_scale
+	var exit_y_screen = base_y - exit_y * y_scale
+	if not (ball_y_screen < exit_y_screen):
+		return false
+
+	var control_x = [20, 50, 80]
+	var star_on_path = false
+	for fx in control_x:
+		var fy = expr.execute([fx])
+		var star_y_screen = base_y - fy * y_scale
+		if star_y_screen > ball_y_screen and star_y_screen < exit_y_screen:
+			star_on_path = true
+			break
+
+	return star_on_path
