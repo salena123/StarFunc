@@ -1,10 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://c2cdbk2ehc4o3"]
+[gd_scene load_steps=14 format=3 uid="uid://c2cdbk2ehc4o3"]
 
 [ext_resource type="Script" uid="uid://b6fhwc8seiost" path="res://LevelManager.gd" id="1_0hol4"]
 [ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="1_wtcfe"]
 [ext_resource type="Texture2D" uid="uid://b57q1eub2wvc5" path="res://Group 1000007244.png" id="2_epypp"]
 [ext_resource type="Texture2D" uid="uid://bpdan0od4twig" path="res://earth.png" id="3_0hol4"]
 [ext_resource type="LabelSettings" uid="uid://u2by8jd7hk8g" path="res://ScoreText.tres" id="5_q6r6c"]
+[ext_resource type="Script" uid="uid://c8g543guoxhdl" path="res://grid.gd" id="6_kdubu"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_y32ns"]
 
@@ -20,6 +21,8 @@ radius = 16.492422
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_kdubu"]
 radius = 50.039986
+
+[sub_resource type="SystemFont" id="SystemFont_kdubu"]
 
 [node name="level1" type="Node2D"]
 script = ExtResource("1_0hol4")
@@ -42,6 +45,7 @@ shape = SubResource("CircleShape2D_0hol4")
 shape = SubResource("SegmentShape2D_q6r6c")
 
 [node name="Line2D" type="Line2D" parent="track"]
+width = 5.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="track"]
 shape = SubResource("SegmentShape2D_kdubu")
@@ -184,3 +188,8 @@ offset_top = 257.0
 offset_right = 549.0
 offset_bottom = 288.0
 text = "Заново"
+
+[node name="Grid" type="Node2D" parent="."]
+script = ExtResource("6_kdubu")
+font = SubResource("SystemFont_kdubu")
+game_node_path = NodePath("..")
