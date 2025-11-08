@@ -10,10 +10,14 @@ config_version=5
 
 [application]
 
-config/name="Новый игровой проект"
+config/name="StarFunc"
 run/main_scene="res://node_2d.tscn"
 config/features=PackedStringArray("4.5", "Mobile")
 config/icon="res://icon.svg"
+
+[display]
+
+window/handheld/orientation=5
 
 [editor]
 
@@ -22,3 +26,4 @@ version_control/autoload_on_startup=true
 [rendering]
 
 renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true

@@ -93,27 +93,6 @@ shape = SubResource("CircleShape2D_kdubu")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="Button" type="Button" parent="UI"]
-offset_left = 266.0
-offset_top = 24.0
-offset_right = 373.0
-offset_bottom = 55.0
-text = "y = -0.5*x + 2"
-
-[node name="Button2" type="Button" parent="UI"]
-offset_left = 269.0
-offset_top = 80.0
-offset_right = 376.0
-offset_bottom = 111.0
-text = "y = -0.2*x + 1"
-
-[node name="Button3" type="Button" parent="UI"]
-offset_left = 266.0
-offset_top = 148.0
-offset_right = 336.0
-offset_bottom = 179.0
-text = "y = -x"
-
 [node name="ScoreLabel" type="Label" parent="UI"]
 offset_right = 40.0
 offset_bottom = 23.0
@@ -121,11 +100,17 @@ label_settings = ExtResource("5_q6r6c")
 
 [node name="LevelCompletePopup" type="Control" parent="UI"]
 layout_mode = 3
-anchors_preset = 0
-offset_left = 482.0
-offset_top = 240.0
-offset_right = 522.0
-offset_bottom = 280.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="ColorRect" type="ColorRect" parent="UI/LevelCompletePopup"]
 layout_mode = 0
@@ -160,34 +145,76 @@ text = "Следующий"
 
 [node name="FailPopup" type="Control" parent="UI"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="ColorRect" type="ColorRect" parent="UI/FailPopup"]
 layout_mode = 0
-offset_left = 364.0
-offset_top = 172.0
-offset_right = 404.0
-offset_bottom = 212.0
+offset_left = -118.5
+offset_top = -71.499985
+offset_right = -78.5
+offset_bottom = -31.499985
 scale = Vector2(7.512697, 3.8536258)
 color = Color(0.20606223, 0.1515562, 0.55811036, 1)
 
 [node name="Label" type="Label" parent="UI/FailPopup"]
 layout_mode = 0
-offset_left = 482.0
-offset_top = 196.0
-offset_right = 555.0
-offset_bottom = 219.0
+offset_left = -12.5
+offset_top = -32.5
+offset_right = 60.5
+offset_bottom = -9.5
 text = "Неудача!"
 
 [node name="RetryButton" type="Button" parent="UI/FailPopup"]
 layout_mode = 0
-offset_left = 482.0
-offset_top = 257.0
-offset_right = 549.0
-offset_bottom = 288.0
+offset_left = -0.5
+offset_top = 15.5
+offset_right = 66.5
+offset_bottom = 46.5
 text = "Заново"
+
+[node name="Buttons" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -146.0
+offset_top = 5.0
+offset_right = -106.0
+offset_bottom = 45.0
+grow_horizontal = 0
+
+[node name="Button3" type="Button" parent="UI/Buttons"]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 150.0
+offset_right = 71.0
+offset_bottom = 181.0
+text = "y = -x"
+
+[node name="Button2" type="Button" parent="UI/Buttons"]
+layout_mode = 0
+offset_top = 78.0
+offset_right = 107.0
+offset_bottom = 109.0
+text = "y = -0.2*x + 1"
+
+[node name="Button" type="Button" parent="UI/Buttons"]
+layout_mode = 0
+offset_left = -1.0
+offset_top = 16.0
+offset_right = 106.0
+offset_bottom = 47.0
+text = "y = -0.5*x + 2"
 
 [node name="Grid" type="Node2D" parent="."]
 script = ExtResource("6_kdubu")

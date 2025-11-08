@@ -78,12 +78,12 @@ func _ready():
 	update_score_label()
 
 func setup_ui():
-	if $UI/Button:
-		$UI/Button.pressed.connect(func(): select_option(0))
-	if $UI/Button2:
-		$UI/Button2.pressed.connect(func(): select_option(1))
-	if $UI/Button3:
-		$UI/Button3.pressed.connect(func(): select_option(2))
+	if $UI/Buttons/Button:
+		$UI/Buttons/Button.pressed.connect(func(): select_option(0))
+	if $UI/Buttons/Button2:
+		$UI/Buttons/Button2.pressed.connect(func(): select_option(1))
+	if $UI/Buttons/Button3:
+		$UI/Buttons/Button3.pressed.connect(func(): select_option(2))
 	if retry_button:
 		retry_button.pressed.connect(func():
 			level_complete_popup.hide()
@@ -182,21 +182,50 @@ func random_function(allowed_types: Array = []) -> String:
 
 
 func setup_level_positions(expr: Expression):
-	var control_x = [-25, 0, 25]
-	for i in range(stars.size()):
-		var fx_val = control_x[i]
-		var fy_val = expr.execute([fx_val])
-		stars[i].visible = true
-		stars[i].position = Vector2(fx_to_screen(fx_val), fy_to_screen_track(fy_val) - vertical_offset_pixels)
+	var num_stars = stars.size()
+	var margin_px = 40.0
+	var min_star_spacing_px = 60.0 
 
-	var ball_x = 40 if ball_side == Side.RIGHT else -40
-	var exit_x = -40 if ball_side == Side.RIGHT else 40
+	var x_start_screen = margin_px
+	var x_end_screen = screen_size.x - margin_px
+
+	var fx_start = (x_start_screen - screen_center.x) / base_unit
+	var fx_end = (x_end_screen - screen_center.x) / base_unit
+
+	var ball_x: float
+	var exit_x: float
+	if ball_side == Side.RIGHT:
+		ball_x = fx_end
+		exit_x = fx_start
+	else:
+		ball_x = fx_start
+		exit_x = fx_end
+
 	var ball_y = expr.execute([ball_x])
 	var exit_y = expr.execute([exit_x])
+	
 	var screen_top = 0
 	ball.position = Vector2(fx_to_screen(ball_x), screen_top + vertical_offset_pixels)
 	exit.position = Vector2(fx_to_screen(exit_x), fy_to_screen_track(exit_y) - vertical_offset_pixels)
 
+	# ==== 4️⃣ Звёзды ====
+	var star_positions = []
+	var step_px = (x_end_screen - x_start_screen) / float(num_stars + 1)
+
+	for i in range(num_stars):
+		var base_px = x_start_screen + (i + 1) * step_px
+		var offset_px = randf_range(-step_px * 0.3, step_px * 0.3)
+		var x_screen = clamp(base_px + offset_px, x_start_screen, x_end_screen)
+
+		if i > 0 and abs(x_screen - star_positions[-1]) < min_star_spacing_px:
+			x_screen = star_positions[-1] + min_star_spacing_px
+		star_positions.append(x_screen)
+
+		var fx_val = (x_screen - screen_center.x) / base_unit
+		var fy_val = expr.execute([fx_val])
+
+		stars[i].visible = true
+		stars[i].position = Vector2(x_screen, fy_to_screen_track(fy_val) - vertical_offset_pixels)
 
 func generate_new_level():
 	$track.visible = false
@@ -232,9 +261,9 @@ func generate_new_level():
 	if expr.parse(valid_correct_func, ["x"]) == OK:
 		setup_level_positions(expr)
 
-	if $UI/Button: $UI/Button.text = options[0]
-	if $UI/Button2: $UI/Button2.text = options[1]
-	if $UI/Button3: $UI/Button3.text = options[2]
+	if $UI/Buttons/Button: $UI/Buttons/Button.text = options[0]
+	if $UI/Buttons/Button2: $UI/Buttons/Button2.text = options[1]
+	if $UI/Buttons/Button3: $UI/Buttons/Button3.text = options[2]
 
 	draw_track(current_correct_func)
 
