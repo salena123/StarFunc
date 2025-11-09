@@ -195,10 +195,10 @@ grow_horizontal = 0
 
 [node name="Button3" type="Button" parent="UI/Buttons"]
 layout_mode = 0
-offset_left = 3.0
-offset_top = 132.0
-offset_right = 73.0
-offset_bottom = 163.0
+offset_left = 1.0
+offset_top = 150.0
+offset_right = 71.0
+offset_bottom = 181.0
 text = "y = -x"
 
 [node name="Button2" type="Button" parent="UI/Buttons"]
@@ -215,15 +215,6 @@ offset_top = 16.0
 offset_right = 106.0
 offset_bottom = 47.0
 text = "y = -0.5*x + 2"
-
-[node name="ForwardButton" type="Button" parent="UI/Buttons"]
-visible = false
-layout_mode = 0
-offset_left = 2.0
-offset_top = 184.0
-offset_right = 74.0
-offset_bottom = 215.0
-text = "Вперед!"
 
 [node name="Grid" type="Node2D" parent="."]
 script = ExtResource("6_kdubu")
