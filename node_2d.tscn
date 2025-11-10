@@ -38,6 +38,7 @@ script = ExtResource("1_kdubu")
 [node name="ball" type="RigidBody2D" parent="."]
 position = Vector2(88, 83)
 physics_material_override = SubResource("PhysicsMaterial_y32ns")
+freeze_mode = 1
 
 [node name="Sprite2D" type="Sprite2D" parent="ball"]
 texture = ExtResource("1_wtcfe")

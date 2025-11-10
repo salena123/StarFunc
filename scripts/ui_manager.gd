@@ -40,7 +40,6 @@ func init(r):
 	)
 	
 	restart.pressed.connect(func():
-		root.ball.freeze = true
 		root.level_gen.reset_current_level()
 	)
 

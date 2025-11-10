@@ -179,7 +179,7 @@ func random_function(allowed_types: Array = []) -> String:
 		FuncType.LINEAR:
 			var k = 0.0
 			while abs(k) < 0.3:
-				k = round(randf_range(-1.5, 1.5) * 10) / 10.0
+				k = round(randf_range(-2, 2) * 10) / 10.0
 			var b = round(randf_range(-5.0, 5.0) * 10) / 10.0
 			func_str = str(k) + "*x + " + str(b)
 		FuncType.QUADRATIC:
@@ -205,23 +205,22 @@ func reset_current_level():
 	for child in root.track.get_children():
 		if child is CollisionShape2D:
 			child.queue_free()
-	if LevelType.INPUT_LINEAR:
+	if get_level_type(root.level) == LevelType.INPUT_LINEAR:
 		root.k_input.clear()
 		root.b_input.clear()
 		root.forward_button_input.hide()
 	root.forward_button.hide()
 	root.track.visible = false
-	root.ball.linear_velocity = Vector2.ZERO
-	root.ball.angular_velocity = 0
-	root.ball.freeze = true
+
 	root.score = 0
 	root.ui.update_score_label()
 	root.first_selection_done = false
-	
+
+	root.ball.freeze = false
+	root.ball.linear_velocity = Vector2.ZERO
+	root.ball.angular_velocity = 0
 	var expr = Expression.new()
 	if expr.parse(current_correct_func, ["x"]) == OK:
 		root.utils.setup_level_positions(expr)
 		root.track_drawer.draw_track(current_correct_func)
-		print("зашло")
-	else:
-		print("не зашло")
+	root.ball.freeze = true

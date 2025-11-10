@@ -190,52 +190,47 @@ func enable_option_buttons(root):
 func format_function_from_string(func_str: String) -> String:
 	var s = func_str.replace(" ", "")
 
-	# Квадратичная функция: ax*x + bx + c
 	if s.find("*x*x") != -1:
 		var x2_pos = s.find("*x*x")
 		var a_str = s.substr(0, x2_pos)
 		var rest = s.substr(x2_pos + 4, s.length() - (x2_pos + 4))
 
+		var a = float(a_str)
 		var b = 0.0
 		var c = 0.0
-		var b_str = ""
+
 		if rest != "":
-			# ищем первый '+' или '-' после a*x*x
-			var plus_pos = rest.find("+")
-			var minus_pos = rest.find("-", 1)
-			var split_pos = -1
-			if plus_pos != -1:
-				split_pos = plus_pos
-			elif minus_pos != -1:
-				split_pos = minus_pos
+			# нормализуем знаки
+			rest = rest.replace("+-", "-")
+			rest = rest.replace("-+", "-")
+			rest = rest.replace("--", "+")
 
-			if split_pos != -1:
-				b_str = rest.substr(0, split_pos)
-				c = float(rest.substr(split_pos, rest.length() - split_pos))
-			else:
-				b_str = rest
+			# создаём регулярку для коэффициента перед x
+			var regex = RegEx.new()
+			regex.compile("([+-]?[0-9.]+)\\*x")
+			var b_match = regex.search(rest)
+			if b_match != null:
+				b = float(b_match.get_string(1))
+				# убираем b из остатка
+				rest = rest.replace(b_match.get_string(0), "")
 
-			if b_str != "":
-				b = float(b_str)
+			if rest != "":
+				c = float(rest)
 
-		var a = float(a_str)
 		return format_quadratic(a, b, c)
 
-	# Синус
 	elif s.find("*sin(") != -1:
 		var mult_pos = s.find("*sin(")
 		var A = float(s.substr(0, mult_pos))
 		var inner = s.substr(mult_pos + 5, s.length() - (mult_pos + 5 - 1))
 		return format_sin(A, inner)
 
-	# Косинус
 	elif s.find("*cos(") != -1:
 		var mult_pos = s.find("*cos(")
 		var A = float(s.substr(0, mult_pos))
 		var inner = s.substr(mult_pos + 5, s.length() - (mult_pos + 5 - 1))
 		return format_cos(A, inner)
 
-	# Линейная функция: k*x + b
 	elif s.find("*x") != -1:
 		var x_pos = s.find("*x")
 		var k_str = s.substr(0, x_pos)
@@ -254,45 +249,45 @@ func format_function_from_string(func_str: String) -> String:
 		return format_linear(k, b)
 
 	else:
-		# Неизвестный формат, возвращаем как есть
 		return func_str
 
+func format_number(n: float) -> String:
+	if is_equal_approx(n, int(n)):
+		return str(int(n))
+	return str(round(n * 100) / 100.0)
 
 func format_linear(k: float, b: float) -> String:
-	var k_str = str(round(k * 10) / 10.0) + "*x"
+	var k_str = format_number(k) + "x"
 	var b_str = ""
 	if b > 0:
-		b_str = " + " + str(round(b * 10) / 10.0)
+		b_str = " + " + format_number(b)
 	elif b < 0:
-		b_str = " - " + str(round(abs(b) * 10) / 10.0)
-	return k_str + b_str
-
+		b_str = " - " + format_number(abs(b))
+	return "y = " + k_str + b_str
 
 func format_quadratic(a: float, b: float, c: float) -> String:
-	var a_str = str(round(a * 100) / 100.0) + "*x*x"
+	var a_str = format_number(a) + "x²"
 	var b_str = ""
 	if b > 0:
-		b_str = " + " + str(round(b * 100) / 100.0) + "*x"
+		b_str = " + " + format_number(b) + "x"
 	elif b < 0:
-		b_str = " - " + str(round(abs(b) * 100) / 100.0) + "*x"
+		b_str = " - " + format_number(abs(b)) + "x"
 
 	var c_str = ""
 	if c > 0:
-		c_str = " + " + str(round(c * 100) / 100.0)
+		c_str = " + " + format_number(c)
 	elif c < 0:
-		c_str = " - " + str(round(abs(c) * 100) / 100.0)
+		c_str = " - " + format_number(abs(c))
 
-	return a_str + b_str + c_str
-
+	return "y = " + a_str + b_str + c_str
 
 func format_sin(A: float, inner: String) -> String:
-	var A_str = str(round(A * 100) / 100.0)
-	return A_str + "*sin(" + inner + ")"
-
+	var A_str = format_number(A)
+	return "y = " + A_str + "*sin(" + inner + ")"
 
 func format_cos(A: float, inner: String) -> String:
-	var A_str = str(round(A * 100) / 100.0)
-	return A_str + "*cos(" + inner + ")"
+	var A_str = format_number(A)
+	return "y = " + A_str + "*cos(" + inner + ")"
 
 
 func on_build_button_pressed(root, k_input, b_input, track_drawer, track, forward_button_input, level_gen):
