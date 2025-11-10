@@ -5,6 +5,8 @@ var ui
 var track_drawer
 var level_gen
 var physics
+var lin_gen
+var input_linear_module
 
 @onready var ball = $ball
 @onready var exit = $exit
@@ -17,6 +19,13 @@ var physics
 	$UI/Buttons/Button2,
 	$UI/Buttons/Button3
 ]
+@onready var input_panel = $UI/InputPanel
+@onready var k_input = $UI/InputPanel/KInput
+@onready var b_input = $UI/InputPanel/BInput
+@onready var build_button = $UI/InputPanel/BuildButton
+@onready var forward_button_input = $UI/InputPanel/ForwardButtonInput
+@onready var error_label = $UI/InputPanel/ErrorLabel
+@onready var restart = $UI/Restart
 
 var score: int = 0
 var level: int = 1
@@ -33,6 +42,7 @@ func _ready():
 	track_drawer = preload("res://scripts/track_drawer.gd").new()
 	level_gen = preload("res://scripts/level_generator.gd").new()
 	physics = preload("res://scripts/physics_checker.gd").new()
+	input_linear_module = preload("res://scripts/input_linear_level.gd").new()
 
 	screen_size = get_viewport_rect().size
 	screen_center = screen_size / 2
@@ -42,11 +52,11 @@ func _ready():
 	track_drawer.init(self)
 	level_gen.init(self)
 	physics.init(self)
+	input_linear_module.init(self)
 
 	randomize()
 	ui.update_score_label()
 	setup_ui_buttons()
-	level_gen.generate_new_level()
 
 	$track.visible = false
 	ball.freeze = true
@@ -56,9 +66,17 @@ func _ready():
 
 	set_process(true)
 	print_scene_info()
-	forward_button.pressed.connect(func(): utils.on_forward_pressed(self, forward_button, option_buttons))
+	forward_button.pressed.connect(func():
+		utils.on_forward_pressed(self, forward_button, option_buttons))
 	forward_button.hide()
-
+	forward_button_input.pressed.connect(func():
+		utils.on_forward_pressed(self, forward_button_input, option_buttons))
+	forward_button_input.hide()
+	level_gen.generate_new_level()
+	build_button.pressed.connect(func():
+		utils.on_build_button_pressed(self, k_input, b_input, track_drawer, track, forward_button_input, level_gen))
+	
+	
 func _process(_delta):
 	physics.check_star_collection()
 	physics.check_exit_reached()

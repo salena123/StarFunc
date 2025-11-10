@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://c2cdbk2ehc4o3"]
+[gd_scene load_steps=16 format=3 uid="uid://c2cdbk2ehc4o3"]
 
 [ext_resource type="Script" uid="uid://c7qx3hdq3vnhc" path="res://scripts/main.gd" id="1_kdubu"]
 [ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="1_wtcfe"]
@@ -21,6 +21,14 @@ radius = 16.492422
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_kdubu"]
 radius = 50.039986
+
+[sub_resource type="LabelSettings" id="LabelSettings_d21ai"]
+font_size = 24
+
+[sub_resource type="LabelSettings" id="LabelSettings_kdubu"]
+font_size = 18
+font_color = Color(1, 0, 0, 1)
+outline_size = 5
 
 [sub_resource type="SystemFont" id="SystemFont_kdubu"]
 
@@ -93,9 +101,24 @@ shape = SubResource("CircleShape2D_kdubu")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
+[node name="Restart" type="Button" parent="UI"]
+offset_left = 2.0
+offset_top = 44.0
+offset_right = 69.0
+offset_bottom = 75.0
+text = "                     "
+
+[node name="Label" type="Label" parent="UI/Restart"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Заново"
+label_settings = SubResource("LabelSettings_d21ai")
+
 [node name="ScoreLabel" type="Label" parent="UI"]
 offset_right = 40.0
 offset_bottom = 23.0
+text = "Звезды: 3"
 label_settings = ExtResource("5_q6r6c")
 
 [node name="LevelCompletePopup" type="Control" parent="UI"]
@@ -224,6 +247,75 @@ offset_top = 184.0
 offset_right = 74.0
 offset_bottom = 215.0
 text = "Вперед!"
+
+[node name="InputPanel" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -254.0
+offset_top = 23.0
+offset_right = -214.0
+offset_bottom = 63.0
+grow_horizontal = 0
+
+[node name="YLabel" type="Label" parent="UI/InputPanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = -2.0
+offset_right = 47.0
+offset_bottom = 21.0
+text = "y ="
+
+[node name="KInput" type="LineEdit" parent="UI/InputPanel"]
+layout_mode = 0
+offset_left = 42.0
+offset_top = -4.0
+offset_right = 110.5625
+offset_bottom = 27.0
+placeholder_text = "k"
+
+[node name="XLabel" type="Label" parent="UI/InputPanel"]
+layout_mode = 0
+offset_left = 111.0
+offset_right = 151.0
+offset_bottom = 23.0
+text = "*x + "
+
+[node name="BInput" type="LineEdit" parent="UI/InputPanel"]
+layout_mode = 0
+offset_left = 149.0
+offset_top = -5.0
+offset_right = 217.5625
+offset_bottom = 26.0
+placeholder_text = "b"
+
+[node name="BuildButton" type="Button" parent="UI/InputPanel"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 48.0
+offset_right = 100.0
+offset_bottom = 79.0
+text = "Построить"
+
+[node name="ForwardButtonInput" type="Button" parent="UI/InputPanel"]
+visible = false
+layout_mode = 0
+offset_left = 126.0
+offset_top = 48.0
+offset_right = 198.0
+offset_bottom = 79.0
+text = "Вперед!"
+
+[node name="ErrorLabel" type="Label" parent="UI/InputPanel"]
+visible = false
+layout_mode = 0
+offset_left = 15.0
+offset_top = 102.0
+offset_right = 55.0
+offset_bottom = 125.0
+text = "Введите значения k и b"
+label_settings = SubResource("LabelSettings_kdubu")
 
 [node name="Grid" type="Node2D" parent="."]
 script = ExtResource("6_kdubu")

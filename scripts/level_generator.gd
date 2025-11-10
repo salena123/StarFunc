@@ -5,7 +5,6 @@ var options = []
 var current_correct_func = ""
 
 enum FuncType { LINEAR, QUADRATIC, SIN, COS }
-
 enum Side { LEFT, RIGHT }
 
 enum LevelType {
@@ -13,30 +12,34 @@ enum LevelType {
 	VARY_B,         # одинаковое k, разные b
 	VARY_K,         # одинаковое b, разные k
 	QUADRATIC,      # квадратичные функции
-	TRIG            # синусы и косинусы
+	TRIG,           # синусы и косинусы
+	INPUT_LINEAR    # линейные с пользовательским вводом
 }
-
-const STAGE_TO_TYPE = [
-	LevelType.SIMPLE,  # 1
-	LevelType.SIMPLE,  # 2
-	LevelType.SIMPLE,  # 3
-	LevelType.SIMPLE,  # 4
-	LevelType.SIMPLE,  # 5
-	LevelType.VARY_B,  # 6
-	LevelType.VARY_B,  # 7
-	LevelType.VARY_B,  # 8
-	LevelType.VARY_K,  # 9
-	LevelType.VARY_K,  # 10
-	LevelType.VARY_K   # 11
-]
 
 func init(r):
 	root = r
 	if root.utils:
 		root.utils.calc_base_unit()
 
+func get_level_type(level: int) -> LevelType:
+	if level <= 5:
+		return LevelType.SIMPLE
+	elif level <= 8:
+		return LevelType.VARY_B
+	elif level <= 11:
+		return LevelType.VARY_K
+	elif level <= 14:
+		return LevelType.INPUT_LINEAR
+	elif level <= 20:
+		return LevelType.QUADRATIC
+	elif level <= 30:
+		return LevelType.TRIG
+	else:
+		var cycle = ((level - 1) % 25) + 1
+		return get_level_type(cycle)
 
 func generate_new_level():
+	root.restart.disabled = false
 	root.utils.enable_option_buttons(root)
 	root.track.visible = false
 	root.score = 0
@@ -46,54 +49,84 @@ func generate_new_level():
 		s.visible = true
 
 	root.ball_side = Side.RIGHT if randi() % 2 == 0 else Side.LEFT
-	print("Выбранная сторона шара:", "RIGHT" if root.ball_side == Side.RIGHT else "LEFT")
+
+	var lvl_type = get_level_type(root.level)
+	print("Тип уровня:", lvl_type)
 
 	var valid_correct_func = ""
-	for i in range(100):
-		var candidate = random_function([FuncType.LINEAR]) if root.level < 10 else random_function()
+	var max_attempts = 5000
+	var attempts = 0
+
+	while valid_correct_func == "" and attempts < max_attempts:
+		attempts += 1
+		var func_types = []
+		match lvl_type:
+			LevelType.SIMPLE, LevelType.VARY_B, LevelType.VARY_K:
+				func_types = [FuncType.LINEAR]
+			LevelType.QUADRATIC:
+				func_types = [FuncType.QUADRATIC]
+			LevelType.TRIG:
+				func_types = [FuncType.SIN, FuncType.COS]
+			LevelType.INPUT_LINEAR:
+				func_types = [FuncType.LINEAR]
+			_:
+				func_types = [FuncType.LINEAR]
+
+		var candidate = random_function(func_types)
 		if root.utils.is_level_valid_for_edges(candidate, root.ball_side):
 			valid_correct_func = candidate
-			break
+
 	if valid_correct_func == "":
 		valid_correct_func = "0.5*x"
 
-
 	current_correct_func = valid_correct_func
 
-	var stage = ((root.level - 1) % 11) + 1
-	var lvl_type = STAGE_TO_TYPE[stage - 1]
-	print("Стадия:", stage, "Тип уровня:", lvl_type)
+	if lvl_type == LevelType.INPUT_LINEAR:
+		for btn in root.option_buttons:
+			btn.hide()
+		root.forward_button.hide()
+		root.k_input.clear()
+		root.b_input.clear()
+		root.input_panel.visible = true
+		var expr = Expression.new()
+		if expr.parse(current_correct_func, ["x"]) == OK:
+			root.utils.setup_level_positions(expr)
 
-	options = generate_options_for_type(lvl_type, valid_correct_func)
+	else:
+		root.input_panel.visible = false
+		for btn in root.option_buttons:
+			btn.show()
 
-	while options.size() < 3:
-		var fallback = random_function([FuncType.LINEAR])
-		if not options.has(fallback):
-			options.append(fallback)
+		options = generate_options_for_type(lvl_type, valid_correct_func)
+		while options.size() < 3:
+			var fallback = random_function([FuncType.LINEAR])
+			if not options.has(fallback):
+				options.append(fallback)
+		options.shuffle()
 
-	options.shuffle()
+		var expr = Expression.new()
+		if expr.parse(valid_correct_func, ["x"]) == OK:
+			root.utils.setup_level_positions(expr)
 
-	var expr = Expression.new()
-	if expr.parse(valid_correct_func, ["x"]) == OK:
-		root.utils.setup_level_positions(expr)
+		root.get_node("UI/Buttons/Button").text = root.utils.format_function_from_string(options[0])
+		root.get_node("UI/Buttons/Button2").text = root.utils.format_function_from_string(options[1])
+		root.get_node("UI/Buttons/Button3").text = root.utils.format_function_from_string(options[2])
 
-	if root.get_node("UI/Buttons/Button"): root.get_node("UI/Buttons/Button").text = options[0]
-	if root.get_node("UI/Buttons/Button2"): root.get_node("UI/Buttons/Button2").text = options[1]
-	if root.get_node("UI/Buttons/Button3"): root.get_node("UI/Buttons/Button3").text = options[2]
+		root.track_drawer.draw_track(current_correct_func)
+		
+		
+		print("Сторона шара:", "RIGHT" if root.ball_side == Side.RIGHT else "LEFT")
+		print("Правильная функция:", current_correct_func)
+		print("Все варианты ответов:")
+		for i in range(options.size()):
+			print("  [", i, "] ", options[i])
 
-	root.track_drawer.draw_track(current_correct_func)
 
 
 func generate_options_for_type(lvl_type: int, base_func: String) -> Array:
 	var opts = [base_func]
 
 	match lvl_type:
-		#LevelType.SIMPLE:
-			#while opts.size() < 3:
-				#var cand = random_function([FuncType.LINEAR])
-				#if not opts.has(cand) and root.utils.is_level_valid_for_edges(cand, root.ball_side):
-					#opts.append(cand)
-					
 		LevelType.SIMPLE:
 			while opts.size() < 3:
 				var cand = random_function([FuncType.LINEAR])
@@ -121,15 +154,15 @@ func generate_options_for_type(lvl_type: int, base_func: String) -> Array:
 		LevelType.QUADRATIC:
 			while opts.size() < 3:
 				var cand = random_function([FuncType.QUADRATIC])
-				if not opts.has(cand) and root.utils.is_level_valid_for_edges(cand, root.ball_side):
+				if not opts.has(cand):
 					opts.append(cand)
 
 		LevelType.TRIG:
 			while opts.size() < 3:
 				var cand = random_function([FuncType.SIN, FuncType.COS])
-				if not opts.has(cand) and root.utils.is_level_valid_for_edges(cand, root.ball_side):
+				if not opts.has(cand):
 					opts.append(cand)
-
+					
 		_:
 			pass
 
@@ -151,7 +184,8 @@ func random_function(allowed_types: Array = []) -> String:
 			func_str = str(k) + "*x + " + str(b)
 		FuncType.QUADRATIC:
 			var a = round(randf_range(-0.1, 0.1) * 10) / 10.0
-			if a == 0.0: a = 0.05
+			if a == 0.0:
+				a = 0.05
 			var b2 = round(randf_range(-0.8, 0.8) * 10) / 10.0
 			var c = round(randf_range(-4.0, 4.0) * 10) / 10.0
 			func_str = str(a) + "*x*x + " + str(b2) + "*x + " + str(c)
@@ -166,11 +200,16 @@ func random_function(allowed_types: Array = []) -> String:
 	return func_str
 
 func reset_current_level():
+	root.restart.disabled = false
 	root.utils.enable_option_buttons(root)
 	for child in root.track.get_children():
 		if child is CollisionShape2D:
 			child.queue_free()
-
+	if LevelType.INPUT_LINEAR:
+		root.k_input.clear()
+		root.b_input.clear()
+		root.forward_button_input.hide()
+	root.forward_button.hide()
 	root.track.visible = false
 	root.ball.linear_velocity = Vector2.ZERO
 	root.ball.angular_velocity = 0
@@ -178,8 +217,11 @@ func reset_current_level():
 	root.score = 0
 	root.ui.update_score_label()
 	root.first_selection_done = false
-
+	
 	var expr = Expression.new()
 	if expr.parse(current_correct_func, ["x"]) == OK:
 		root.utils.setup_level_positions(expr)
 		root.track_drawer.draw_track(current_correct_func)
+		print("зашло")
+	else:
+		print("не зашло")

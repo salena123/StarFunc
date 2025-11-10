@@ -17,6 +17,8 @@ config/icon="res://icon.svg"
 
 [display]
 
+window/size/viewport_width=697
+window/size/viewport_height=748
 window/handheld/orientation=5
 
 [editor]

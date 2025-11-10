@@ -9,6 +9,7 @@ var root
 @onready var level_label
 @onready var fail_popup
 @onready var fail_retry_button
+@onready var restart
 
 func init(r):
 	root = r
@@ -19,6 +20,7 @@ func init(r):
 	level_label = root.get_node("UI/LevelCompletePopup/Label")
 	fail_popup = root.get_node("UI/FailPopup")
 	fail_retry_button = root.get_node("UI/FailPopup/RetryButton")
+	restart = root.get_node("UI/Restart")
 
 	level_complete_popup.hide()
 	fail_popup.hide()
@@ -36,6 +38,11 @@ func init(r):
 		fail_popup.hide()
 		root.level_gen.reset_current_level()
 	)
+	
+	restart.pressed.connect(func():
+		root.ball.freeze = true
+		root.level_gen.reset_current_level()
+	)
 
 func update_score_label():
 	if score_label:
@@ -43,9 +50,11 @@ func update_score_label():
 
 func show_level_complete():
 	root.ball.freeze = true
+	root.restart.disabled = true
 	level_label.text = "Уровень " + str(root.level) + " пройден!"
 	level_complete_popup.show()
 
 func show_fail():
+	root.restart.disabled = true
 	root.ball.freeze = true
 	fail_popup.show()

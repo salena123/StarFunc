@@ -21,5 +21,6 @@ func check_ball_fall_off_screen():
 	if root.ball.global_position.y > rect.size.y + 100 \
 	or root.ball.global_position.x > rect.size.x + 50 \
 	or root.ball.global_position.x < -50:
+		root.restart.disabled = true
 		root.ball.freeze = true
 		root.ui.show_fail()

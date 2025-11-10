@@ -106,6 +106,24 @@ func is_level_valid_for_edges(func_str: String, desired_side: int) -> bool:
 	if desired_side == Side.LEFT and k >= 0:
 		return false
 
+	var ball_spawn_y_px = top_margin + vertical_offset_pixels
+	var ball_radius_px = 0.0
+
+	if root.ball.has_node("CollisionShape2D"):
+		var col_shape = root.ball.get_node("CollisionShape2D")
+		if col_shape.shape is CircleShape2D:
+			ball_radius_px = col_shape.shape.radius
+
+	var safe_gap_px = ball_radius_px
+	print("ball_radius_px =", ball_radius_px)
+	print("safe_gap_px =", safe_gap_px)
+	if desired_side == Side.RIGHT:
+		if y_right_px < ball_spawn_y_px + safe_gap_px:
+			return false
+	elif desired_side == Side.LEFT:
+		if y_left_px < ball_spawn_y_px + safe_gap_px:
+			return false
+
 	return true
 
 func setup_level_positions(expr: Expression):
@@ -151,11 +169,6 @@ func setup_level_positions(expr: Expression):
 		root.stars[i].visible = true
 		root.stars[i].position = Vector2(x_screen, fy_to_screen(fy_val) - vertical_offset_pixels)
 
-	print("DEBUG stars: ball_x=", ball_x, " exit_x=", exit_x)
-	print("DEBUG fx_start=", fx_start, " fx_end=", fx_end)
-	print("DEBUG expr test: y(0)=", expr.execute([0]))
-
-
 func on_forward_pressed(root, forward_button, option_buttons):
 	if root.first_selection_done:
 		return
@@ -173,3 +186,135 @@ func enable_option_buttons(root):
 	for btn in root.option_buttons:
 		if btn:
 			btn.disabled = false
+			
+func format_function_from_string(func_str: String) -> String:
+	var s = func_str.replace(" ", "")
+
+	# Квадратичная функция: ax*x + bx + c
+	if s.find("*x*x") != -1:
+		var x2_pos = s.find("*x*x")
+		var a_str = s.substr(0, x2_pos)
+		var rest = s.substr(x2_pos + 4, s.length() - (x2_pos + 4))
+
+		var b = 0.0
+		var c = 0.0
+		var b_str = ""
+		if rest != "":
+			# ищем первый '+' или '-' после a*x*x
+			var plus_pos = rest.find("+")
+			var minus_pos = rest.find("-", 1)
+			var split_pos = -1
+			if plus_pos != -1:
+				split_pos = plus_pos
+			elif minus_pos != -1:
+				split_pos = minus_pos
+
+			if split_pos != -1:
+				b_str = rest.substr(0, split_pos)
+				c = float(rest.substr(split_pos, rest.length() - split_pos))
+			else:
+				b_str = rest
+
+			if b_str != "":
+				b = float(b_str)
+
+		var a = float(a_str)
+		return format_quadratic(a, b, c)
+
+	# Синус
+	elif s.find("*sin(") != -1:
+		var mult_pos = s.find("*sin(")
+		var A = float(s.substr(0, mult_pos))
+		var inner = s.substr(mult_pos + 5, s.length() - (mult_pos + 5 - 1))
+		return format_sin(A, inner)
+
+	# Косинус
+	elif s.find("*cos(") != -1:
+		var mult_pos = s.find("*cos(")
+		var A = float(s.substr(0, mult_pos))
+		var inner = s.substr(mult_pos + 5, s.length() - (mult_pos + 5 - 1))
+		return format_cos(A, inner)
+
+	# Линейная функция: k*x + b
+	elif s.find("*x") != -1:
+		var x_pos = s.find("*x")
+		var k_str = s.substr(0, x_pos)
+		var b_str = s.substr(x_pos + 2, s.length() - (x_pos + 2))
+
+		var k = float(k_str)
+		var b = 0.0
+
+		if b_str.begins_with("+"):
+			b = float(b_str.substr(1, b_str.length() - 1))
+		elif b_str.begins_with("-"):
+			b = -float(b_str.substr(1, b_str.length() - 1))
+		elif b_str != "":
+			b = float(b_str)
+
+		return format_linear(k, b)
+
+	else:
+		# Неизвестный формат, возвращаем как есть
+		return func_str
+
+
+func format_linear(k: float, b: float) -> String:
+	var k_str = str(round(k * 10) / 10.0) + "*x"
+	var b_str = ""
+	if b > 0:
+		b_str = " + " + str(round(b * 10) / 10.0)
+	elif b < 0:
+		b_str = " - " + str(round(abs(b) * 10) / 10.0)
+	return k_str + b_str
+
+
+func format_quadratic(a: float, b: float, c: float) -> String:
+	var a_str = str(round(a * 100) / 100.0) + "*x*x"
+	var b_str = ""
+	if b > 0:
+		b_str = " + " + str(round(b * 100) / 100.0) + "*x"
+	elif b < 0:
+		b_str = " - " + str(round(abs(b) * 100) / 100.0) + "*x"
+
+	var c_str = ""
+	if c > 0:
+		c_str = " + " + str(round(c * 100) / 100.0)
+	elif c < 0:
+		c_str = " - " + str(round(abs(c) * 100) / 100.0)
+
+	return a_str + b_str + c_str
+
+
+func format_sin(A: float, inner: String) -> String:
+	var A_str = str(round(A * 100) / 100.0)
+	return A_str + "*sin(" + inner + ")"
+
+
+func format_cos(A: float, inner: String) -> String:
+	var A_str = str(round(A * 100) / 100.0)
+	return A_str + "*cos(" + inner + ")"
+
+
+func on_build_button_pressed(root, k_input, b_input, track_drawer, track, forward_button_input, level_gen):
+	var k_text = k_input.text.strip_edges()
+	var b_text = b_input.text.strip_edges()
+
+	if k_text == "" or b_text == "":
+		root.error_label.show()
+		print("Введите значения k и b")
+		return
+
+	var k_val = float(k_text)
+	var b_val = float(b_text)
+	var func_str = str(k_val) + "*x + " + str(b_val)
+
+	print("Построена функция:", func_str)
+	root.error_label.hide()
+	
+	var expr = Expression.new()
+	if expr.parse(func_str, ["x"]) == OK:
+		track_drawer.draw_track(func_str)
+		track.visible = true
+		forward_button_input.show() 
+	else:
+		print("Ошибка: не удалось разобрать выражение")
