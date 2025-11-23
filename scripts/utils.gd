@@ -138,18 +138,12 @@ func setup_level_positions(expr: Expression):
 	var fx_end = (x_end_screen - root.screen_center.x) / root.base_unit
 
 	var ball_x: float
-	var exit_x: float
 	if root.ball_side == root.level_gen.Side.RIGHT:
 		ball_x = fx_end
-		exit_x = fx_start
 	else:
 		ball_x = fx_start
-		exit_x = fx_end
-
-	var exit_y = clamp(expr.execute([exit_x]), y_min, y_max)
 
 	root.ball.position = Vector2(fx_to_screen(ball_x), top_margin + vertical_offset_pixels)
-	root.exit.position = Vector2(fx_to_screen(exit_x), fy_to_screen(exit_y) - vertical_offset_pixels)
 
 	var star_positions = []
 	var step_px = (x_end_screen - x_start_screen) / float(num_stars + 1)
@@ -181,6 +175,11 @@ func on_forward_pressed(root, forward_button, option_buttons):
 	for btn in option_buttons:
 		if btn:
 			btn.disabled = true
+	
+	var lvl_type = root.level_gen.get_level_type(root.level)
+	if lvl_type == root.level_gen.LevelType.INPUT_LINEAR or lvl_type == root.level_gen.LevelType.INPUT_SLIDER:
+		if root.build_button:
+			root.build_button.disabled = true
 
 func enable_option_buttons(root):
 	for btn in root.option_buttons:
@@ -200,18 +199,15 @@ func format_function_from_string(func_str: String) -> String:
 		var c = 0.0
 
 		if rest != "":
-			# нормализуем знаки
 			rest = rest.replace("+-", "-")
 			rest = rest.replace("-+", "-")
 			rest = rest.replace("--", "+")
 
-			# создаём регулярку для коэффициента перед x
 			var regex = RegEx.new()
 			regex.compile("([+-]?[0-9.]+)\\*x")
 			var b_match = regex.search(rest)
 			if b_match != null:
 				b = float(b_match.get_string(1))
-				# убираем b из остатка
 				rest = rest.replace(b_match.get_string(0), "")
 
 			if rest != "":
@@ -291,25 +287,55 @@ func format_cos(A: float, inner: String) -> String:
 
 
 func on_build_button_pressed(root, k_input, b_input, track_drawer, track, forward_button_input, level_gen):
-	var k_text = k_input.text.strip_edges()
-	var b_text = b_input.text.strip_edges()
+	var lvl_type = level_gen.get_level_type(root.level)
+	var k_val: float
+	var b_val: float
+	
+	if lvl_type == level_gen.LevelType.INPUT_SLIDER:
+		if not root.k_slider or not root.b_slider:
+			if root.error_label:
+				root.error_label.text = "Слайдеры не найдены"
+				root.error_label.show()
+			return
+		k_val = root.k_slider.value
+		b_val = root.b_slider.value
+		var func_str = str(k_val) + "*x + " + str(b_val)
+		_build_function(root, func_str, track_drawer, track, forward_button_input)
+	else:
+		var k_text = k_input.text.strip_edges()
+		var b_text = b_input.text.strip_edges()
 
-	if k_text == "" or b_text == "":
-		root.error_label.show()
-		print("Введите значения k и b")
-		return
+		if k_text == "" or b_text == "":
+			if root.error_label:
+				root.error_label.text = "Введите значения k и b"
+				root.error_label.show()
+			print("Введите значения k и b")
+			return
 
-	var k_val = float(k_text)
-	var b_val = float(b_text)
-	var func_str = str(k_val) + "*x + " + str(b_val)
+		var k_val_input = float(k_text)
+		var b_val_input = float(b_text)
+		var func_str = str(k_val_input) + "*x + " + str(b_val_input)
+		_build_function(root, func_str, track_drawer, track, forward_button_input)
 
+func _build_function(root, func_str: String, track_drawer, track, forward_button_input):
 	print("Построена функция:", func_str)
-	root.error_label.hide()
+	if root.error_label:
+		root.error_label.hide()
 	
 	var expr = Expression.new()
 	if expr.parse(func_str, ["x"]) == OK:
 		track_drawer.draw_track(func_str)
 		track.visible = true
-		forward_button_input.show() 
+		forward_button_input.show()
+		
+		if not root.first_selection_done:
+			if root.timer and root.timer.is_stopped():
+				root.timer.wait_time = root.timer_duration
+				root.timer.start()
+				if root.timer_label:
+					root.timer_label.text = "Таймер: " + str(root.timer_duration)
 	else:
+		if root.error_label:
+			root.error_label.text = "Ошибка: не удалось разобрать выражение"
+			root.error_label.show()
 		print("Ошибка: не удалось разобрать выражение")

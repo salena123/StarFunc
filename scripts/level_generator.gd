@@ -13,7 +13,8 @@ enum LevelType {
 	VARY_K,         # одинаковое b, разные k
 	QUADRATIC,      # квадратичные функции
 	TRIG,           # синусы и косинусы
-	INPUT_LINEAR    # линейные с пользовательским вводом
+	INPUT_LINEAR,   # линейные с пользовательским вводом (текстовые поля)
+	INPUT_SLIDER    # линейные с пользовательским вводом (слайдеры)
 }
 
 func init(r):
@@ -22,23 +23,122 @@ func init(r):
 		root.utils.calc_base_unit()
 
 func get_level_type(level: int) -> LevelType:
-	if level <= 5:
-		return LevelType.SIMPLE
-	elif level <= 8:
-		return LevelType.VARY_B
-	elif level <= 11:
-		return LevelType.VARY_K
-	elif level <= 14:
+	if level <= 1:
+		return LevelType.INPUT_SLIDER
+	elif level <= 2:
 		return LevelType.INPUT_LINEAR
-	elif level <= 20:
-		return LevelType.QUADRATIC
+	elif level <= 3:
+		return LevelType.SIMPLE
+	elif level <= 4:
+		return LevelType.VARY_B
+	elif level <= 5:
+		return LevelType.VARY_K
 	elif level <= 30:
 		return LevelType.TRIG
 	else:
 		var cycle = ((level - 1) % 25) + 1
 		return get_level_type(cycle)
 
+func load_saved_level(level_number: int) -> bool:
+	if not root.level_saver:
+		return false
+	var LevelSaver = root.level_saver
+	var level_data = LevelSaver.load_level(level_number)
+	if level_data == null:
+		return false
+	
+	current_correct_func = level_data.correct_func
+	options = level_data.options.duplicate()
+	root.ball_side = level_data.ball_side
+	
+	seed(level_data.star_seed)
+	
+	var expr = Expression.new()
+	if expr.parse(current_correct_func, ["x"]) == OK:
+		root.utils.setup_level_positions(expr)
+	
+	var saved_lvl_type = get_level_type(level_number)
+	if saved_lvl_type == LevelType.INPUT_LINEAR:
+		for btn in root.option_buttons:
+			btn.hide()
+		root.forward_button.hide()
+		if root.k_input:
+			root.k_input.visible = true
+		if root.b_input:
+			root.b_input.visible = true
+		if root.k_slider:
+			root.k_slider.visible = false
+		if root.b_slider:
+			root.b_slider.visible = false
+		if root.k_value_label:
+			root.k_value_label.visible = false
+		if root.b_value_label:
+			root.b_value_label.visible = false
+		root.input_panel.visible = true
+	elif saved_lvl_type == LevelType.INPUT_SLIDER:
+		for btn in root.option_buttons:
+			btn.hide()
+		root.forward_button.hide()
+		if root.k_slider:
+			root.k_slider.value = 0.0
+		if root.b_slider:
+			root.b_slider.value = 0.0
+		# Обновляем k_slider_label и b_slider_label
+		if root.k_slider_label:
+			root.k_slider_label.text = "0.0"
+		if root.b_slider_label:
+			root.b_slider_label.text = "0.0"
+		if root.k_input:
+			root.k_input.visible = false
+		if root.b_input:
+			root.b_input.visible = false
+		if root.k_slider:
+			root.k_slider.visible = true
+		if root.b_slider:
+			root.b_slider.visible = true
+		if root.has_node("UI/Slider"):
+			root.get_node("UI/Slider").visible = true
+		if root.k_slider_label:
+			root.k_slider_label.visible = true
+		if root.b_slider_label:
+			root.b_slider_label.visible = true
+		if root.x_label:
+			root.x_label.visible = false
+		if root.y_label:
+			root.y_label.visible = false
+		if root.k_value_label:
+			root.k_value_label.visible = false
+		if root.b_value_label:
+			root.b_value_label.visible = false
+		root.input_panel.visible = true
+	else:
+		root.input_panel.visible = false
+		for btn in root.option_buttons:
+			btn.show()
+		root.get_node("UI/Buttons/Button").text = root.utils.format_function_from_string(options[0])
+		root.get_node("UI/Buttons/Button2").text = root.utils.format_function_from_string(options[1])
+		root.get_node("UI/Buttons/Button3").text = root.utils.format_function_from_string(options[2])
+	
+	return true
+
+
 func generate_new_level():
+	if root.level_saver and load_saved_level(root.level):
+		print("Загружен сохранённый уровень ", root.level)
+		root.restart.disabled = false
+		root.utils.enable_option_buttons(root)
+		root.track.visible = false
+		root.score = 0
+		root.ui.update_score_label()
+		root.first_selection_done = false
+		for s in root.stars:
+			s.visible = true
+		if root.timer:
+			root.timer.stop()
+		if root.timer_label:
+			root.timer_label.text = "Таймер: --"
+		return
+	
 	root.restart.disabled = false
 	root.utils.enable_option_buttons(root)
 	root.track.visible = false
@@ -47,6 +147,10 @@ func generate_new_level():
 	root.first_selection_done = false
 	for s in root.stars:
 		s.visible = true
+	if root.timer:
+		root.timer.stop()
+	if root.timer_label:
+		root.timer_label.text = "Таймер: --"
 
 	root.ball_side = Side.RIGHT if randi() % 2 == 0 else Side.LEFT
 
@@ -67,7 +171,7 @@ func generate_new_level():
 				func_types = [FuncType.QUADRATIC]
 			LevelType.TRIG:
 				func_types = [FuncType.SIN, FuncType.COS]
-			LevelType.INPUT_LINEAR:
+			LevelType.INPUT_LINEAR, LevelType.INPUT_SLIDER:
 				func_types = [FuncType.LINEAR]
 			_:
 				func_types = [FuncType.LINEAR]
@@ -85,8 +189,77 @@ func generate_new_level():
 		for btn in root.option_buttons:
 			btn.hide()
 		root.forward_button.hide()
-		root.k_input.clear()
-		root.b_input.clear()
+		# Разблокируем кнопку "Построить" (будет заблокирована после нажатия "Вперед")
+		if root.build_button:
+			root.build_button.disabled = false
+		if root.k_input:
+			root.k_input.clear()
+		if root.b_input:
+			root.b_input.clear()
+		if root.k_input:
+			root.k_input.visible = true
+		if root.b_input:
+			root.b_input.visible = true
+		if root.k_slider:
+			root.k_slider.visible = false
+		if root.b_slider:
+			root.b_slider.visible = false
+		if root.has_node("UI/Slider"):
+			root.get_node("UI/Slider").visible = false
+		if root.k_slider_label:
+			root.k_slider_label.visible = false
+		if root.b_slider_label:
+			root.b_slider_label.visible = false
+		if root.x_label:
+			root.x_label.visible = false
+		if root.y_label:
+			root.y_label.visible = false
+		if root.k_value_label:
+			root.k_value_label.visible = false
+		if root.b_value_label:
+			root.b_value_label.visible = false
+		root.input_panel.visible = true
+		var expr = Expression.new()
+		if expr.parse(current_correct_func, ["x"]) == OK:
+			root.utils.setup_level_positions(expr)
+	elif lvl_type == LevelType.INPUT_SLIDER:
+		for btn in root.option_buttons:
+			btn.hide()
+		root.forward_button.hide()
+		# Разблокируем кнопку "Построить" (будет заблокирована после нажатия "Вперед")
+		if root.build_button:
+			root.build_button.disabled = false
+		if root.k_slider:
+			root.k_slider.value = 0.0
+		if root.b_slider:
+			root.b_slider.value = 0.0
+		# Обновляем k_slider_label и b_slider_label
+		if root.k_slider_label:
+			root.k_slider_label.text = "0.0"
+		if root.b_slider_label:
+			root.b_slider_label.text = "0.0"
+		if root.k_input:
+			root.k_input.visible = false
+		if root.b_input:
+			root.b_input.visible = false
+		if root.k_slider:
+			root.k_slider.visible = true
+		if root.b_slider:
+			root.b_slider.visible = true
+		if root.has_node("UI/Slider"):
+			root.get_node("UI/Slider").visible = true
+		if root.k_slider_label:
+			root.k_slider_label.visible = true
+		if root.b_slider_label:
+			root.b_slider_label.visible = true
+		if root.x_label:
+			root.x_label.visible = false
+		if root.y_label:
+			root.y_label.visible = false
+		if root.k_value_label:
+			root.k_value_label.visible = false
+		if root.b_value_label:
+			root.b_value_label.visible = false
 		root.input_panel.visible = true
 		var expr = Expression.new()
 		if expr.parse(current_correct_func, ["x"]) == OK:
@@ -94,6 +267,8 @@ func generate_new_level():
 
 	else:
 		root.input_panel.visible = false
+		if root.build_button:
+			root.build_button.disabled = false
 		for btn in root.option_buttons:
 			btn.show()
 
@@ -112,14 +287,22 @@ func generate_new_level():
 		root.get_node("UI/Buttons/Button2").text = root.utils.format_function_from_string(options[1])
 		root.get_node("UI/Buttons/Button3").text = root.utils.format_function_from_string(options[2])
 
-		root.track_drawer.draw_track(current_correct_func)
-		
-		
 		print("Сторона шара:", "RIGHT" if root.ball_side == Side.RIGHT else "LEFT")
 		print("Правильная функция:", current_correct_func)
 		print("Все варианты ответов:")
 		for i in range(options.size()):
 			print("  [", i, "] ", options[i])
+		
+		if root.level_saver:
+			var LevelSaver = root.level_saver
+			var level_data = LevelSaver.LevelData.new()
+			level_data.level_number = root.level
+			level_data.level_type = lvl_type
+			level_data.correct_func = current_correct_func
+			level_data.options = options.duplicate()
+			level_data.ball_side = root.ball_side
+			level_data.star_seed = randi()
+			LevelSaver.save_level(level_data)
 
 
 
@@ -205,16 +388,33 @@ func reset_current_level():
 	for child in root.track.get_children():
 		if child is CollisionShape2D:
 			child.queue_free()
-	if get_level_type(root.level) == LevelType.INPUT_LINEAR:
-		root.k_input.clear()
-		root.b_input.clear()
+	var lvl_type = get_level_type(root.level)
+	if lvl_type == LevelType.INPUT_LINEAR:
+		if root.k_input:
+			root.k_input.clear()
+		if root.b_input:
+			root.b_input.clear()
+		root.forward_button_input.hide()
+	elif lvl_type == LevelType.INPUT_SLIDER:
+		if root.k_slider:
+			root.k_slider.value = 0.0
+		if root.b_slider:
+			root.b_slider.value = 0.0
 		root.forward_button_input.hide()
 	root.forward_button.hide()
 	root.track.visible = false
+	if root.timer:
+		root.timer.stop()
+	if root.timer_label:
+		root.timer_label.text = "Таймер: --"
 
 	root.score = 0
 	root.ui.update_score_label()
 	root.first_selection_done = false
+	
+	if lvl_type == LevelType.INPUT_LINEAR or lvl_type == LevelType.INPUT_SLIDER:
+		if root.build_button:
+			root.build_button.disabled = false
 
 	root.ball.freeze = false
 	root.ball.linear_velocity = Vector2.ZERO

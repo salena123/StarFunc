@@ -12,15 +12,29 @@ func check_star_collection():
 			root.score += 1
 			root.ui.update_score_label()
 
-func check_exit_reached():
-	if root.ball.global_position.distance_to(root.exit.global_position) < 40:
+func check_level_complete_by_stars():
+	if root.score > 0:
+		root.ball.freeze = true
+		if root.timer:
+			root.timer.stop()
+		if root.timer_label:
+			root.timer_label.text = "Таймер: 0.0"
+		if root.progress_manager:
+			root.progress_manager.on_level_complete(root.level, root.score)
 		root.ui.show_level_complete()
+	else:
+		root.ball.freeze = true
+		if root.timer_label:
+			root.timer_label.text = "Таймер: 0.0"
+		root.ui.show_fail()
 
 func check_ball_fall_off_screen():
 	var rect = root.get_viewport_rect()
 	if root.ball.global_position.y > rect.size.y + 100 \
 	or root.ball.global_position.x > rect.size.x + 50 \
 	or root.ball.global_position.x < -50:
-		root.restart.disabled = true
-		root.ball.freeze = true
-		root.ui.show_fail()
+		if root.timer:
+			root.timer.stop()
+		if root.timer_label:
+			root.timer_label.text = "Таймер: 0.0"
+		check_level_complete_by_stars()

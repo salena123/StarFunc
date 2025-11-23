@@ -7,9 +7,10 @@ var level_gen
 var physics
 var lin_gen
 var input_linear_module
+var progress_manager
+var level_saver
 
 @onready var ball = $ball
-@onready var exit = $exit
 @onready var stars = $stars.get_children()
 @onready var track = $track
 @onready var line2d = $track/Line2D
@@ -22,10 +23,19 @@ var input_linear_module
 @onready var input_panel = $UI/InputPanel
 @onready var k_input = $UI/InputPanel/KInput
 @onready var b_input = $UI/InputPanel/BInput
+@onready var k_slider = $UI/InputPanel/KSlider
+@onready var k_value_label = $UI/InputPanel/KValueLabel
+@onready var b_slider = $UI/InputPanel/BSlider
+@onready var b_value_label = $UI/InputPanel/BValueLabel
 @onready var build_button = $UI/InputPanel/BuildButton
 @onready var forward_button_input = $UI/InputPanel/ForwardButtonInput
 @onready var error_label = $UI/InputPanel/ErrorLabel
 @onready var restart = $UI/Restart
+@onready var timer_label = $UI/Timer
+@onready var k_slider_label = $UI/Slider/KLabel
+@onready var b_slider_label = $UI/Slider/BLabel
+@onready var x_label = $UI/Slider/XLabel
+@onready var y_label = $UI/Slider/YLabel
 
 var score: int = 0
 var level: int = 1
@@ -35,6 +45,9 @@ var current_correct_func: String = ""
 var base_unit: float
 var screen_size: Vector2
 var screen_center: Vector2
+var timer: Timer
+var timer_duration: float = 15.0
+
 
 func _ready():
 	utils = preload("res://scripts/utils.gd").new()
@@ -43,6 +56,8 @@ func _ready():
 	level_gen = preload("res://scripts/level_generator.gd").new()
 	physics = preload("res://scripts/physics_checker.gd").new()
 	input_linear_module = preload("res://scripts/input_linear_level.gd").new()
+	progress_manager = preload("res://scripts/progress_manager.gd").new()
+	level_saver = preload("res://scripts/level_saver.gd")
 
 	screen_size = get_viewport_rect().size
 	screen_center = screen_size / 2
@@ -53,6 +68,7 @@ func _ready():
 	level_gen.init(self)
 	physics.init(self)
 	input_linear_module.init(self)
+	progress_manager.init(self)
 
 	randomize()
 	ui.update_score_label()
@@ -64,14 +80,28 @@ func _ready():
 	ball.angular_damp = 0.0
 	ball.continuous_cd = true
 
+	timer = Timer.new()
+	timer.wait_time = timer_duration
+	timer.one_shot = true
+	timer.timeout.connect(_on_timer_timeout)
+	add_child(timer)
+	
+	if timer_label:
+		timer_label.text = "Таймер: --"
+	
 	set_process(true)
 	print_scene_info()
+	if has_node("UI/Slider"):
+		get_node("UI/Slider").visible = false
 	forward_button.pressed.connect(func():
 		utils.on_forward_pressed(self, forward_button, option_buttons))
 	forward_button.hide()
 	forward_button_input.pressed.connect(func():
 		utils.on_forward_pressed(self, forward_button_input, option_buttons))
 	forward_button_input.hide()
+	
+	setup_sliders()
+	
 	level_gen.generate_new_level()
 	build_button.pressed.connect(func():
 		utils.on_build_button_pressed(self, k_input, b_input, track_drawer, track, forward_button_input, level_gen))
@@ -79,14 +109,146 @@ func _ready():
 	
 func _process(_delta):
 	physics.check_star_collection()
-	physics.check_exit_reached()
 	physics.check_ball_fall_off_screen()
+	update_timer_display()
 
 func select_option(index: int):
+	if first_selection_done:
+		return
 	var func_str = level_gen.options[index]
 	track_drawer.draw_track(func_str)
 	$track.visible = true
 	forward_button.show()
+	
+	if timer and timer.is_stopped():
+		timer.wait_time = timer_duration
+		timer.start()
+		if timer_label:
+			timer_label.text = "Таймер: " + str(timer_duration)
+		print("Таймер запущен, выбрана функция:", func_str)
+
+func _on_timer_timeout():
+	if timer_label:
+		timer_label.text = "Таймер: 0.0"
+	physics.check_level_complete_by_stars()
+
+func update_timer_display():
+	if timer_label and timer:
+		if timer.is_stopped():
+			timer_label.text = "Таймер: --"
+		else:
+			var time_left = timer.time_left
+			timer_label.text = "Таймер: " + str(round(time_left * 10) / 10.0)
+
+func print_scene_info():
+	var rect = get_viewport_rect()
+	print("Размер экрана:", rect.size)
+	print("Ball:", ball.global_position)
+	for i in range(stars.size()):
+		print("Star", i + 1, ":", stars[i].global_position)
+
+func setup_sliders():
+	if not has_node("UI/InputPanel/KSlider"):
+		var k_slider_node = HSlider.new()
+		k_slider_node.name = "KSlider"
+		k_slider_node.min_value = -3.0
+		k_slider_node.max_value = 3.0
+		k_slider_node.step = 0.1
+		k_slider_node.value = 0.0
+		k_slider_node.position = Vector2(42, 25)
+		k_slider_node.size = Vector2(100, 20)
+		$UI/InputPanel.add_child(k_slider_node)
+		k_slider = k_slider_node
+		
+		var k_label = Label.new()
+		k_label.name = "KValueLabel"
+		k_label.text = "k = 0.0"
+		k_label.position = Vector2(150, 25)
+		k_label.size = Vector2(70, 20)
+		$UI/InputPanel.add_child(k_label)
+		k_value_label = k_label
+	else:
+		k_slider = $UI/InputPanel/KSlider
+		if has_node("UI/InputPanel/KValueLabel"):
+			k_value_label = $UI/InputPanel/KValueLabel
+		else:
+			var k_label = Label.new()
+			k_label.name = "KValueLabel"
+			k_label.text = "k = 0.0"
+			k_label.position = Vector2(150, 25)
+			k_label.size = Vector2(70, 20)
+			$UI/InputPanel.add_child(k_label)
+			k_value_label = k_label
+	
+	if not has_node("UI/InputPanel/BSlider"):
+		var b_slider_node = HSlider.new()
+		b_slider_node.name = "BSlider"
+		b_slider_node.min_value = -5.0
+		b_slider_node.max_value = 5.0
+		b_slider_node.step = 0.1
+		b_slider_node.value = 0.0
+		b_slider_node.position = Vector2(149, 25)
+		b_slider_node.size = Vector2(100, 20)
+		$UI/InputPanel.add_child(b_slider_node)
+		b_slider = b_slider_node
+		
+		var b_label = Label.new()
+		b_label.name = "BValueLabel"
+		b_label.text = "b = 0.0"
+		b_label.position = Vector2(257, 25)
+		b_label.size = Vector2(70, 20)
+		$UI/InputPanel.add_child(b_label)
+		b_value_label = b_label
+	else:
+		b_slider = $UI/InputPanel/BSlider
+		if has_node("UI/InputPanel/BValueLabel"):
+			b_value_label = $UI/InputPanel/BValueLabel
+		else:
+			var b_label = Label.new()
+			b_label.name = "BValueLabel"
+			b_label.text = "b = 0.0"
+			b_label.position = Vector2(257, 25)
+			b_label.size = Vector2(70, 20)
+			$UI/InputPanel.add_child(b_label)
+			b_value_label = b_label
+	
+	if k_slider:
+		k_slider.value_changed.connect(_on_k_slider_changed)
+	
+	if b_slider:
+		b_slider.value_changed.connect(_on_b_slider_changed)
+
+func _on_k_slider_changed(value: float):
+	var lvl_type = level_gen.get_level_type(level)
+	if lvl_type == level_gen.LevelType.INPUT_SLIDER:
+		var formatted_value = utils.format_number(value)
+		if k_slider_label:
+			k_slider_label.text = formatted_value
+
+func _on_b_slider_changed(value: float):
+	var lvl_type = level_gen.get_level_type(level)
+	if lvl_type == level_gen.LevelType.INPUT_SLIDER:
+		var formatted_value = utils.format_number(value)
+		if b_slider_label:
+			b_slider_label.text = formatted_value
+
+func _on_k_input_changed(new_text: String):
+	var lvl_type = level_gen.get_level_type(level)
+	if lvl_type == level_gen.LevelType.INPUT_SLIDER and k_slider and k_slider.visible:
+		if new_text != "":
+			if new_text.is_valid_float() or new_text.is_valid_int():
+				var val = float(new_text)
+				val = clamp(val, k_slider.min_value, k_slider.max_value)
+				k_slider.value = val
+
+func _on_b_input_changed(new_text: String):
+	var lvl_type = level_gen.get_level_type(level)
+	if lvl_type == level_gen.LevelType.INPUT_SLIDER and b_slider and b_slider.visible:
+		if new_text != "":
+			if new_text.is_valid_float() or new_text.is_valid_int():
+				var val = float(new_text)
+				val = clamp(val, b_slider.min_value, b_slider.max_value)
+				b_slider.value = val
 
 func setup_ui_buttons():
 	if $UI/Buttons/Button:
@@ -95,11 +257,3 @@ func setup_ui_buttons():
 		$UI/Buttons/Button2.pressed.connect(func(): select_option(1))
 	if $UI/Buttons/Button3:
 		$UI/Buttons/Button3.pressed.connect(func(): select_option(2))
-
-func print_scene_info():
-	var rect = get_viewport_rect()
-	print("Размер экрана:", rect.size)
-	print("Ball:", ball.global_position)
-	print("Exit:", exit.global_position)
-	for i in range(stars.size()):
-		print("Star", i + 1, ":", stars[i].global_position)
