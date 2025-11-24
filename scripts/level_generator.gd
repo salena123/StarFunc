@@ -23,11 +23,11 @@ func init(r):
 		root.utils.calc_base_unit()
 
 func get_level_type(level: int) -> LevelType:
-	if level <= 3:
+	if level <= 1:
 		return LevelType.INPUT_SLIDER
-	elif level <= 6:
+	elif level <= 2:
 		return LevelType.INPUT_LINEAR
-	elif level <= 9:
+	elif level <= 3:
 		return LevelType.SIMPLE
 	elif level <= 4:
 		return LevelType.VARY_B
@@ -89,43 +89,43 @@ func load_saved_level(level_number: int) -> bool:
 			root.b_value_label.visible = false
 		root.input_panel.visible = true
 	elif saved_lvl_type == LevelType.INPUT_SLIDER:
-		for btn in root.option_buttons:
-			btn.hide()
-		root.forward_button.hide()
-		if root.build_button:
-			root.build_button.disabled = false
-		if root.k_slider:
-			root.k_slider.value = 0.0
-		if root.b_slider:
-			root.b_slider.value = 0.0
-		# Обновляем k_slider_label и b_slider_label
-		if root.k_slider_label:
-			root.k_slider_label.text = "0.0"
-		if root.b_slider_label:
-			root.b_slider_label.text = "0.0"
-		if root.k_input:
-			root.k_input.visible = false
-		if root.b_input:
-			root.b_input.visible = false
-		if root.k_slider:
-			root.k_slider.visible = true
-		if root.b_slider:
-			root.b_slider.visible = true
-		if root.has_node("UI/Slider"):
-			root.get_node("UI/Slider").visible = true
-		if root.k_slider_label:
-			root.k_slider_label.visible = true
-		if root.b_slider_label:
-			root.b_slider_label.visible = true
-		if root.x_label:
-			root.x_label.visible = false
-		if root.y_label:
-			root.y_label.visible = false
-		if root.k_value_label:
-			root.k_value_label.visible = false
-		if root.b_value_label:
-			root.b_value_label.visible = false
-		root.input_panel.visible = true
+		if root.input_slider_module:
+			root.input_slider_module.setup_ui_with_function(current_correct_func)
+		else:
+			for btn in root.option_buttons:
+				btn.hide()
+			root.forward_button.hide()
+			if root.build_button:
+				root.build_button.disabled = false
+			if root.k_slider:
+				root.k_slider.value = 0.0
+			if root.b_slider:
+				root.b_slider.value = 0.0
+			if root.k_slider_label:
+				root.k_slider_label.text = "0.0"
+				root.k_slider_label.visible = true
+			if root.b_slider_label:
+				root.b_slider_label.text = "0.0"
+				root.b_slider_label.visible = true
+			if root.k_input:
+				root.k_input.visible = false
+			if root.b_input:
+				root.b_input.visible = false
+			if root.k_slider:
+				root.k_slider.visible = true
+			if root.b_slider:
+				root.b_slider.visible = true
+			if root.has_node("UI/Slider"):
+				root.get_node("UI/Slider").visible = true
+			if root.x_label:
+				root.x_label.visible = false
+			if root.y_label:
+				root.y_label.visible = false
+			if root.k_value_label:
+				root.k_value_label.visible = false
+			if root.b_value_label:
+				root.b_value_label.visible = false
+			root.input_panel.visible = true
 	else:
 		root.input_panel.visible = false
 		for btn in root.option_buttons:
@@ -173,27 +173,33 @@ func generate_new_level():
 	print("Тип уровня:", lvl_type)
 
 	var valid_correct_func = ""
-	var max_attempts = 5000
-	var attempts = 0
+	var used_slider_generator = false
+	if lvl_type == LevelType.INPUT_SLIDER and root.input_slider_module:
+		valid_correct_func = root.input_slider_module.generate_function()
+		used_slider_generator = true
+	
+	if not used_slider_generator:
+		var max_attempts = 5000
+		var attempts = 0
 
-	while valid_correct_func == "" and attempts < max_attempts:
-		attempts += 1
-		var func_types = []
-		match lvl_type:
-			LevelType.SIMPLE, LevelType.VARY_B, LevelType.VARY_K:
-				func_types = [FuncType.LINEAR]
-			LevelType.QUADRATIC:
-				func_types = [FuncType.QUADRATIC]
-			LevelType.TRIG:
-				func_types = [FuncType.SIN, FuncType.COS]
-			LevelType.INPUT_LINEAR, LevelType.INPUT_SLIDER:
-				func_types = [FuncType.LINEAR]
-			_:
-				func_types = [FuncType.LINEAR]
+		while valid_correct_func == "" and attempts < max_attempts:
+			attempts += 1
+			var func_types = []
+			match lvl_type:
+				LevelType.SIMPLE, LevelType.VARY_B, LevelType.VARY_K:
+					func_types = [FuncType.LINEAR]
+				LevelType.QUADRATIC:
+					func_types = [FuncType.QUADRATIC]
+				LevelType.TRIG:
+					func_types = [FuncType.SIN, FuncType.COS]
+				LevelType.INPUT_LINEAR, LevelType.INPUT_SLIDER:
+					func_types = [FuncType.LINEAR]
+				_:
+					func_types = [FuncType.LINEAR]
 
-		var candidate = random_function(func_types)
-		if root.utils.is_level_valid_for_edges(candidate, root.ball_side):
-			valid_correct_func = candidate
+			var candidate = random_function(func_types)
+			if root.utils.is_level_valid_for_edges(candidate, root.ball_side):
+				valid_correct_func = candidate
 
 	if valid_correct_func == "":
 		valid_correct_func = "0.5*x"
@@ -242,49 +248,48 @@ func generate_new_level():
 			_save_current_level(lvl_type)
 	elif lvl_type == LevelType.INPUT_SLIDER:
 		options = []
-		for btn in root.option_buttons:
-			btn.hide()
-		root.forward_button.hide()
-		# Разблокируем кнопку "Построить" (будет заблокирована после нажатия "Вперед")
-		if root.build_button:
-			root.build_button.disabled = false
-		if root.k_slider:
-			root.k_slider.value = 0.0
-		if root.b_slider:
-			root.b_slider.value = 0.0
-		# Обновляем k_slider_label и b_slider_label
-		if root.k_slider_label:
-			root.k_slider_label.text = "0.0"
-		if root.b_slider_label:
-			root.b_slider_label.text = "0.0"
-		if root.k_input:
-			root.k_input.visible = false
-		if root.b_input:
-			root.b_input.visible = false
-		if root.k_slider:
-			root.k_slider.visible = true
-		if root.b_slider:
-			root.b_slider.visible = true
-		if root.has_node("UI/Slider"):
-			root.get_node("UI/Slider").visible = true
-		if root.k_slider_label:
-			root.k_slider_label.visible = true
-		if root.b_slider_label:
-			root.b_slider_label.visible = true
-		if root.x_label:
-			root.x_label.visible = false
-		if root.y_label:
-			root.y_label.visible = false
-		if root.k_value_label:
-			root.k_value_label.visible = false
-		if root.b_value_label:
-			root.b_value_label.visible = false
-		root.input_panel.visible = true
-		var expr = Expression.new()
-		if expr.parse(current_correct_func, ["x"]) == OK:
+		if root.input_slider_module:
 			print("[LevelGen] setup_level_positions using input-slider func:", current_correct_func)
-			root.utils.setup_level_positions(expr)
-			_save_current_level(lvl_type)
+			root.input_slider_module.setup_ui_with_function(current_correct_func)
+		else:
+			for btn in root.option_buttons:
+				btn.hide()
+			root.forward_button.hide()
+			if root.build_button:
+				root.build_button.disabled = false
+			if root.k_slider:
+				root.k_slider.value = 0.0
+			if root.b_slider:
+				root.b_slider.value = 0.0
+			if root.k_slider_label:
+				root.k_slider_label.text = "0.0"
+				root.k_slider_label.visible = true
+			if root.b_slider_label:
+				root.b_slider_label.text = "0.0"
+				root.b_slider_label.visible = true
+			if root.k_input:
+				root.k_input.visible = false
+			if root.b_input:
+				root.b_input.visible = false
+			if root.k_slider:
+				root.k_slider.visible = true
+			if root.b_slider:
+				root.b_slider.visible = true
+			if root.has_node("UI/Slider"):
+				root.get_node("UI/Slider").visible = true
+			if root.x_label:
+				root.x_label.visible = false
+			if root.y_label:
+				root.y_label.visible = false
+			if root.k_value_label:
+				root.k_value_label.visible = false
+			if root.b_value_label:
+				root.b_value_label.visible = false
+			root.input_panel.visible = true
+			var expr = Expression.new()
+			if expr.parse(current_correct_func, ["x"]) == OK:
+				root.utils.setup_level_positions(expr)
+		_save_current_level(lvl_type)
 
 	else:
 		root.input_panel.visible = false

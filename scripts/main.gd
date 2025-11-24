@@ -7,6 +7,7 @@ var level_gen
 var physics
 var lin_gen
 var input_linear_module
+var input_slider_module
 var progress_manager
 var level_saver
 
@@ -21,21 +22,21 @@ var level_saver
 	$UI/Buttons/Button3
 ]
 @onready var input_panel = $UI/InputPanel
-@onready var k_input = $UI/InputPanel/KInput
-@onready var b_input = $UI/InputPanel/BInput
-@onready var k_slider = $UI/InputPanel/KSlider
-@onready var k_value_label = $UI/InputPanel/KValueLabel
-@onready var b_slider = $UI/InputPanel/BSlider
-@onready var b_value_label = $UI/InputPanel/BValueLabel
-@onready var build_button = $UI/InputPanel/BuildButton
-@onready var forward_button_input = $UI/InputPanel/ForwardButtonInput
-@onready var error_label = $UI/InputPanel/ErrorLabel
+@onready var k_input = get_node_or_null("UI/InputPanel/KInput")
+@onready var b_input = get_node_or_null("UI/InputPanel/BInput")
+@onready var k_slider = get_node_or_null("UI/InputPanel/KSlider")
+@onready var k_value_label = get_node_or_null("UI/InputPanel/KValueLabel")
+@onready var b_slider = get_node_or_null("UI/InputPanel/BSlider")
+@onready var b_value_label = get_node_or_null("UI/InputPanel/BValueLabel")
+@onready var build_button = get_node_or_null("UI/InputPanel/BuildButton")
+@onready var forward_button_input = get_node_or_null("UI/InputPanel/ForwardButtonInput")
+@onready var error_label = get_node_or_null("UI/InputPanel/ErrorLabel")
 @onready var restart = $UI/Restart
 @onready var timer_label = $UI/Timer
-@onready var k_slider_label = $UI/Slider/KLabel
-@onready var b_slider_label = $UI/Slider/BLabel
-@onready var x_label = $UI/Slider/XLabel
-@onready var y_label = $UI/Slider/YLabel
+@onready var k_slider_label = get_node_or_null("UI/Slider/KLabel")
+@onready var b_slider_label = get_node_or_null("UI/Slider/BLabel")
+@onready var x_label = get_node_or_null("UI/Slider/XLabel")
+@onready var y_label = get_node_or_null("UI/Slider/YLabel")
 
 var score: int = 0
 var level: int = 1
@@ -56,6 +57,7 @@ func _ready():
 	level_gen = preload("res://scripts/level_generator.gd").new()
 	physics = preload("res://scripts/physics_checker.gd").new()
 	input_linear_module = preload("res://scripts/input_linear_level.gd").new()
+	input_slider_module = preload("res://scripts/input_slider_level.gd").new()
 	progress_manager = preload("res://scripts/progress_manager.gd").new()
 	level_saver = preload("res://scripts/level_saver.gd")
 
@@ -68,6 +70,7 @@ func _ready():
 	level_gen.init(self)
 	physics.init(self)
 	input_linear_module.init(self)
+	input_slider_module.init(self)
 	progress_manager.init(self)
 
 	randomize()
@@ -151,8 +154,8 @@ func setup_sliders():
 	if not has_node("UI/InputPanel/KSlider"):
 		var k_slider_node = HSlider.new()
 		k_slider_node.name = "KSlider"
-		k_slider_node.min_value = -3.0
-		k_slider_node.max_value = 3.0
+		k_slider_node.min_value = -1.5
+		k_slider_node.max_value = 1.5
 		k_slider_node.step = 0.1
 		k_slider_node.value = 0.0
 		k_slider_node.position = Vector2(42, 25)
@@ -169,6 +172,8 @@ func setup_sliders():
 		k_value_label = k_label
 	else:
 		k_slider = $UI/InputPanel/KSlider
+		k_slider.min_value = -1.5
+		k_slider.max_value = 1.5
 		if has_node("UI/InputPanel/KValueLabel"):
 			k_value_label = $UI/InputPanel/KValueLabel
 		else:
@@ -183,8 +188,8 @@ func setup_sliders():
 	if not has_node("UI/InputPanel/BSlider"):
 		var b_slider_node = HSlider.new()
 		b_slider_node.name = "BSlider"
-		b_slider_node.min_value = -5.0
-		b_slider_node.max_value = 5.0
+		b_slider_node.min_value = -10.0
+		b_slider_node.max_value = 10.0
 		b_slider_node.step = 0.1
 		b_slider_node.value = 0.0
 		b_slider_node.position = Vector2(149, 25)
@@ -201,6 +206,8 @@ func setup_sliders():
 		b_value_label = b_label
 	else:
 		b_slider = $UI/InputPanel/BSlider
+		b_slider.min_value = -10.0
+		b_slider.max_value = 10.0
 		if has_node("UI/InputPanel/BValueLabel"):
 			b_value_label = $UI/InputPanel/BValueLabel
 		else:
