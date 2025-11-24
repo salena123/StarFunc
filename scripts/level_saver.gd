@@ -32,11 +32,6 @@ class LevelData:
 		return level
 
 static func save_level(level_data: LevelData) -> bool:
-	var file = FileAccess.open(LEVELS_FILE, FileAccess.WRITE)
-	if file == null:
-		print("Ошибка: не удалось открыть файл для записи уровней")
-		return false
-	
 	var levels = load_all_levels()
 	
 	var found = false
@@ -50,6 +45,11 @@ static func save_level(level_data: LevelData) -> bool:
 		levels.append(level_data)
 	
 	levels.sort_custom(func(a, b): return a.level_number < b.level_number)
+	
+	var file = FileAccess.open(LEVELS_FILE, FileAccess.WRITE)
+	if file == null:
+		print("Ошибка: не удалось открыть файл для записи уровней")
+		return false
 	
 	var json_data = []
 	for level in levels:
@@ -122,6 +122,8 @@ static func delete_level(level_number: int) -> bool:
 	return true
 
 static func save_progress(level_number: int, stars: int) -> bool:
+	level_number = int(level_number)
+	stars = int(stars)
 	var progress = load_progress()
 	
 	if progress.has(level_number):
@@ -157,7 +159,24 @@ static func load_progress() -> Dictionary:
 	if not json.data is Dictionary:
 		return {}
 	
-	return json.data
+	var sanitized = {}
+	for key in json.data.keys():
+		var lvl_key = key
+		if typeof(key) == TYPE_STRING:
+			if key.is_valid_int():
+				lvl_key = int(key)
+			else:
+				continue
+		elif typeof(key) != TYPE_INT:
+			continue
+		
+		var stars_val = json.data[key]
+		if typeof(stars_val) != TYPE_INT:
+			stars_val = int(stars_val)
+		
+		sanitized[lvl_key] = stars_val
+	
+	return sanitized
 
 static func get_level_stars(level_number: int) -> int:
 	var progress = load_progress()

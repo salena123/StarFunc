@@ -23,11 +23,11 @@ func init(r):
 		root.utils.calc_base_unit()
 
 func get_level_type(level: int) -> LevelType:
-	if level <= 1:
+	if level <= 3:
 		return LevelType.INPUT_SLIDER
-	elif level <= 2:
+	elif level <= 6:
 		return LevelType.INPUT_LINEAR
-	elif level <= 3:
+	elif level <= 9:
 		return LevelType.SIMPLE
 	elif level <= 4:
 		return LevelType.VARY_B
@@ -63,6 +63,8 @@ func load_saved_level(level_number: int) -> bool:
 		for btn in root.option_buttons:
 			btn.hide()
 		root.forward_button.hide()
+		if root.build_button:
+			root.build_button.disabled = false
 		if root.k_input:
 			root.k_input.visible = true
 		if root.b_input:
@@ -71,6 +73,16 @@ func load_saved_level(level_number: int) -> bool:
 			root.k_slider.visible = false
 		if root.b_slider:
 			root.b_slider.visible = false
+		if root.has_node("UI/Slider"):
+			root.get_node("UI/Slider").visible = false
+		if root.k_slider_label:
+			root.k_slider_label.visible = false
+		if root.b_slider_label:
+			root.b_slider_label.visible = false
+		if root.x_label:
+			root.x_label.visible = false
+		if root.y_label:
+			root.y_label.visible = false
 		if root.k_value_label:
 			root.k_value_label.visible = false
 		if root.b_value_label:
@@ -80,6 +92,8 @@ func load_saved_level(level_number: int) -> bool:
 		for btn in root.option_buttons:
 			btn.hide()
 		root.forward_button.hide()
+		if root.build_button:
+			root.build_button.disabled = false
 		if root.k_slider:
 			root.k_slider.value = 0.0
 		if root.b_slider:
@@ -187,6 +201,7 @@ func generate_new_level():
 	current_correct_func = valid_correct_func
 
 	if lvl_type == LevelType.INPUT_LINEAR:
+		options = []
 		for btn in root.option_buttons:
 			btn.hide()
 		root.forward_button.hide()
@@ -224,7 +239,9 @@ func generate_new_level():
 		if expr.parse(current_correct_func, ["x"]) == OK:
 			print("[LevelGen] setup_level_positions using input-linear func:", current_correct_func)
 			root.utils.setup_level_positions(expr)
+			_save_current_level(lvl_type)
 	elif lvl_type == LevelType.INPUT_SLIDER:
+		options = []
 		for btn in root.option_buttons:
 			btn.hide()
 		root.forward_button.hide()
@@ -267,6 +284,7 @@ func generate_new_level():
 		if expr.parse(current_correct_func, ["x"]) == OK:
 			print("[LevelGen] setup_level_positions using input-slider func:", current_correct_func)
 			root.utils.setup_level_positions(expr)
+			_save_current_level(lvl_type)
 
 	else:
 		root.input_panel.visible = false
@@ -297,17 +315,22 @@ func generate_new_level():
 		for i in range(options.size()):
 			print("  [", i, "] ", options[i])
 		
-		if root.level_saver:
-			var LevelSaver = root.level_saver
-			var level_data = LevelSaver.LevelData.new()
-			level_data.level_number = root.level
-			level_data.level_type = lvl_type
-			level_data.correct_func = current_correct_func
-			level_data.options = options.duplicate()
-			level_data.ball_side = root.ball_side
-			level_data.star_seed = randi()
-			LevelSaver.save_level(level_data)
+		_save_current_level(lvl_type)
 
+
+
+func _save_current_level(lvl_type: int):
+	if not root.level_saver:
+		return
+	var LevelSaver = root.level_saver
+	var level_data = LevelSaver.LevelData.new()
+	level_data.level_number = root.level
+	level_data.level_type = lvl_type
+	level_data.correct_func = current_correct_func
+	level_data.options = options.duplicate()
+	level_data.ball_side = root.ball_side
+	level_data.star_seed = randi()
+	LevelSaver.save_level(level_data)
 
 
 func generate_options_for_type(lvl_type: int, base_func: String) -> Array:
