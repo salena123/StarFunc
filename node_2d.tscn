@@ -61,6 +61,19 @@ width = 5.0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="track"]
 shape = SubResource("SegmentShape2D_kdubu")
 
+[node name="track2" type="StaticBody2D" parent="."]
+
+[node name="RigidBody2D" type="RigidBody2D" parent="track2"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="track2/RigidBody2D"]
+shape = SubResource("SegmentShape2D_q6r6c")
+
+[node name="Line2D" type="Line2D" parent="track2"]
+width = 5.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="track2"]
+shape = SubResource("SegmentShape2D_kdubu")
+
 [node name="stars" type="Node" parent="."]
 
 [node name="star1" type="Area2D" parent="stars"]
@@ -207,6 +220,40 @@ offset_top = 15.5
 offset_right = 66.5
 offset_bottom = 46.5
 text = "Заново"
+
+[node name="Buttons2" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -282.0
+offset_top = 5.0
+offset_right = -242.0
+offset_bottom = 45.0
+grow_horizontal = 0
+
+[node name="Button3" type="Button" parent="UI/Buttons2"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 132.0
+offset_right = 73.0
+offset_bottom = 163.0
+text = "y = -x"
+
+[node name="Button2" type="Button" parent="UI/Buttons2"]
+layout_mode = 0
+offset_top = 78.0
+offset_right = 107.0
+offset_bottom = 109.0
+text = "y = -0.2*x + 1"
+
+[node name="Button" type="Button" parent="UI/Buttons2"]
+layout_mode = 0
+offset_left = -1.0
+offset_top = 16.0
+offset_right = 106.0
+offset_bottom = 47.0
+text = "y = -0.5*x + 2"
 
 [node name="Buttons" type="Control" parent="UI"]
 layout_mode = 3

@@ -8,6 +8,7 @@ var physics
 var lin_gen
 var input_linear_module
 var input_slider_module
+var double_linear_module
 var progress_manager
 var level_saver
 
@@ -15,11 +16,18 @@ var level_saver
 @onready var stars = $stars.get_children()
 @onready var track = $track
 @onready var line2d = $track/Line2D
+@onready var track2 = $track2
+@onready var line2d2 = $track2/Line2D
 @onready var forward_button = $UI/Buttons/ForwardButton
 @onready var option_buttons = [
 	$UI/Buttons/Button,
 	$UI/Buttons/Button2,
 	$UI/Buttons/Button3
+]
+@onready var option_buttons2 = [
+	$UI/Buttons2/Button,
+	$UI/Buttons2/Button2,
+	$UI/Buttons2/Button3
 ]
 @onready var input_panel = $UI/InputPanel
 @onready var k_input = get_node_or_null("UI/InputPanel/KInput")
@@ -58,6 +66,7 @@ func _ready():
 	physics = preload("res://scripts/physics_checker.gd").new()
 	input_linear_module = preload("res://scripts/input_linear_level.gd").new()
 	input_slider_module = preload("res://scripts/input_slider_level.gd").new()
+	double_linear_module = preload("res://scripts/double_linear_level.gd").new()
 	progress_manager = preload("res://scripts/progress_manager.gd").new()
 	level_saver = preload("res://scripts/level_saver.gd")
 
@@ -71,6 +80,7 @@ func _ready():
 	physics.init(self)
 	input_linear_module.init(self)
 	input_slider_module.init(self)
+	double_linear_module.init(self)
 	progress_manager.init(self)
 
 	randomize()
@@ -97,10 +107,10 @@ func _ready():
 	if has_node("UI/Slider"):
 		get_node("UI/Slider").visible = false
 	forward_button.pressed.connect(func():
-		utils.on_forward_pressed(self, forward_button, option_buttons))
+		utils.on_forward_pressed(self, forward_button, option_buttons + option_buttons2))
 	forward_button.hide()
 	forward_button_input.pressed.connect(func():
-		utils.on_forward_pressed(self, forward_button_input, option_buttons))
+		utils.on_forward_pressed(self, forward_button_input, option_buttons + option_buttons2))
 	forward_button_input.hide()
 	
 	setup_sliders()
@@ -115,12 +125,25 @@ func _process(_delta):
 	physics.check_ball_fall_off_screen()
 	update_timer_display()
 
-func select_option(index: int):
+func select_option(index: int, group: int = 0):
 	if first_selection_done:
 		return
-	var func_str = level_gen.options[index]
-	track_drawer.draw_track(func_str)
-	$track.visible = true
+	var func_str = level_gen.get_option_for_group(group, index)
+	if func_str == "":
+		return
+	var lvl_type = level_gen.get_level_type(level)
+	if lvl_type == level_gen.LevelType.DOUBLE_LINEAR:
+		var bounds = double_linear_module.get_segment_range(group)
+		if group == 1:
+			track_drawer.draw_track_secondary_with_bounds(func_str, bounds.x, bounds.y)
+			if track2:
+				track2.visible = true
+		else:
+			track_drawer.draw_track_with_bounds(func_str, bounds.x, bounds.y)
+			track.visible = true
+	else:
+		track_drawer.draw_track(func_str)
+		track.visible = true
 	forward_button.show()
 	
 	if timer and timer.is_stopped():
@@ -259,8 +282,14 @@ func _on_b_input_changed(new_text: String):
 
 func setup_ui_buttons():
 	if $UI/Buttons/Button:
-		$UI/Buttons/Button.pressed.connect(func(): select_option(0))
+		$UI/Buttons/Button.pressed.connect(func(): select_option(0, 0))
 	if $UI/Buttons/Button2:
-		$UI/Buttons/Button2.pressed.connect(func(): select_option(1))
+		$UI/Buttons/Button2.pressed.connect(func(): select_option(1, 0))
 	if $UI/Buttons/Button3:
-		$UI/Buttons/Button3.pressed.connect(func(): select_option(2))
+		$UI/Buttons/Button3.pressed.connect(func(): select_option(2, 0))
+	if option_buttons2.size() > 0 and option_buttons2[0]:
+		option_buttons2[0].pressed.connect(func(): select_option(0, 1))
+	if option_buttons2.size() > 1 and option_buttons2[1]:
+		option_buttons2[1].pressed.connect(func(): select_option(1, 1))
+	if option_buttons2.size() > 2 and option_buttons2[2]:
+		option_buttons2[2].pressed.connect(func(): select_option(2, 1))

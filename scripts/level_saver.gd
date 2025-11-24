@@ -7,18 +7,24 @@ class LevelData:
 	var level_number: int
 	var level_type: int
 	var correct_func: String
+	var correct_func_b: String
 	var options: Array
+	var options_b: Array
 	var ball_side: int
 	var star_seed: int
+	var double_intersection_x: float = NAN 	
 	
 	func to_dict() -> Dictionary:
 		return {
 			"level_number": level_number,
 			"level_type": level_type,
 			"correct_func": correct_func,
+			"correct_func_b": correct_func_b,
 			"options": options,
+			"options_b": options_b,
 			"ball_side": ball_side,
-			"star_seed": star_seed
+			"star_seed": star_seed,
+			"double_intersection_x": double_intersection_x
 		}
 	
 	static func from_dict(dict: Dictionary) -> LevelData:
@@ -26,9 +32,14 @@ class LevelData:
 		level.level_number = dict.get("level_number", 1)
 		level.level_type = dict.get("level_type", 0)
 		level.correct_func = dict.get("correct_func", "")
-		level.options = dict.get("options", [])
+		level.correct_func_b = dict.get("correct_func_b", "")
+		var opts = dict.get("options", [])
+		var opts_b = dict.get("options_b", [])
+		level.options = opts if opts is Array else []
+		level.options_b = opts_b if opts_b is Array else []
 		level.ball_side = dict.get("ball_side", 0)
 		level.star_seed = dict.get("star_seed", 0)
+		level.double_intersection_x = dict.get("double_intersection_x", NAN)
 		return level
 
 static func save_level(level_data: LevelData) -> bool:

@@ -32,7 +32,7 @@ func calc_base_unit():
 	if screen_w <= 0.0:
 		screen_w = 800.0
 
-	root.base_unit = screen_w / 20.0
+	root.base_unit = screen_w / 20.0 
 	if root.base_unit == 0.0:
 		root.base_unit = 1.0
 
@@ -214,6 +214,98 @@ func setup_level_positions(expr: Expression):
 		root.stars[i].visible = true
 		root.stars[i].position = Vector2(x_screen, fy_to_screen(fy_val) - vertical_offset_pixels)
 
+func setup_double_level_positions(expr_a: Expression, expr_b: Expression):
+	if root == null:
+		push_warning("Utils.setup_double_level_positions called before utils.init; skipping")
+		return
+	if not ensure_coordinate_bounds():
+		push_warning("Cannot setup double level positions without coordinate bounds")
+		return
+	var num_stars = root.stars.size()
+	if num_stars == 0:
+		return
+	if num_stars == 1:
+		setup_level_positions(expr_a)
+		return
+	var margin_px = 40.0
+	var min_star_spacing_px = 60.0
+	var x_start_screen = margin_px
+	var x_end_screen = root.screen_size.x - margin_px
+	var fx_start = (x_start_screen - root.screen_center.x) / root.base_unit
+	var fx_end = (x_end_screen - root.screen_center.x) / root.base_unit
+	var ball_x: float = fx_end if root.ball_side == root.level_gen.Side.RIGHT else fx_start
+	root.ball.position = Vector2(fx_to_screen(ball_x), top_margin + vertical_offset_pixels)
+	if root.double_linear_module == null:
+		setup_level_positions(expr_a)
+		return
+	var range_a = root.double_linear_module.get_segment_range(0)
+	var range_b = root.double_linear_module.get_segment_range(1)
+	var counts = _split_star_counts(num_stars)
+	var star_index = 0
+	var prev_x = null
+	var result_a = _place_segment_stars(expr_a, counts[0], range_a.x, range_a.y, star_index, prev_x)
+	star_index = result_a["index"]
+	prev_x = result_a["prev_x"]
+	var result_b = _place_segment_stars(expr_b, counts[1], range_b.x, range_b.y, star_index, prev_x)
+	star_index = result_b["index"]
+	prev_x = result_b["prev_x"]
+	while star_index < num_stars:
+		root.stars[star_index].visible = false
+		star_index += 1
+
+func _split_star_counts(total: int) -> Array:
+	if total <= 1:
+		return [total, 0]
+	var left = int(ceil(total / 2.0))
+	var right = total - left
+	if right == 0:
+		right = 1
+		left = max(0, left - 1)
+	return [left, right]
+
+func _place_segment_stars(expr: Expression, count: int, fx_start: float, fx_end: float, start_index: int, prev_screen_x) -> Dictionary:
+	var current_index = start_index
+	var last_x = prev_screen_x
+	if count <= 0:
+		return {"index": current_index, "prev_x": last_x}
+	var screen_start = fx_to_screen(fx_start)
+	var screen_end = fx_to_screen(fx_end)
+	if screen_start > screen_end:
+		var tmp = screen_start
+		screen_start = screen_end
+		screen_end = tmp
+	var span_px = max(1.0, abs(screen_end - screen_start))
+	var step_px = span_px / float(count + 1)
+	var margin_px = 40.0
+	var min_star_spacing_px = 60.0
+	for i in range(count):
+		if current_index >= root.stars.size():
+			break
+		var base_px = screen_start + (i + 1) * step_px
+		var offset_px = randf_range(-step_px * 0.3, step_px * 0.3)
+		var x_screen = clamp(base_px + offset_px, screen_start + margin_px * 0.1, screen_end - margin_px * 0.1)
+		if last_x != null and abs(x_screen - last_x) < min_star_spacing_px:
+			if x_screen >= last_x:
+				x_screen = last_x + min_star_spacing_px
+			else:
+				x_screen = last_x - min_star_spacing_px
+		x_screen = clamp(x_screen, min(screen_start, screen_end), max(screen_start, screen_end))
+		last_x = x_screen
+		var fx_val = (x_screen - root.screen_center.x) / root.base_unit
+		var fy_raw = expr.execute([fx_val])
+		var fy_val: float = 0.0
+		var fy_type = typeof(fy_raw)
+		if fy_type == TYPE_FLOAT:
+			fy_val = clamp(fy_raw, y_min, y_max)
+		elif fy_type == TYPE_INT:
+			fy_val = clamp(float(fy_raw), y_min, y_max)
+		else:
+			fy_val = 0.0
+		root.stars[current_index].visible = true
+		root.stars[current_index].position = Vector2(x_screen, fy_to_screen(fy_val) - vertical_offset_pixels)
+		current_index += 1
+	return {"index": current_index, "prev_x": last_x}
+
 func on_forward_pressed(root, forward_button, option_buttons):
 	if root.first_selection_done:
 		return
@@ -236,6 +328,10 @@ func enable_option_buttons(root):
 	for btn in root.option_buttons:
 		if btn:
 			btn.disabled = false
+	if root.option_buttons2:
+		for btn in root.option_buttons2:
+			if btn:
+				btn.disabled = false
 			
 func format_function_from_string(func_str: String) -> String:
 	var s = func_str.replace(" ", "")

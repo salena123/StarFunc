@@ -2,7 +2,10 @@ extends Node
 
 var root
 var options = []
+var options_secondary = []
 var current_correct_func = ""
+var current_correct_func_b = ""
+var double_intersection_x: float = NAN
 
 enum FuncType { LINEAR, QUADRATIC, SIN, COS }
 enum Side { LEFT, RIGHT }
@@ -14,7 +17,8 @@ enum LevelType {
 	QUADRATIC,      # квадратичные функции
 	TRIG,           # синусы и косинусы
 	INPUT_LINEAR,   # линейные с пользовательским вводом (текстовые поля)
-	INPUT_SLIDER    # линейные с пользовательским вводом (слайдеры)
+	INPUT_SLIDER,   # линейные с пользовательским вводом (слайдеры)
+	DOUBLE_LINEAR   # два графика
 }
 
 func init(r):
@@ -23,17 +27,19 @@ func init(r):
 		root.utils.calc_base_unit()
 
 func get_level_type(level: int) -> LevelType:
-	if level <= 1:
-		return LevelType.INPUT_SLIDER
-	elif level <= 2:
+	if level <= 5:
+		return LevelType.DOUBLE_LINEAR
+	elif level <= 10:
 		return LevelType.INPUT_LINEAR
-	elif level <= 3:
+	elif level <= 15:
 		return LevelType.SIMPLE
-	elif level <= 4:
+	elif level <= 20:
 		return LevelType.VARY_B
-	elif level <= 5:
+	elif level <= 25:
 		return LevelType.VARY_K
 	elif level <= 30:
+		return LevelType.DOUBLE_LINEAR
+	elif level <= 35:
 		return LevelType.TRIG
 	else:
 		var cycle = ((level - 1) % 25) + 1
@@ -48,20 +54,26 @@ func load_saved_level(level_number: int) -> bool:
 		return false
 	
 	current_correct_func = level_data.correct_func
-	options = level_data.options.duplicate()
+	current_correct_func_b = level_data.correct_func_b
+	options = level_data.options.duplicate() if level_data.options is Array else []
+	options_secondary = level_data.options_b.duplicate() if level_data.options_b is Array else []
 	root.ball_side = level_data.ball_side
+	double_intersection_x = level_data.double_intersection_x
 	
 	seed(level_data.star_seed)
 	
+	var saved_lvl_type = get_level_type(level_number)
 	var expr = Expression.new()
-	if expr.parse(current_correct_func, ["x"]) == OK:
+	if saved_lvl_type != LevelType.DOUBLE_LINEAR and expr.parse(current_correct_func, ["x"]) == OK:
 		print("[LevelGen] setup_level_positions using saved func:", current_correct_func)
 		root.utils.setup_level_positions(expr)
 	
-	var saved_lvl_type = get_level_type(level_number)
 	if saved_lvl_type == LevelType.INPUT_LINEAR:
 		for btn in root.option_buttons:
 			btn.hide()
+		_show_buttons(root.option_buttons2, false)
+		if root.has_node("UI/Buttons2"):
+			root.get_node("UI/Buttons2").hide()
 		root.forward_button.hide()
 		if root.build_button:
 			root.build_button.disabled = false
@@ -94,6 +106,9 @@ func load_saved_level(level_number: int) -> bool:
 		else:
 			for btn in root.option_buttons:
 				btn.hide()
+			_show_buttons(root.option_buttons2, false)
+			if root.has_node("UI/Buttons2"):
+				root.get_node("UI/Buttons2").hide()
 			root.forward_button.hide()
 			if root.build_button:
 				root.build_button.disabled = false
@@ -126,13 +141,38 @@ func load_saved_level(level_number: int) -> bool:
 			if root.b_value_label:
 				root.b_value_label.visible = false
 			root.input_panel.visible = true
+	elif saved_lvl_type == LevelType.DOUBLE_LINEAR:
+		var double_module = root.double_linear_module
+		if double_module:
+			var state = double_module.prepare_from_saved(
+				current_correct_func,
+				current_correct_func_b,
+				options,
+				options_secondary,
+				double_intersection_x
+			)
+			current_correct_func = state.primary
+			current_correct_func_b = state.secondary
+			options = state.options_primary
+			options_secondary = state.options_secondary
+			double_intersection_x = state.intersection
+			double_module.set_intersection(double_intersection_x)
+			double_module.apply_ui(options, options_secondary)
+			double_module.draw_tracks(current_correct_func, current_correct_func_b)
+		else:
+			push_warning("DOUBLE_LINEAR: module not initialized; cannot restore saved state")
+		return true
 	else:
 		root.input_panel.visible = false
 		for btn in root.option_buttons:
 			btn.show()
+		for btn in root.option_buttons2:
+			btn.hide()
 		root.get_node("UI/Buttons/Button").text = root.utils.format_function_from_string(options[0])
 		root.get_node("UI/Buttons/Button2").text = root.utils.format_function_from_string(options[1])
 		root.get_node("UI/Buttons/Button3").text = root.utils.format_function_from_string(options[2])
+		if root.has_node("UI/Buttons2"):
+			root.get_node("UI/Buttons2").hide()
 	
 	return true
 
@@ -157,6 +197,11 @@ func generate_new_level():
 	root.restart.disabled = false
 	root.utils.enable_option_buttons(root)
 	root.track.visible = false
+	if root.track2:
+		root.track2.visible = false
+		for child in root.track2.get_children():
+			if child is CollisionShape2D:
+				child.queue_free()
 	root.score = 0
 	root.ui.update_score_label()
 	root.first_selection_done = false
@@ -166,6 +211,8 @@ func generate_new_level():
 		root.timer.stop()
 	if root.timer_label:
 		root.timer_label.text = "Таймер: --"
+	options_secondary = []
+	double_intersection_x = NAN
 
 	root.ball_side = Side.RIGHT if randi() % 2 == 0 else Side.LEFT
 
@@ -205,11 +252,31 @@ func generate_new_level():
 		valid_correct_func = "0.5*x"
 
 	current_correct_func = valid_correct_func
+	current_correct_func_b = ""
 
-	if lvl_type == LevelType.INPUT_LINEAR:
+	if lvl_type == LevelType.DOUBLE_LINEAR:
+		var double_module = root.double_linear_module
+		if double_module:
+			var state = double_module.prepare_new_level(valid_correct_func)
+			current_correct_func = state.primary
+			current_correct_func_b = state.secondary
+			options = state.options_primary
+			options_secondary = state.options_secondary
+			double_intersection_x = state.intersection
+			double_module.set_intersection(double_intersection_x)
+			double_module.apply_ui(options, options_secondary)
+			double_module.draw_tracks(current_correct_func, current_correct_func_b)
+			_save_current_level(LevelType.DOUBLE_LINEAR)
+		else:
+			push_warning("DOUBLE_LINEAR: module not initialized; skipping level generation")
+		return
+	elif lvl_type == LevelType.INPUT_LINEAR:
 		options = []
 		for btn in root.option_buttons:
 			btn.hide()
+		_show_buttons(root.option_buttons2, false)
+		if root.has_node("UI/Buttons2"):
+			root.get_node("UI/Buttons2").hide()
 		root.forward_button.hide()
 		# Разблокируем кнопку "Построить" (будет заблокирована после нажатия "Вперед")
 		if root.build_button:
@@ -248,6 +315,9 @@ func generate_new_level():
 			_save_current_level(lvl_type)
 	elif lvl_type == LevelType.INPUT_SLIDER:
 		options = []
+		_show_buttons(root.option_buttons2, false)
+		if root.has_node("UI/Buttons2"):
+			root.get_node("UI/Buttons2").hide()
 		if root.input_slider_module:
 			print("[LevelGen] setup_level_positions using input-slider func:", current_correct_func)
 			root.input_slider_module.setup_ui_with_function(current_correct_func)
@@ -295,8 +365,8 @@ func generate_new_level():
 		root.input_panel.visible = false
 		if root.build_button:
 			root.build_button.disabled = false
-		for btn in root.option_buttons:
-			btn.show()
+		_show_buttons(root.option_buttons, true)
+		_show_buttons(root.option_buttons2, false)
 
 		options = generate_options_for_type(lvl_type, valid_correct_func)
 		while options.size() < 3:
@@ -313,6 +383,8 @@ func generate_new_level():
 		root.get_node("UI/Buttons/Button").text = root.utils.format_function_from_string(options[0])
 		root.get_node("UI/Buttons/Button2").text = root.utils.format_function_from_string(options[1])
 		root.get_node("UI/Buttons/Button3").text = root.utils.format_function_from_string(options[2])
+		if root.has_node("UI/Buttons2"):
+			root.get_node("UI/Buttons2").hide()
 
 		print("Сторона шара:", "RIGHT" if root.ball_side == Side.RIGHT else "LEFT")
 		print("Правильная функция:", current_correct_func)
@@ -324,6 +396,24 @@ func generate_new_level():
 
 
 
+func _show_buttons(buttons: Array, visible: bool):
+	if buttons == null:
+		return
+	for btn in buttons:
+		if btn:
+			if visible:
+				btn.show()
+				btn.disabled = false
+			else:
+				btn.hide()
+
+func get_option_for_group(group: int, index: int) -> String:
+	var list = options if group == 0 else options_secondary
+	if index >= 0 and index < list.size():
+		return list[index]
+	return ""
+
+
 func _save_current_level(lvl_type: int):
 	if not root.level_saver:
 		return
@@ -332,9 +422,12 @@ func _save_current_level(lvl_type: int):
 	level_data.level_number = root.level
 	level_data.level_type = lvl_type
 	level_data.correct_func = current_correct_func
+	level_data.correct_func_b = current_correct_func_b
 	level_data.options = options.duplicate()
+	level_data.options_b = options_secondary.duplicate()
 	level_data.ball_side = root.ball_side
 	level_data.star_seed = randi()
+	level_data.double_intersection_x = double_intersection_x
 	LevelSaver.save_level(level_data)
 
 
@@ -420,6 +513,10 @@ func reset_current_level():
 	for child in root.track.get_children():
 		if child is CollisionShape2D:
 			child.queue_free()
+	if root.track2:
+		for child in root.track2.get_children():
+			if child is CollisionShape2D:
+				child.queue_free()
 	var lvl_type = get_level_type(root.level)
 	if lvl_type == LevelType.INPUT_LINEAR:
 		if root.k_input:
@@ -435,6 +532,8 @@ func reset_current_level():
 		root.forward_button_input.hide()
 	root.forward_button.hide()
 	root.track.visible = false
+	if root.track2:
+		root.track2.visible = false
 	if root.timer:
 		root.timer.stop()
 	if root.timer_label:
@@ -454,6 +553,11 @@ func reset_current_level():
 	var expr = Expression.new()
 	if expr.parse(current_correct_func, ["x"]) == OK:
 		print("[LevelGen] reset_current_level placing stars for func:", current_correct_func)
-		root.utils.setup_level_positions(expr)
-		root.track_drawer.draw_track(current_correct_func)
+		if lvl_type == LevelType.DOUBLE_LINEAR:
+			if root.double_linear_module:
+				root.double_linear_module.set_intersection(double_intersection_x)
+				root.double_linear_module.draw_tracks(current_correct_func, current_correct_func_b)
+		else:
+			root.utils.setup_level_positions(expr)
+			root.track_drawer.draw_track(current_correct_func)
 	root.ball.freeze = true
