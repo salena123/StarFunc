@@ -5,32 +5,66 @@ var top_margin = 50
 var bottom_margin = 50
 var vertical_offset_pixels = 35
 
-var x_min
-var x_max
-var y_min
-var y_max
+var x_min: float = -10.0
+var x_max: float = 10.0
+var y_min: float = -5.0
+var y_max: float = 5.0
 
 func init(r):
 	root = r
 	calc_base_unit()
 
 func calc_base_unit():
-	var screen_w = root.screen_size.x
-	var screen_h = root.screen_size.y
+	if root == null:
+		push_warning("Utils.calc_base_unit called before utils.init; skipping")
+		return
 
-	root.base_unit = screen_w / 20.0 
+	var screen_size_val = root.screen_size
+	if screen_size_val == null:
+		if root.has_method("get_viewport_rect"):
+			screen_size_val = root.get_viewport_rect().size
+		else:
+			screen_size_val = Vector2(800, 600)
 
-	x_min = -10
-	x_max = 10
+	var screen_w = float(screen_size_val.x)
+	var screen_h = float(screen_size_val.y)
 
-	y_min = - (screen_h - top_margin - bottom_margin) / (2 * root.base_unit)
-	y_max =   (screen_h - top_margin - bottom_margin) / (2 * root.base_unit)
+	if screen_w <= 0.0:
+		screen_w = 800.0
+
+	root.base_unit = screen_w / 20.0
+	if root.base_unit == 0.0:
+		root.base_unit = 1.0
+
+	x_min = -10.0
+	x_max = 10.0
+
+	var vertical_span = screen_h - top_margin - bottom_margin
+	if vertical_span <= 0.0:
+		vertical_span = 100.0
+
+	y_min = -vertical_span / (2.0 * root.base_unit)
+	y_max = vertical_span / (2.0 * root.base_unit)
+
+
+func ensure_coordinate_bounds() -> bool:
+	if root == null:
+		push_warning("Utils not initialized yet; coordinate conversion skipped")
+		return false
+
+	if root.base_unit == null or root.base_unit == 0.0 or y_min == null or y_max == null:
+		calc_base_unit()
+	return root.base_unit != null and root.base_unit != 0.0 and y_min != null and y_max != null
 
 
 func fx_to_screen(x):
+	if not ensure_coordinate_bounds():
+		return 0.0
 	return root.screen_center.x + x * root.base_unit
 
 func fy_to_screen(y):
+	if not ensure_coordinate_bounds():
+		return 0.0
 	var track_height = root.screen_size.y - top_margin - bottom_margin
 	var t = (y - y_min) / (y_max - y_min)
 	return root.screen_size.y - bottom_margin - t * track_height
@@ -127,6 +161,14 @@ func is_level_valid_for_edges(func_str: String, desired_side: int) -> bool:
 	return true
 
 func setup_level_positions(expr: Expression):
+	if root == null:
+		push_warning("Utils.setup_level_positions called before utils.init; skipping")
+		return
+
+	if not ensure_coordinate_bounds():
+		push_warning("Cannot setup level positions without coordinate bounds")
+		return
+
 	var num_stars = root.stars.size()
 	var margin_px = 40.0
 	var min_star_spacing_px = 60.0
@@ -158,7 +200,16 @@ func setup_level_positions(expr: Expression):
 		star_positions.append(x_screen)
 
 		var fx_val = (x_screen - root.screen_center.x) / root.base_unit
-		var fy_val = clamp(expr.execute([fx_val]), y_min, y_max)
+		var fy_raw = expr.execute([fx_val])
+		var fy_val: float
+		var fy_type = typeof(fy_raw)
+		if fy_type == TYPE_FLOAT:
+			fy_val = clamp(fy_raw, y_min, y_max)
+		elif fy_type == TYPE_INT:
+			fy_val = clamp(float(fy_raw), y_min, y_max)
+		else:
+			push_warning("Expression evaluation returned unsupported type (%s); falling back to center line for star %s" % [fy_type, i])
+			fy_val = 0.0
 
 		root.stars[i].visible = true
 		root.stars[i].position = Vector2(x_screen, fy_to_screen(fy_val) - vertical_offset_pixels)

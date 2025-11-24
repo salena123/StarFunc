@@ -17,15 +17,17 @@ func _ready():
 		game_node = get_node(game_node_path)
 
 func _process(_delta):
-	call_deferred("update")
+	queue_redraw()
 
 func _draw():
 	if game_node == null:
 		return
 
 	var screen_size = get_viewport_rect().size
-	var center = game_node.screen_center
+	var center = game_node.screen_center if game_node.screen_center != null else screen_size / 2
 	var base_unit = game_node.base_unit
+	if base_unit == null or is_equal_approx(base_unit, 0.0):
+		return
 
 	var x_min = -center.x / base_unit
 	var x_max = (screen_size.x - center.x) / base_unit

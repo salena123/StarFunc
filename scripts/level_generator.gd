@@ -55,6 +55,7 @@ func load_saved_level(level_number: int) -> bool:
 	
 	var expr = Expression.new()
 	if expr.parse(current_correct_func, ["x"]) == OK:
+		print("[LevelGen] setup_level_positions using saved func:", current_correct_func)
 		root.utils.setup_level_positions(expr)
 	
 	var saved_lvl_type = get_level_type(level_number)
@@ -221,6 +222,7 @@ func generate_new_level():
 		root.input_panel.visible = true
 		var expr = Expression.new()
 		if expr.parse(current_correct_func, ["x"]) == OK:
+			print("[LevelGen] setup_level_positions using input-linear func:", current_correct_func)
 			root.utils.setup_level_positions(expr)
 	elif lvl_type == LevelType.INPUT_SLIDER:
 		for btn in root.option_buttons:
@@ -263,6 +265,7 @@ func generate_new_level():
 		root.input_panel.visible = true
 		var expr = Expression.new()
 		if expr.parse(current_correct_func, ["x"]) == OK:
+			print("[LevelGen] setup_level_positions using input-slider func:", current_correct_func)
 			root.utils.setup_level_positions(expr)
 
 	else:
@@ -281,6 +284,7 @@ func generate_new_level():
 
 		var expr = Expression.new()
 		if expr.parse(valid_correct_func, ["x"]) == OK:
+			print("[LevelGen] setup_level_positions using generated func:", valid_correct_func)
 			root.utils.setup_level_positions(expr)
 
 		root.get_node("UI/Buttons/Button").text = root.utils.format_function_from_string(options[0])
@@ -421,6 +425,7 @@ func reset_current_level():
 	root.ball.angular_velocity = 0
 	var expr = Expression.new()
 	if expr.parse(current_correct_func, ["x"]) == OK:
+		print("[LevelGen] reset_current_level placing stars for func:", current_correct_func)
 		root.utils.setup_level_positions(expr)
 		root.track_drawer.draw_track(current_correct_func)
 	root.ball.freeze = true
