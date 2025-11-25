@@ -188,7 +188,7 @@ func setup_sliders():
 		
 		var k_label = Label.new()
 		k_label.name = "KValueLabel"
-		k_label.text = "k = 0.0"
+		k_label.text = ""
 		k_label.position = Vector2(150, 25)
 		k_label.size = Vector2(70, 20)
 		$UI/InputPanel.add_child(k_label)
@@ -202,7 +202,7 @@ func setup_sliders():
 		else:
 			var k_label = Label.new()
 			k_label.name = "KValueLabel"
-			k_label.text = "k = 0.0"
+			k_label.text = ""
 			k_label.position = Vector2(150, 25)
 			k_label.size = Vector2(70, 20)
 			$UI/InputPanel.add_child(k_label)
@@ -222,7 +222,7 @@ func setup_sliders():
 		
 		var b_label = Label.new()
 		b_label.name = "BValueLabel"
-		b_label.text = "b = 0.0"
+		b_label.text = ""
 		b_label.position = Vector2(257, 25)
 		b_label.size = Vector2(70, 20)
 		$UI/InputPanel.add_child(b_label)
@@ -236,7 +236,7 @@ func setup_sliders():
 		else:
 			var b_label = Label.new()
 			b_label.name = "BValueLabel"
-			b_label.text = "b = 0.0"
+			b_label.text = ""
 			b_label.position = Vector2(257, 25)
 			b_label.size = Vector2(70, 20)
 			$UI/InputPanel.add_child(b_label)
@@ -248,12 +248,16 @@ func setup_sliders():
 	if b_slider:
 		b_slider.value_changed.connect(_on_b_slider_changed)
 
+	refresh_input_slider_value_labels()
+
 func _on_k_slider_changed(value: float):
 	var lvl_type = level_gen.get_level_type(level)
 	if lvl_type == level_gen.LevelType.INPUT_SLIDER:
 		var formatted_value = utils.format_number(value)
 		if k_slider_label:
 			k_slider_label.text = formatted_value
+		if k_value_label:
+			k_value_label.text = formatted_value
 
 func _on_b_slider_changed(value: float):
 	var lvl_type = level_gen.get_level_type(level)
@@ -261,6 +265,22 @@ func _on_b_slider_changed(value: float):
 		var formatted_value = utils.format_number(value)
 		if b_slider_label:
 			b_slider_label.text = formatted_value
+		if b_value_label:
+			b_value_label.text = formatted_value
+
+func refresh_input_slider_value_labels():
+	if utils == null:
+		return
+	if k_value_label:
+		if k_slider:
+			k_value_label.text = utils.format_number(k_slider.value)
+		else:
+			k_value_label.text = ""
+	if b_value_label:
+		if b_slider:
+			b_value_label.text = utils.format_number(b_slider.value)
+		else:
+			b_value_label.text = ""
 
 func _on_k_input_changed(new_text: String):
 	var lvl_type = level_gen.get_level_type(level)

@@ -27,17 +27,17 @@ func init(r):
 		root.utils.calc_base_unit()
 
 func get_level_type(level: int) -> LevelType:
-	if level <= 5:
-		return LevelType.DOUBLE_LINEAR
-	elif level <= 10:
-		return LevelType.INPUT_LINEAR
-	elif level <= 15:
+	if level <= 1:
 		return LevelType.SIMPLE
-	elif level <= 20:
+	elif level <= 2:
 		return LevelType.VARY_B
-	elif level <= 25:
+	elif level <= 3:
 		return LevelType.VARY_K
-	elif level <= 30:
+	elif level <= 4:
+		return LevelType.INPUT_LINEAR
+	elif level <= 5:
+		return LevelType.INPUT_SLIDER
+	elif level <= 6:
 		return LevelType.DOUBLE_LINEAR
 	elif level <= 35:
 		return LevelType.TRIG
@@ -48,6 +48,7 @@ func get_level_type(level: int) -> LevelType:
 func load_saved_level(level_number: int) -> bool:
 	if not root.level_saver:
 		return false
+	_reset_slider_ui()
 	var LevelSaver = root.level_saver
 	var level_data = LevelSaver.load_level(level_number)
 	if level_data == null:
@@ -97,12 +98,20 @@ func load_saved_level(level_number: int) -> bool:
 			root.y_label.visible = false
 		if root.k_value_label:
 			root.k_value_label.visible = false
+			root.k_value_label.text = ""
 		if root.b_value_label:
 			root.b_value_label.visible = false
+			root.b_value_label.text = ""
 		root.input_panel.visible = true
 	elif saved_lvl_type == LevelType.INPUT_SLIDER:
 		if root.input_slider_module:
 			root.input_slider_module.setup_ui_with_function(current_correct_func)
+			if root.k_value_label:
+				root.k_value_label.visible = true
+			if root.b_value_label:
+				root.b_value_label.visible = true
+			if root.has_method("refresh_input_slider_value_labels"):
+				root.refresh_input_slider_value_labels()
 		else:
 			for btn in root.option_buttons:
 				btn.hide()
@@ -137,9 +146,11 @@ func load_saved_level(level_number: int) -> bool:
 			if root.y_label:
 				root.y_label.visible = false
 			if root.k_value_label:
-				root.k_value_label.visible = false
+				root.k_value_label.visible = true
 			if root.b_value_label:
-				root.b_value_label.visible = false
+				root.b_value_label.visible = true
+			if root.has_method("refresh_input_slider_value_labels"):
+				root.refresh_input_slider_value_labels()
 			root.input_panel.visible = true
 	elif saved_lvl_type == LevelType.DOUBLE_LINEAR:
 		var double_module = root.double_linear_module
@@ -178,6 +189,13 @@ func load_saved_level(level_number: int) -> bool:
 
 
 func generate_new_level():
+	if root.k_value_label:
+		root.k_value_label.visible = false
+		root.k_value_label.text = ""
+	if root.b_value_label:
+		root.b_value_label.visible = false
+		root.b_value_label.text = ""
+	_reset_slider_ui()
 	if root.level_saver and load_saved_level(root.level):
 		print("Загружен сохранённый уровень ", root.level)
 		root.restart.disabled = false
@@ -305,8 +323,10 @@ func generate_new_level():
 			root.y_label.visible = false
 		if root.k_value_label:
 			root.k_value_label.visible = false
+			root.k_value_label.text = ""
 		if root.b_value_label:
 			root.b_value_label.visible = false
+			root.b_value_label.text = ""
 		root.input_panel.visible = true
 		var expr = Expression.new()
 		if expr.parse(current_correct_func, ["x"]) == OK:
@@ -318,9 +338,15 @@ func generate_new_level():
 		_show_buttons(root.option_buttons2, false)
 		if root.has_node("UI/Buttons2"):
 			root.get_node("UI/Buttons2").hide()
+		if root.k_value_label:
+			root.k_value_label.visible = true
+		if root.b_value_label:
+			root.b_value_label.visible = true
 		if root.input_slider_module:
 			print("[LevelGen] setup_level_positions using input-slider func:", current_correct_func)
 			root.input_slider_module.setup_ui_with_function(current_correct_func)
+			if root.has_method("refresh_input_slider_value_labels"):
+				root.refresh_input_slider_value_labels()
 		else:
 			for btn in root.option_buttons:
 				btn.hide()
@@ -351,10 +377,8 @@ func generate_new_level():
 				root.x_label.visible = false
 			if root.y_label:
 				root.y_label.visible = false
-			if root.k_value_label:
-				root.k_value_label.visible = false
-			if root.b_value_label:
-				root.b_value_label.visible = false
+			if root.has_method("refresh_input_slider_value_labels"):
+				root.refresh_input_slider_value_labels()
 			root.input_panel.visible = true
 			var expr = Expression.new()
 			if expr.parse(current_correct_func, ["x"]) == OK:
@@ -561,3 +585,16 @@ func reset_current_level():
 			root.utils.setup_level_positions(expr)
 			root.track_drawer.draw_track(current_correct_func)
 	root.ball.freeze = true
+
+
+func _reset_slider_ui():
+	if root.k_slider:
+		root.k_slider.visible = false
+	if root.b_slider:
+		root.b_slider.visible = false
+	if root.k_slider_label:
+		root.k_slider_label.visible = false
+	if root.b_slider_label:
+		root.b_slider_label.visible = false
+	if root.has_node("UI/Slider"):
+		root.get_node("UI/Slider").visible = false

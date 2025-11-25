@@ -39,7 +39,14 @@ class LevelData:
 		level.options_b = opts_b if opts_b is Array else []
 		level.ball_side = dict.get("ball_side", 0)
 		level.star_seed = dict.get("star_seed", 0)
-		level.double_intersection_x = dict.get("double_intersection_x", NAN)
+		var double_val = dict.get("double_intersection_x", NAN)
+		if double_val == null:
+			double_val = NAN
+		elif typeof(double_val) in [TYPE_INT, TYPE_FLOAT]:
+			double_val = float(double_val)
+		else:
+			double_val = NAN
+		level.double_intersection_x = double_val
 		return level
 
 static func save_level(level_data: LevelData) -> bool:
@@ -199,4 +206,3 @@ static func get_total_stars() -> int:
 	for stars in progress.values():
 		total += stars
 	return total
-

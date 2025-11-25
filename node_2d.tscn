@@ -383,6 +383,7 @@ offset_bottom = 63.0
 grow_horizontal = 0
 
 [node name="KLabel" type="Label" parent="UI/Slider"]
+visible = false
 layout_mode = 0
 offset_left = 42.0
 offset_right = 82.0
@@ -390,6 +391,7 @@ offset_bottom = 23.0
 label_settings = SubResource("LabelSettings_rj586")
 
 [node name="BLabel" type="Label" parent="UI/Slider"]
+visible = false
 layout_mode = 0
 offset_left = 149.0
 offset_right = 189.0
