@@ -52,8 +52,6 @@ func _prepare_ui():
 		root.k_input.visible = false
 	if root.b_input:
 		root.b_input.visible = false
-	if root.k_value_label:
-		root.k_value_label.visible = true
 	if root.b_value_label:
 		root.b_value_label.visible = true
 	if root.has_method("refresh_input_slider_value_labels"):

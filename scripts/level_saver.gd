@@ -24,7 +24,7 @@ class LevelData:
 			"options_b": options_b,
 			"ball_side": ball_side,
 			"star_seed": star_seed,
-			"double_intersection_x": double_intersection_x
+			"double_intersection_x": (double_intersection_x if double_intersection_x == double_intersection_x else null)
 		}
 	
 	static func from_dict(dict: Dictionary) -> LevelData:

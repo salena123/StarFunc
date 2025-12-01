@@ -486,3 +486,43 @@ func _build_function(root, func_str: String, track_drawer, track, forward_button
 			root.error_label.text = "Ошибка: не удалось разобрать выражение"
 			root.error_label.show()
 		print("Ошибка: не удалось разобрать выражение")
+		
+		
+func clear_ui_before_level_load():
+
+	if root.k_slider:
+		root.k_slider.visible = false
+	if root.b_slider:
+		root.b_slider.visible = false
+	if root.k_slider_label:
+		root.k_slider_label.visible = false
+	if root.b_slider_label:
+		root.b_slider_label.visible = false
+	if root.k_value_label:
+		root.k_value_label.visible = false
+		root.k_value_label.text = ""
+	if root.b_value_label:
+		root.b_value_label.visible = false
+		root.b_value_label.text = ""
+	if root.k_input:
+		root.k_input.visible = false
+	if root.b_input:
+		root.b_input.visible = false
+
+	if root.has_node("UI/Slider"):
+		root.get_node("UI/Slider").visible = false
+
+	# прячем кнопки
+	for btn in root.option_buttons:
+		btn.hide()
+	for btn in root.option_buttons2:
+		btn.hide()
+
+	if root.has_node("UI/Buttons2"):
+		root.get_node("UI/Buttons2").hide()
+
+	if root.forward_button:
+		root.forward_button.hide()
+
+	if root.forward_button_input:
+		root.forward_button_input.hide()

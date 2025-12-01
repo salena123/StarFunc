@@ -6,6 +6,7 @@ var options_secondary = []
 var current_correct_func = ""
 var current_correct_func_b = ""
 var double_intersection_x: float = NAN
+var is_level_loaded_from_save: bool = false
 
 enum FuncType { LINEAR, QUADRATIC, SIN, COS }
 enum Side { LEFT, RIGHT }
@@ -47,13 +48,19 @@ func get_level_type(level: int) -> LevelType:
 
 func load_saved_level(level_number: int) -> bool:
 	if not root.level_saver:
+		print("level_saver не инициализирован")
+		is_level_loaded_from_save = false
 		return false
-	_reset_slider_ui()
+	root.utils.clear_ui_before_level_load()
 	var LevelSaver = root.level_saver
 	var level_data = LevelSaver.load_level(level_number)
 	if level_data == null:
+		print("Уровень ", level_number, " не найден в levels.json")
+		is_level_loaded_from_save = false
 		return false
+	print("Найден сохранённый уровень ", level_number, " (тип: ", level_data.level_type, ")")
 	
+	is_level_loaded_from_save = true
 	current_correct_func = level_data.correct_func
 	current_correct_func_b = level_data.correct_func_b
 	options = level_data.options.duplicate() if level_data.options is Array else []
@@ -63,7 +70,9 @@ func load_saved_level(level_number: int) -> bool:
 	
 	seed(level_data.star_seed)
 	
-	var saved_lvl_type = get_level_type(level_number)
+	var saved_lvl_type = level_data.level_type
+	if saved_lvl_type == null:
+		saved_lvl_type = get_level_type(level_number)
 	var expr = Expression.new()
 	if saved_lvl_type != LevelType.DOUBLE_LINEAR and expr.parse(current_correct_func, ["x"]) == OK:
 		print("[LevelGen] setup_level_positions using saved func:", current_correct_func)
@@ -196,22 +205,29 @@ func generate_new_level():
 		root.b_value_label.visible = false
 		root.b_value_label.text = ""
 	_reset_slider_ui()
-	if root.level_saver and load_saved_level(root.level):
-		print("Загружен сохранённый уровень ", root.level)
-		root.restart.disabled = false
-		root.utils.enable_option_buttons(root)
-		root.track.visible = false
-		root.score = 0
-		root.ui.update_score_label()
-		root.first_selection_done = false
-		for s in root.stars:
-			s.visible = true
-		if root.timer:
-			root.timer.stop()
-		if root.timer_label:
-			root.timer_label.text = "Таймер: --"
-		return
 	
+	if root.level_saver:
+		var saved = load_saved_level(root.level)
+		if saved:
+			print("Загружен сохранённый уровень ", root.level)
+			root.restart.disabled = false
+			root.utils.enable_option_buttons(root)
+			root.track.visible = false
+			root.score = 0
+			root.ui.update_score_label()
+			root.first_selection_done = false
+			for s in root.stars:
+				s.visible = true
+			if root.timer:
+				root.timer.stop()
+			if root.timer_label:
+				root.timer_label.text = "Таймер: --"
+			return
+		else:
+			print("Уровень ", root.level, " не найден в сохранениях, генерирую новый...")
+	
+	# Генерация нового уровня
+	is_level_loaded_from_save = false
 	root.restart.disabled = false
 	root.utils.enable_option_buttons(root)
 	root.track.visible = false
@@ -232,6 +248,9 @@ func generate_new_level():
 	options_secondary = []
 	double_intersection_x = NAN
 
+
+	var level_seed = randi()
+	seed(level_seed)
 	root.ball_side = Side.RIGHT if randi() % 2 == 0 else Side.LEFT
 
 	var lvl_type = get_level_type(root.level)
@@ -284,7 +303,7 @@ func generate_new_level():
 			double_module.set_intersection(double_intersection_x)
 			double_module.apply_ui(options, options_secondary)
 			double_module.draw_tracks(current_correct_func, current_correct_func_b)
-			_save_current_level(LevelType.DOUBLE_LINEAR)
+			_save_current_level(LevelType.DOUBLE_LINEAR, level_seed)
 		else:
 			push_warning("DOUBLE_LINEAR: module not initialized; skipping level generation")
 		return
@@ -296,7 +315,7 @@ func generate_new_level():
 		if root.has_node("UI/Buttons2"):
 			root.get_node("UI/Buttons2").hide()
 		root.forward_button.hide()
-		# Разблокируем кнопку "Построить" (будет заблокирована после нажатия "Вперед")
+
 		if root.build_button:
 			root.build_button.disabled = false
 		if root.k_input:
@@ -332,7 +351,7 @@ func generate_new_level():
 		if expr.parse(current_correct_func, ["x"]) == OK:
 			print("[LevelGen] setup_level_positions using input-linear func:", current_correct_func)
 			root.utils.setup_level_positions(expr)
-			_save_current_level(lvl_type)
+			_save_current_level(lvl_type, level_seed)
 	elif lvl_type == LevelType.INPUT_SLIDER:
 		options = []
 		_show_buttons(root.option_buttons2, false)
@@ -383,7 +402,7 @@ func generate_new_level():
 			var expr = Expression.new()
 			if expr.parse(current_correct_func, ["x"]) == OK:
 				root.utils.setup_level_positions(expr)
-		_save_current_level(lvl_type)
+		_save_current_level(lvl_type, level_seed)
 
 	else:
 		root.input_panel.visible = false
@@ -416,7 +435,7 @@ func generate_new_level():
 		for i in range(options.size()):
 			print("  [", i, "] ", options[i])
 		
-		_save_current_level(lvl_type)
+		_save_current_level(lvl_type, level_seed)
 
 
 
@@ -438,8 +457,13 @@ func get_option_for_group(group: int, index: int) -> String:
 	return ""
 
 
-func _save_current_level(lvl_type: int):
+func _save_current_level(lvl_type: int, level_seed: int = 0):
 	if not root.level_saver:
+		print("level_saver не инициализирован, сохранение невозможно")
+		return
+
+	if is_level_loaded_from_save:
+		print("Уровень ", root.level, " был загружен из сохранения, пропускаю пересохранение")
 		return
 	var LevelSaver = root.level_saver
 	var level_data = LevelSaver.LevelData.new()
@@ -450,9 +474,14 @@ func _save_current_level(lvl_type: int):
 	level_data.options = options.duplicate()
 	level_data.options_b = options_secondary.duplicate()
 	level_data.ball_side = root.ball_side
-	level_data.star_seed = randi()
+	level_data.star_seed = level_seed if level_seed != 0 else randi()
 	level_data.double_intersection_x = double_intersection_x
-	LevelSaver.save_level(level_data)
+	var saved = LevelSaver.save_level(level_data)
+	if saved:
+		print("✓ Уровень ", root.level, " сохранён в levels.json")
+		is_level_loaded_from_save = true  
+	else:
+		print("✗ Ошибка сохранения уровня ", root.level)
 
 
 func generate_options_for_type(lvl_type: int, base_func: String) -> Array:

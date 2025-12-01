@@ -107,6 +107,7 @@ position = Vector2(-1, 1)
 shape = SubResource("CircleShape2D_q6r6c")
 
 [node name="exit" type="Area2D" parent="."]
+visible = false
 position = Vector2(825, 498)
 
 [node name="Sprite2D" type="Sprite2D" parent="exit"]
