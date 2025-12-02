@@ -2,9 +2,9 @@ extends Node2D
 
 @export var grid_spacing_x: int = 50
 @export var grid_spacing_y: int = 50
-@export var grid_color: Color = Color(0.5, 0.5, 0.5, 0.3)
-@export var axis_color_x: Color = Color(1, 0, 0)
-@export var axis_color_y: Color = Color(0, 0, 1)
+@export var grid_color: Color = Color(0.169, 0.106, 0.067, 0.302)
+@export var axis_color_x: Color = Color(1, 1, 1)
+@export var axis_color_y: Color = Color(1, 1, 1)
 @export var label_color: Color = Color(1, 1, 1)
 
 @export var font: Font

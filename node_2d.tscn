@@ -1,11 +1,14 @@
-[gd_scene load_steps=17 format=3 uid="uid://c2cdbk2ehc4o3"]
+[gd_scene load_steps=21 format=3 uid="uid://c2cdbk2ehc4o3"]
 
 [ext_resource type="Script" uid="uid://c7qx3hdq3vnhc" path="res://scripts/main.gd" id="1_kdubu"]
 [ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="1_wtcfe"]
 [ext_resource type="Texture2D" uid="uid://b57q1eub2wvc5" path="res://Group 1000007244.png" id="2_epypp"]
 [ext_resource type="Texture2D" uid="uid://bpdan0od4twig" path="res://earth.png" id="3_0hol4"]
 [ext_resource type="LabelSettings" uid="uid://u2by8jd7hk8g" path="res://ScoreText.tres" id="5_q6r6c"]
+[ext_resource type="Texture2D" uid="uid://du8swh2slpfph" path="res://BackgrondSprite.png" id="6_4d7sh"]
 [ext_resource type="Script" uid="uid://c8g543guoxhdl" path="res://grid.gd" id="6_kdubu"]
+[ext_resource type="Script" uid="uid://d5jhcclg2few" path="res://background.gd" id="6_rj586"]
+[ext_resource type="Texture2D" uid="uid://dsphoe8vgna25" path="res://Group (3).png" id="8_4d7sh"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_y32ns"]
 
@@ -32,10 +35,40 @@ outline_size = 5
 
 [sub_resource type="LabelSettings" id="LabelSettings_rj586"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rj586"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+expand_margin_left = 10.0
+expand_margin_top = 5.0
+expand_margin_right = 10.0
+shadow_color = Color(0.6, 0.6, 0.6, 1)
+shadow_size = 1
+shadow_offset = Vector2(0, 3)
+
 [sub_resource type="SystemFont" id="SystemFont_kdubu"]
 
 [node name="level1" type="Node2D"]
 script = ExtResource("1_kdubu")
+
+[node name="Background" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0.90588236)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_right = 600.0
+offset_bottom = 760.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.0057411, 1)
+texture = ExtResource("6_4d7sh")
+expand_mode = 1
+stretch_mode = 6
+script = ExtResource("6_rj586")
 
 [node name="ball" type="RigidBody2D" parent="."]
 position = Vector2(88, 83)
@@ -43,9 +76,11 @@ physics_material_override = SubResource("PhysicsMaterial_y32ns")
 freeze_mode = 1
 
 [node name="Sprite2D" type="Sprite2D" parent="ball"]
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("1_wtcfe")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ball"]
+scale = Vector2(0.5, 0.5)
 shape = SubResource("CircleShape2D_0hol4")
 
 [node name="track" type="StaticBody2D" parent="."]
@@ -56,7 +91,8 @@ shape = SubResource("CircleShape2D_0hol4")
 shape = SubResource("SegmentShape2D_q6r6c")
 
 [node name="Line2D" type="Line2D" parent="track"]
-width = 5.0
+width = 2.0
+default_color = Color(0.9843137, 0.50980395, 0.3137255, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="track"]
 shape = SubResource("SegmentShape2D_kdubu")
@@ -69,7 +105,8 @@ shape = SubResource("SegmentShape2D_kdubu")
 shape = SubResource("SegmentShape2D_q6r6c")
 
 [node name="Line2D" type="Line2D" parent="track2"]
-width = 5.0
+width = 2.0
+default_color = Color(0.9843137, 0.50980395, 0.3137255, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="track2"]
 shape = SubResource("SegmentShape2D_kdubu")
@@ -80,30 +117,36 @@ shape = SubResource("SegmentShape2D_kdubu")
 position = Vector2(165, 196)
 
 [node name="Sprite2D" type="Sprite2D" parent="stars/star1"]
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_epypp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="stars/star1"]
 position = Vector2(-1, 1)
+scale = Vector2(0.5, 0.5)
 shape = SubResource("CircleShape2D_q6r6c")
 
 [node name="star2" type="Area2D" parent="stars"]
 position = Vector2(429, 317)
 
 [node name="Sprite2D" type="Sprite2D" parent="stars/star2"]
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_epypp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="stars/star2"]
 position = Vector2(-1, 1)
+scale = Vector2(0.5, 0.5)
 shape = SubResource("CircleShape2D_q6r6c")
 
 [node name="star3" type="Area2D" parent="stars"]
 position = Vector2(643, 406)
 
 [node name="Sprite2D" type="Sprite2D" parent="stars/star3"]
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_epypp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="stars/star3"]
 position = Vector2(-1, 1)
+scale = Vector2(0.5, 0.5)
 shape = SubResource("CircleShape2D_q6r6c")
 
 [node name="exit" type="Area2D" parent="."]
@@ -365,13 +408,6 @@ offset_bottom = 125.0
 text = "Введите значения k и b"
 label_settings = SubResource("LabelSettings_kdubu")
 
-[node name="Timer" type="Label" parent="UI"]
-offset_left = 174.0
-offset_right = 300.0
-offset_bottom = 40.0
-text = "Таймер: "
-label_settings = ExtResource("5_q6r6c")
-
 [node name="Slider" type="Control" parent="UI"]
 layout_mode = 3
 anchors_preset = 1
@@ -410,6 +446,30 @@ layout_mode = 0
 offset_left = 111.0
 offset_right = 151.0
 offset_bottom = 23.0
+
+[node name="TimerContainer" type="PanelContainer" parent="UI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -90.0
+offset_top = 17.0
+offset_right = -50.0
+offset_bottom = 57.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_rj586")
+
+[node name="ContentHBox" type="HBoxContainer" parent="UI/TimerContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TextureRect" type="TextureRect" parent="UI/TimerContainer/ContentHBox"]
+layout_mode = 2
+texture = ExtResource("8_4d7sh")
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="UI/TimerContainer/ContentHBox"]
+layout_mode = 2
+label_settings = ExtResource("5_q6r6c")
 
 [node name="Grid" type="Node2D" parent="."]
 script = ExtResource("6_kdubu")

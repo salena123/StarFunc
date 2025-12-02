@@ -52,8 +52,12 @@ func show_level_complete():
 	root.restart.disabled = true
 	level_label.text = "Уровень " + str(root.level) + " пройден!"
 	level_complete_popup.show()
+	if root.timer:
+		root.timer.paused = true
 
 func show_fail():
 	root.restart.disabled = true
 	root.ball.freeze = true
 	fail_popup.show()
+	if root.timer:
+		root.timer.paused = true

@@ -40,7 +40,7 @@ var level_saver
 @onready var forward_button_input = get_node_or_null("UI/InputPanel/ForwardButtonInput")
 @onready var error_label = get_node_or_null("UI/InputPanel/ErrorLabel")
 @onready var restart = $UI/Restart
-@onready var timer_label = $UI/Timer
+@onready var timer_label = $UI/TimerContainer/ContentHBox/Label
 @onready var k_slider_label = get_node_or_null("UI/Slider/KLabel")
 @onready var b_slider_label = get_node_or_null("UI/Slider/BLabel")
 @onready var x_label = get_node_or_null("UI/Slider/XLabel")
@@ -100,7 +100,7 @@ func _ready():
 	add_child(timer)
 	
 	if timer_label:
-		timer_label.text = "Таймер: --"
+		timer_label.text = format_time(timer_duration)
 	
 	set_process(true)
 	print_scene_info()
@@ -150,21 +150,26 @@ func select_option(index: int, group: int = 0):
 		timer.wait_time = timer_duration
 		timer.start()
 		if timer_label:
-			timer_label.text = "Таймер: " + str(timer_duration)
+			timer_label.text = format_time(timer_duration)
 		print("Таймер запущен, выбрана функция:", func_str)
 
 func _on_timer_timeout():
 	if timer_label:
-		timer_label.text = "Таймер: 0.0"
+		timer_label.text = format_time(0.0)
 	physics.check_level_complete_by_stars()
+
+func format_time(seconds: float) -> String:
+	var secs = int(seconds)
+	var millis = int((seconds - secs) * 10)
+	return "%02d:%d" % [secs, millis]
 
 func update_timer_display():
 	if timer_label and timer:
 		if timer.is_stopped():
-			timer_label.text = "Таймер: --"
+			timer_label.text = format_time(timer_duration)
 		else:
 			var time_left = timer.time_left
-			timer_label.text = "Таймер: " + str(round(time_left * 10) / 10.0)
+			timer_label.text = format_time(time_left)
 
 func print_scene_info():
 	var rect = get_viewport_rect()

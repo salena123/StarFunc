@@ -204,7 +204,15 @@ func generate_new_level():
 	if root.b_value_label:
 		root.b_value_label.visible = false
 		root.b_value_label.text = ""
+	root.utils.clear_ui_before_level_load()
 	_reset_slider_ui()
+	
+	# Сброс таймера в начале нового уровня
+	if root.timer:
+		root.timer.stop()
+		root.timer.paused = false
+	if root.timer_label:
+		root.timer_label.text = root.format_time(root.timer_duration)
 	
 	if root.level_saver:
 		var saved = load_saved_level(root.level)
@@ -570,6 +578,14 @@ func reset_current_level():
 		for child in root.track2.get_children():
 			if child is CollisionShape2D:
 				child.queue_free()
+	
+	# Сброс таймера при перезапуске уровня
+	if root.timer:
+		root.timer.stop()
+		root.timer.paused = false
+	if root.timer_label:
+		root.timer_label.text = root.format_time(root.timer_duration)
+	
 	var lvl_type = get_level_type(root.level)
 	if lvl_type == LevelType.INPUT_LINEAR:
 		if root.k_input:

@@ -1,4 +1,8 @@
-[gd_resource type="LabelSettings" format=3 uid="uid://u2by8jd7hk8g"]
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://u2by8jd7hk8g"]
+
+[ext_resource type="FontFile" uid="uid://bsi23ifa7ri5i" path="res://BlushesRegular.ttf" id="1_p8pt3"]
 
 [resource]
-font_size = 29
+font = ExtResource("1_p8pt3")
+font_size = 24
+font_color = Color(0, 0, 0, 1)

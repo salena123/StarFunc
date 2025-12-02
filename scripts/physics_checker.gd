@@ -16,16 +16,12 @@ func check_level_complete_by_stars():
 	if root.score > 0:
 		root.ball.freeze = true
 		if root.timer:
-			root.timer.stop()
-		if root.timer_label:
-			root.timer_label.text = "Таймер: 0.0"
+			root.timer.paused = true
 		if root.progress_manager:
 			root.progress_manager.on_level_complete(root.level, root.score)
 		root.ui.show_level_complete()
 	else:
 		root.ball.freeze = true
-		if root.timer_label:
-			root.timer_label.text = "Таймер: 0.0"
 		root.ui.show_fail()
 
 func check_ball_fall_off_screen():
@@ -34,7 +30,5 @@ func check_ball_fall_off_screen():
 	or root.ball.global_position.x > rect.size.x + 50 \
 	or root.ball.global_position.x < -50:
 		if root.timer:
-			root.timer.stop()
-		if root.timer_label:
-			root.timer_label.text = "Таймер: 0.0"
+			root.timer.paused = true
 		check_level_complete_by_stars()

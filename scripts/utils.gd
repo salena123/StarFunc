@@ -3,7 +3,7 @@ extends Node
 var root
 var top_margin = 50
 var bottom_margin = 50
-var vertical_offset_pixels = 35
+var vertical_offset_pixels = 15
 
 var x_min: float = -10.0
 var x_max: float = 10.0
