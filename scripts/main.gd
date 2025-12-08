@@ -18,33 +18,43 @@ var level_saver
 @onready var line2d = $track/Line2D
 @onready var track2 = $track2
 @onready var line2d2 = $track2/Line2D
-@onready var forward_button = $UI/Buttons/ForwardButton
+@onready var forward_button = get_node_or_null("UI/BottomLayout/Panel/Items/ForwardButton")
+@onready var option_check_buttons = [
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0/CheckButton"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1/CheckButton"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2/CheckButton")
+]
+@onready var option_formula_labels = [
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0/FormulaLabel"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1/FormulaLabel"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2/FormulaLabel")
+]
 @onready var option_buttons = [
-	$UI/Buttons/Button,
-	$UI/Buttons/Button2,
-	$UI/Buttons/Button3
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0/CheckButton"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1/CheckButton"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2/CheckButton")
 ]
 @onready var option_buttons2 = [
-	$UI/Buttons2/Button,
-	$UI/Buttons2/Button2,
-	$UI/Buttons2/Button3
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option0/CheckButton"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option1/CheckButton"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option2/CheckButton")
 ]
-@onready var input_panel = $UI/InputPanel
-@onready var k_input = get_node_or_null("UI/InputPanel/KInput")
-@onready var b_input = get_node_or_null("UI/InputPanel/BInput")
-@onready var k_slider = get_node_or_null("UI/InputPanel/KSlider")
-@onready var k_value_label = get_node_or_null("UI/InputPanel/KValueLabel")
-@onready var b_slider = get_node_or_null("UI/InputPanel/BSlider")
-@onready var b_value_label = get_node_or_null("UI/InputPanel/BValueLabel")
-@onready var build_button = get_node_or_null("UI/InputPanel/BuildButton")
-@onready var forward_button_input = get_node_or_null("UI/InputPanel/ForwardButtonInput")
-@onready var error_label = get_node_or_null("UI/InputPanel/ErrorLabel")
+@onready var input_panel = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel")
+@onready var k_input = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/KInput")
+@onready var b_input = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/BInput")
+@onready var k_slider = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/KSlider")
+@onready var k_value_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/KLabel")
+@onready var b_slider = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/BSlider")
+@onready var b_value_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/BLabel")
+@onready var build_button = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/BuildButton")
+@onready var forward_button_input = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/ForwardButtonInput")
+@onready var error_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/ErrorLabel")
 @onready var restart = $UI/Restart
 @onready var timer_label = $UI/TimerContainer/ContentHBox/Label
-@onready var k_slider_label = get_node_or_null("UI/Slider/KLabel")
-@onready var b_slider_label = get_node_or_null("UI/Slider/BLabel")
-@onready var x_label = get_node_or_null("UI/Slider/XLabel")
-@onready var y_label = get_node_or_null("UI/Slider/YLabel")
+@onready var k_slider_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/KLabel")
+@onready var b_slider_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/BLabel")
+@onready var x_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/XLabel")
+@onready var y_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/YLabel")
 
 var score: int = 0
 var level: int = 1
@@ -104,16 +114,46 @@ func _ready():
 	
 	set_process(true)
 	print_scene_info()
-	if has_node("UI/Slider"):
-		get_node("UI/Slider").visible = false
-	forward_button.pressed.connect(func():
-		utils.on_forward_pressed(self, forward_button, option_buttons + option_buttons2))
-	forward_button.hide()
-	forward_button_input.pressed.connect(func():
-		utils.on_forward_pressed(self, forward_button_input, option_buttons + option_buttons2))
-	forward_button_input.hide()
+	if has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider"):
+		get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider").visible = false
+	# Стартовое состояние панели — развернутое: задаём минимальную высоту под контент
+	var start_panel = get_node_or_null("UI/BottomLayout/Panel")
+	var start_items = get_node_or_null("UI/BottomLayout/Panel/Items")
+	if start_panel and start_items:
+		var header = start_items.get_node_or_null("HBoxContainer")
+		var header_height := 40.0
+		if header and header.size.y > 0.0:
+			header_height = header.size.y
+		start_panel.custom_minimum_size.y = header_height + 160.0
+		# Иконка развёрнутого состояния (стрелка вниз)
+		var roll_btn = header.get_node_or_null("RollButton") if header else null
+		if roll_btn:
+			var icon = roll_btn.get_node_or_null("Icon")
+			if icon:
+				icon.rotation_degrees = 0.0
+	if forward_button:
+		forward_button.pressed.connect(func():
+			utils.on_forward_pressed(self, forward_button, option_check_buttons))
+		forward_button.disabled = false
+		forward_button.show()
+	if forward_button_input:
+		forward_button_input.pressed.connect(func():
+			utils.on_forward_pressed(self, forward_button_input, option_check_buttons))
+		forward_button_input.hide()
 	
 	setup_sliders()
+	
+	# Сбросить все CheckButton при старте
+	for cb in option_check_buttons:
+		if cb:
+			cb.button_pressed = false
+	# Скрыть все контейнеры кнопок при старте
+	var buttons1_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
+	if buttons1_node:
+		buttons1_node.hide()
+	var buttons2_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
+	if buttons2_node:
+		buttons2_node.hide()
 	
 	level_gen.generate_new_level()
 	build_button.pressed.connect(func():
@@ -144,7 +184,9 @@ func select_option(index: int, group: int = 0):
 	else:
 		track_drawer.draw_track(func_str)
 		track.visible = true
-	forward_button.show()
+	if forward_button:
+		forward_button.disabled = false
+		forward_button.show()
 	
 	if timer and timer.is_stopped():
 		timer.wait_time = timer_duration
@@ -180,7 +222,7 @@ func print_scene_info():
 
 func setup_sliders():
 	# === K SLIDER ===
-	if not has_node("UI/InputPanel/KSlider"):
+	if not has_node("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/KSlider"):
 		var k_slider_node = HSlider.new()
 		k_slider_node.name = "KSlider"
 		k_slider_node.min_value = -1.5
@@ -189,15 +231,15 @@ func setup_sliders():
 		k_slider_node.value = 0.0
 		k_slider_node.position = Vector2(42, 25)
 		k_slider_node.size = Vector2(100, 20)
-		$UI/InputPanel.add_child(k_slider_node)
+		get_node("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel").add_child(k_slider_node)
 		k_slider = k_slider_node
 	else:
-		k_slider = $UI/InputPanel/KSlider
+		k_slider = get_node("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/KSlider")
 		k_slider.min_value = -1.5
 		k_slider.max_value = 1.5
 
 	# === B SLIDER ===
-	if not has_node("UI/InputPanel/BSlider"):
+	if not has_node("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/BSlider"):
 		var b_slider_node = HSlider.new()
 		b_slider_node.name = "BSlider"
 		b_slider_node.min_value = -10.0
@@ -206,10 +248,10 @@ func setup_sliders():
 		b_slider_node.value = 0.0
 		b_slider_node.position = Vector2(149, 25)
 		b_slider_node.size = Vector2(100, 20)
-		$UI/InputPanel.add_child(b_slider_node)
+		get_node("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel").add_child(b_slider_node)
 		b_slider = b_slider_node
 	else:
-		b_slider = $UI/InputPanel/BSlider
+		b_slider = get_node("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/BSlider")
 		b_slider.min_value = -10.0
 		b_slider.max_value = 10.0
 
@@ -255,15 +297,89 @@ func _on_b_input_changed(new_text: String):
 				b_slider.value = val
 
 func setup_ui_buttons():
-	if $UI/Buttons/Button:
-		$UI/Buttons/Button.pressed.connect(func(): select_option(0, 0))
-	if $UI/Buttons/Button2:
-		$UI/Buttons/Button2.pressed.connect(func(): select_option(1, 0))
-	if $UI/Buttons/Button3:
-		$UI/Buttons/Button3.pressed.connect(func(): select_option(2, 0))
-	if option_buttons2.size() > 0 and option_buttons2[0]:
-		option_buttons2[0].pressed.connect(func(): select_option(0, 1))
-	if option_buttons2.size() > 1 and option_buttons2[1]:
-		option_buttons2[1].pressed.connect(func(): select_option(1, 1))
-	if option_buttons2.size() > 2 and option_buttons2[2]:
-		option_buttons2[2].pressed.connect(func(): select_option(2, 1))
+	setup_check_buttons()
+	# Подключение CheckButton для DOUBLE_LINEAR режима
+	var buttons1_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
+	if buttons1_node:
+		if buttons1_node.get_node_or_null("Option0/CheckButton"):
+			buttons1_node.get_node("Option0/CheckButton").toggled.connect(func(pressed): select_option(0, 0))
+		if buttons1_node.get_node_or_null("Option1/CheckButton"):
+			buttons1_node.get_node("Option1/CheckButton").toggled.connect(func(pressed): select_option(1, 0))
+		if buttons1_node.get_node_or_null("Option2/CheckButton"):
+			buttons1_node.get_node("Option2/CheckButton").toggled.connect(func(pressed): select_option(2, 0))
+	
+	var buttons2_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
+	if buttons2_node:
+		if buttons2_node.get_node_or_null("Option0/CheckButton"):
+			buttons2_node.get_node("Option0/CheckButton").toggled.connect(func(pressed): select_option(0, 1))
+		if buttons2_node.get_node_or_null("Option1/CheckButton"):
+			buttons2_node.get_node("Option1/CheckButton").toggled.connect(func(pressed): select_option(1, 1))
+		if buttons2_node.get_node_or_null("Option2/CheckButton"):
+			buttons2_node.get_node("Option2/CheckButton").toggled.connect(func(pressed): select_option(2, 1))
+	
+	# Подключение кнопки сворачивания
+	var roll_button = get_node_or_null("UI/BottomLayout/Panel/Items/HBoxContainer/RollButton")
+	if roll_button:
+		roll_button.pressed.connect(_on_roll_button_pressed)
+
+func setup_check_buttons():
+	for i in range(option_check_buttons.size()):
+		var cb = option_check_buttons[i]
+		if cb:
+			cb.toggled.connect(_on_check_toggled.bind(i))
+
+func _on_check_toggled(pressed: bool, index: int):
+	if first_selection_done:
+		return
+	var func_str = level_gen.get_option_for_group(0, index)
+	if func_str == "":
+		return
+	if pressed:
+		track_drawer.draw_track(func_str)
+		track.visible = true
+	else:
+		track.visible = false
+		if track2:
+			track2.visible = false
+	if forward_button:
+		forward_button.disabled = false
+
+func _on_roll_button_pressed():
+	var panel = get_node_or_null("UI/BottomLayout/Panel")
+	var items = get_node_or_null("UI/BottomLayout/Panel/Items")
+	var header = get_node_or_null("UI/BottomLayout/Panel/Items/HBoxContainer")
+	var roll_button = get_node_or_null("UI/BottomLayout/Panel/Items/HBoxContainer/RollButton")
+	
+	if not panel or not items or not header or not roll_button:
+		print("Не найдены узлы для сворачивания панели")
+		return
+	
+	# считаем, что панель развернута, если хотя бы один ребёнок после header видим
+	var expanded := false
+	var children := items.get_children()
+	for i in range(1, children.size()):
+		var c = children[i]
+		if c is CanvasItem and c.visible:
+			expanded = true
+			break
+	
+	if expanded:
+		# Сворачиваем: скрываем все элементы кроме заголовка
+		for i in range(1, children.size()):
+			var c = children[i]
+			if c is CanvasItem:
+				c.visible = false
+		panel.custom_minimum_size.y = header.size.y + 40.0
+		var icon = roll_button.get_node_or_null("Icon")
+		if icon:
+			icon.rotation_degrees = 180.0  # стрелка вверх
+	else:
+		# Разворачиваем: показываем все элементы после заголовка
+		for i in range(1, children.size()):
+			var c = children[i]
+			if c is CanvasItem:
+				c.visible = true
+		panel.custom_minimum_size.y = header.size.y + 160.0  # Достаточная высота, чтобы были видны ответы и белый фон
+		var icon2 = roll_button.get_node_or_null("Icon")
+		if icon2:
+			icon2.rotation_degrees = 0.0  # стрелка вниз

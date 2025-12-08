@@ -82,9 +82,11 @@ func load_saved_level(level_number: int) -> bool:
 		for btn in root.option_buttons:
 			btn.hide()
 		_show_buttons(root.option_buttons2, false)
-		if root.has_node("UI/Buttons2"):
-			root.get_node("UI/Buttons2").hide()
-		root.forward_button.hide()
+		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
+			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
+		if root.forward_button:
+			root.forward_button.disabled = true
+			root.forward_button.show()
 		if root.build_button:
 			root.build_button.disabled = false
 		if root.k_input:
@@ -95,8 +97,8 @@ func load_saved_level(level_number: int) -> bool:
 			root.k_slider.visible = false
 		if root.b_slider:
 			root.b_slider.visible = false
-		if root.has_node("UI/Slider"):
-			root.get_node("UI/Slider").visible = false
+		if root.has_node("UI/BottomLayout/Panel/Items/Answers/Slider"):
+			root.get_node("UI/BottomLayout/Panel/Items/Answers/Slider").visible = false
 		if root.k_slider_label:
 			root.k_slider_label.visible = false
 		if root.b_slider_label:
@@ -122,12 +124,14 @@ func load_saved_level(level_number: int) -> bool:
 			if root.has_method("refresh_input_slider_value_labels"):
 				root.refresh_input_slider_value_labels()
 		else:
-			for btn in root.option_buttons:
-				btn.hide()
-			_show_buttons(root.option_buttons2, false)
-			if root.has_node("UI/Buttons2"):
-				root.get_node("UI/Buttons2").hide()
-			root.forward_button.hide()
+			for cb in root.option_check_buttons:
+				cb.hide()
+				cb.disabled = true
+			if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
+				root.get_node("UI/BottomLayout/Panel/Items/Answers").hide()
+			if root.forward_button:
+				root.forward_button.disabled = true
+				root.forward_button.show()
 			if root.build_button:
 				root.build_button.disabled = false
 			if root.k_slider:
@@ -148,8 +152,8 @@ func load_saved_level(level_number: int) -> bool:
 				root.k_slider.visible = true
 			if root.b_slider:
 				root.b_slider.visible = true
-			if root.has_node("UI/Slider"):
-				root.get_node("UI/Slider").visible = true
+			if root.has_node("UI/BottomLayout/Panel/Items/Answers/Slider"):
+				root.get_node("UI/BottomLayout/Panel/Items/Answers/Slider").visible = true
 			if root.x_label:
 				root.x_label.visible = false
 			if root.y_label:
@@ -179,20 +183,36 @@ func load_saved_level(level_number: int) -> bool:
 			double_module.set_intersection(double_intersection_x)
 			double_module.apply_ui(options, options_secondary)
 			double_module.draw_tracks(current_correct_func, current_correct_func_b)
+			double_module.set_intersection(double_intersection_x)
+			double_module.apply_ui(options, options_secondary)
+			double_module.draw_tracks(current_correct_func, current_correct_func_b)
 		else:
 			push_warning("DOUBLE_LINEAR: module not initialized; cannot restore saved state")
 		return true
 	else:
 		root.input_panel.visible = false
-		for btn in root.option_buttons:
-			btn.show()
-		for btn in root.option_buttons2:
-			btn.hide()
-		root.get_node("UI/Buttons/Button").text = root.utils.format_function_from_string(options[0])
-		root.get_node("UI/Buttons/Button2").text = root.utils.format_function_from_string(options[1])
-		root.get_node("UI/Buttons/Button3").text = root.utils.format_function_from_string(options[2])
-		if root.has_node("UI/Buttons2"):
-			root.get_node("UI/Buttons2").hide()
+		# Показать Buttons1 для обычных уровней
+		var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
+		if buttons1_node:
+			buttons1_node.show()
+			for cb in root.option_check_buttons:
+				if cb:
+					cb.disabled = false
+		# Скрыть Buttons2 для обычных уровней
+		var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
+		if buttons2_node:
+			buttons2_node.hide()
+		var button_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0/FormulaLabel")
+		if button_node:
+			button_node.text = root.utils.format_function_from_string(options[0])
+		var button2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1/FormulaLabel")
+		if button2_node:
+			button2_node.text = root.utils.format_function_from_string(options[1])
+		var button3_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2/FormulaLabel")
+		if button3_node:
+			button3_node.text = root.utils.format_function_from_string(options[2])
+		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
+			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
 	
 	return true
 
@@ -317,11 +337,11 @@ func generate_new_level():
 		return
 	elif lvl_type == LevelType.INPUT_LINEAR:
 		options = []
-		for btn in root.option_buttons:
-			btn.hide()
-		_show_buttons(root.option_buttons2, false)
-		if root.has_node("UI/Buttons2"):
-			root.get_node("UI/Buttons2").hide()
+		for cb in root.option_check_buttons:
+			cb.hide()
+			cb.disabled = true
+		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
+			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
 		root.forward_button.hide()
 
 		if root.build_button:
@@ -338,8 +358,8 @@ func generate_new_level():
 			root.k_slider.visible = false
 		if root.b_slider:
 			root.b_slider.visible = false
-		if root.has_node("UI/Slider"):
-			root.get_node("UI/Slider").visible = false
+		if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider"):
+			root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider").visible = false
 		if root.k_slider_label:
 			root.k_slider_label.visible = false
 		if root.b_slider_label:
@@ -362,9 +382,11 @@ func generate_new_level():
 			_save_current_level(lvl_type, level_seed)
 	elif lvl_type == LevelType.INPUT_SLIDER:
 		options = []
-		_show_buttons(root.option_buttons2, false)
-		if root.has_node("UI/Buttons2"):
-			root.get_node("UI/Buttons2").hide()
+		for cb in root.option_check_buttons:
+			cb.hide()
+			cb.disabled = true
+		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
+			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
 		if root.k_value_label:
 			root.k_value_label.visible = true
 		if root.b_value_label:
@@ -398,8 +420,8 @@ func generate_new_level():
 				root.k_slider.visible = true
 			if root.b_slider:
 				root.b_slider.visible = true
-			if root.has_node("UI/Slider"):
-				root.get_node("UI/Slider").visible = true
+			if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider"):
+				root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider").visible = true
 			if root.x_label:
 				root.x_label.visible = false
 			if root.y_label:
@@ -416,8 +438,17 @@ func generate_new_level():
 		root.input_panel.visible = false
 		if root.build_button:
 			root.build_button.disabled = false
-		_show_buttons(root.option_buttons, true)
-		_show_buttons(root.option_buttons2, false)
+		# Показать Buttons1 для обычных уровней
+		var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
+		if buttons1_node:
+			buttons1_node.show()
+			for cb in root.option_check_buttons:
+				if cb:
+					cb.disabled = false
+		# Скрыть Buttons2 для обычных уровней
+		var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
+		if buttons2_node:
+			buttons2_node.hide()
 
 		options = generate_options_for_type(lvl_type, valid_correct_func)
 		while options.size() < 3:
@@ -431,11 +462,17 @@ func generate_new_level():
 			print("[LevelGen] setup_level_positions using generated func:", valid_correct_func)
 			root.utils.setup_level_positions(expr)
 
-		root.get_node("UI/Buttons/Button").text = root.utils.format_function_from_string(options[0])
-		root.get_node("UI/Buttons/Button2").text = root.utils.format_function_from_string(options[1])
-		root.get_node("UI/Buttons/Button3").text = root.utils.format_function_from_string(options[2])
-		if root.has_node("UI/Buttons2"):
-			root.get_node("UI/Buttons2").hide()
+		var button_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0/FormulaLabel")
+		if button_node:
+			button_node.text = root.utils.format_function_from_string(options[0])
+		var button2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1/FormulaLabel")
+		if button2_node:
+			button2_node.text = root.utils.format_function_from_string(options[1])
+		var button3_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2/FormulaLabel")
+		if button3_node:
+			button3_node.text = root.utils.format_function_from_string(options[2])
+		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
+			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
 
 		print("Сторона шара:", "RIGHT" if root.ball_side == Side.RIGHT else "LEFT")
 		print("Правильная функция:", current_correct_func)
@@ -444,6 +481,11 @@ func generate_new_level():
 			print("  [", i, "] ", options[i])
 		
 		_save_current_level(lvl_type, level_seed)
+		
+		# Убедиться, что ForwardButton видна и активна
+		if root.forward_button:
+			root.forward_button.disabled = false
+			root.forward_button.show()
 
 
 
@@ -571,6 +613,10 @@ func random_function(allowed_types: Array = []) -> String:
 func reset_current_level():
 	root.restart.disabled = false
 	root.utils.enable_option_buttons(root)
+	# Показать ForwardButton при перезапуске
+	if root.forward_button:
+		root.forward_button.disabled = false
+		root.forward_button.show()
 	for child in root.track.get_children():
 		if child is CollisionShape2D:
 			child.queue_free()

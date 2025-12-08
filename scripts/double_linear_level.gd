@@ -27,12 +27,23 @@ func apply_ui(options_a: Array, options_b: Array):
 		root.input_panel.visible = false
 	if root.build_button:
 		root.build_button.disabled = false
-	_show_buttons(root.option_buttons, true)
-	_show_buttons(root.option_buttons2, true)
+	# Показать оба контейнера для DOUBLE_LINEAR
+	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
+	if buttons1_node:
+		buttons1_node.show()
+		for cb in root.option_buttons:
+			if cb:
+				cb.disabled = false
+	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
+	if buttons2_node:
+		buttons2_node.show()
+		for cb in root.option_buttons2:
+			if cb:
+				cb.disabled = false
 	_set_button_texts(root.option_buttons, options_a)
 	_set_button_texts(root.option_buttons2, options_b)
-	if root.has_node("UI/Buttons2"):
-		root.get_node("UI/Buttons2").show()
+	if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
+		root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
 
 
 func draw_tracks(primary_func: String, secondary_func: String):
@@ -274,4 +285,12 @@ func _set_button_texts(buttons: Array, values: Array):
 		return
 	for i in range(min(buttons.size(), values.size())):
 		if buttons[i]:
-			buttons[i].text = root.utils.format_function_from_string(values[i])
+			# Determine path based on which group we're setting
+			var path = ""
+			if buttons[i].get_parent().name == "Buttons1":
+				path = "UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option" + str(i) + "/FormulaLabel"
+			else:
+				path = "UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option" + str(i) + "/FormulaLabel"
+			var label = root.get_node_or_null(path)
+			if label:
+				label.text = root.utils.format_function_from_string(values[i])

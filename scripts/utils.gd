@@ -313,18 +313,20 @@ func on_forward_pressed(root, forward_button, option_buttons):
 	root.ball.freeze = false
 	root.ball.apply_impulse(Vector2.ZERO, Vector2(0, 50))
 
-	forward_button.hide()
+	# Не скрываем кнопку, а просто отключаем её
+	forward_button.disabled = true
 
-	for btn in option_buttons:
-		if btn:
-			btn.disabled = true
-	
 	var lvl_type = root.level_gen.get_level_type(root.level)
 	if lvl_type == root.level_gen.LevelType.INPUT_LINEAR or lvl_type == root.level_gen.LevelType.INPUT_SLIDER:
 		if root.build_button:
 			root.build_button.disabled = true
 
 func enable_option_buttons(root):
+	# Включить CheckButton для обычных уровней
+	for cb in root.option_check_buttons:
+		if cb:
+			cb.disabled = false
+	# Включить старые кнопки для DOUBLE_LINEAR
 	for btn in root.option_buttons:
 		if btn:
 			btn.disabled = false
@@ -512,17 +514,25 @@ func clear_ui_before_level_load():
 	if root.has_node("UI/Slider"):
 		root.get_node("UI/Slider").visible = false
 
-	# прячем кнопки
-	for btn in root.option_buttons:
-		btn.hide()
-	for btn in root.option_buttons2:
-		btn.hide()
+	# прячем/сбрасываем чекбоксы
+	for cb in root.option_check_buttons:
+		if cb:
+			cb.button_pressed = false
+			cb.disabled = true
+	# прячем контейнеры кнопок
+	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
+	if buttons1_node:
+		buttons1_node.hide()
+	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
+	if buttons2_node:
+		buttons2_node.hide()
 
 	if root.has_node("UI/Buttons2"):
 		root.get_node("UI/Buttons2").hide()
 
-	if root.forward_button:
-		root.forward_button.hide()
+	if root.has_node("UI/BottomLayout/Panel/Items/ForwardButton"):
+		root.get_node("UI/BottomLayout/Panel/Items/ForwardButton").disabled = false
+		root.get_node("UI/BottomLayout/Panel/Items/ForwardButton").show()
 
 	if root.forward_button_input:
 		root.forward_button_input.hide()
