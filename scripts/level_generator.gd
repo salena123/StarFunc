@@ -84,9 +84,6 @@ func load_saved_level(level_number: int) -> bool:
 		_show_buttons(root.option_buttons2, false)
 		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
 			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
-		if root.forward_button:
-			root.forward_button.disabled = true
-			root.forward_button.show()
 		if root.build_button:
 			root.build_button.disabled = false
 		if root.k_input:
@@ -129,9 +126,6 @@ func load_saved_level(level_number: int) -> bool:
 				cb.disabled = true
 			if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
 				root.get_node("UI/BottomLayout/Panel/Items/Answers").hide()
-			if root.forward_button:
-				root.forward_button.disabled = true
-				root.forward_button.show()
 			if root.build_button:
 				root.build_button.disabled = false
 			if root.k_slider:
@@ -342,10 +336,9 @@ func generate_new_level():
 			cb.disabled = true
 		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
 			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
-		root.forward_button.hide()
-
 		if root.build_button:
 			root.build_button.disabled = false
+
 		if root.k_input:
 			root.k_input.clear()
 		if root.b_input:
@@ -399,7 +392,6 @@ func generate_new_level():
 		else:
 			for btn in root.option_buttons:
 				btn.hide()
-			root.forward_button.hide()
 			if root.build_button:
 				root.build_button.disabled = false
 			if root.k_slider:
@@ -613,6 +605,11 @@ func random_function(allowed_types: Array = []) -> String:
 func reset_current_level():
 	root.restart.disabled = false
 	root.utils.enable_option_buttons(root)
+	# Снять все галочки с CheckButton при перезапуске уровня
+	if root.option_check_buttons:
+		for cb in root.option_check_buttons:
+			if cb:
+				cb.button_pressed = false
 	# Показать ForwardButton при перезапуске
 	if root.forward_button:
 		root.forward_button.disabled = false
@@ -645,7 +642,6 @@ func reset_current_level():
 		if root.b_slider:
 			root.b_slider.value = 0.0
 		root.forward_button_input.hide()
-	root.forward_button.hide()
 	root.track.visible = false
 	if root.track2:
 		root.track2.visible = false
@@ -673,8 +669,9 @@ func reset_current_level():
 				root.double_linear_module.set_intersection(double_intersection_x)
 				root.double_linear_module.draw_tracks(current_correct_func, current_correct_func_b)
 		else:
+			# Используем правильную функцию только для расстановки звёзд,
+			# НЕ рисуем по ней физический трек, чтобы шарик не контактировал с невидимым графиком
 			root.utils.setup_level_positions(expr)
-			root.track_drawer.draw_track(current_correct_func)
 	root.ball.freeze = true
 
 

@@ -50,7 +50,16 @@ var level_saver
 @onready var forward_button_input = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/ForwardButtonInput")
 @onready var error_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/ErrorLabel")
 @onready var restart = $UI/Restart
-@onready var timer_label = $UI/TimerContainer/ContentHBox/Label
+@onready var timer_label: Label = $UI/TimerContainer/ContentHBox/Label
+# Исходная высота нижней панели с ответами, чтобы при разворачивании
+# возвращать её к первоначальному красивому виду
+var _bottom_panel_initial_height: float = 0.0
+
+# Высота нижней панели в развернутом состоянии (запоминаем один раз при первом сворачивании)
+var _bottom_panel_full_height: float = 0.0
+
+# Флаг, чтобы не реагировать на сигналы CheckButton, когда мы меняем их состояние из кода
+var _suppress_check_signal := false
 @onready var k_slider_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/KLabel")
 @onready var b_slider_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/BLabel")
 @onready var x_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/XLabel")
@@ -144,9 +153,11 @@ func _ready():
 	setup_sliders()
 	
 	# Сбросить все CheckButton при старте
+	_suppress_check_signal = true
 	for cb in option_check_buttons:
 		if cb:
 			cb.button_pressed = false
+	_suppress_check_signal = false
 	# Скрыть все контейнеры кнопок при старте
 	var buttons1_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
 	if buttons1_node:
@@ -302,20 +313,38 @@ func setup_ui_buttons():
 	var buttons1_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
 	if buttons1_node:
 		if buttons1_node.get_node_or_null("Option0/CheckButton"):
-			buttons1_node.get_node("Option0/CheckButton").toggled.connect(func(pressed): select_option(0, 0))
+			buttons1_node.get_node("Option0/CheckButton").toggled.connect(func(pressed):
+				if pressed:
+					select_option(0, 0)
+			)
 		if buttons1_node.get_node_or_null("Option1/CheckButton"):
-			buttons1_node.get_node("Option1/CheckButton").toggled.connect(func(pressed): select_option(1, 0))
+			buttons1_node.get_node("Option1/CheckButton").toggled.connect(func(pressed):
+				if pressed:
+					select_option(1, 0)
+			)
 		if buttons1_node.get_node_or_null("Option2/CheckButton"):
-			buttons1_node.get_node("Option2/CheckButton").toggled.connect(func(pressed): select_option(2, 0))
+			buttons1_node.get_node("Option2/CheckButton").toggled.connect(func(pressed):
+				if pressed:
+					select_option(2, 0)
+			)
 	
 	var buttons2_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
 	if buttons2_node:
 		if buttons2_node.get_node_or_null("Option0/CheckButton"):
-			buttons2_node.get_node("Option0/CheckButton").toggled.connect(func(pressed): select_option(0, 1))
+			buttons2_node.get_node("Option0/CheckButton").toggled.connect(func(pressed):
+				if pressed:
+					select_option(0, 1)
+			)
 		if buttons2_node.get_node_or_null("Option1/CheckButton"):
-			buttons2_node.get_node("Option1/CheckButton").toggled.connect(func(pressed): select_option(1, 1))
+			buttons2_node.get_node("Option1/CheckButton").toggled.connect(func(pressed):
+				if pressed:
+					select_option(1, 1)
+			)
 		if buttons2_node.get_node_or_null("Option2/CheckButton"):
-			buttons2_node.get_node("Option2/CheckButton").toggled.connect(func(pressed): select_option(2, 1))
+			buttons2_node.get_node("Option2/CheckButton").toggled.connect(func(pressed):
+				if pressed:
+					select_option(2, 1)
+			)
 	
 	# Подключение кнопки сворачивания
 	var roll_button = get_node_or_null("UI/BottomLayout/Panel/Items/HBoxContainer/RollButton")
@@ -329,18 +358,46 @@ func setup_check_buttons():
 			cb.toggled.connect(_on_check_toggled.bind(i))
 
 func _on_check_toggled(pressed: bool, index: int):
-	if first_selection_done:
+	# Игнорируем сигналы, когда мы сами программно меняем чекбоксы
+	if _suppress_check_signal:
+		return
+	# После нажатия ForwardButton запрещаем включать новые графики,
+	# но разрешаем выключать текущий, чтобы убрать его со сцены
+	if first_selection_done and pressed:
 		return
 	var func_str = level_gen.get_option_for_group(0, index)
 	if func_str == "":
 		return
 	if pressed:
+		# Выключаем остальные CheckButton, чтобы активным был только один
+		_suppress_check_signal = true
+		for i in range(option_check_buttons.size()):
+			if i == index:
+				continue
+			var other_cb = option_check_buttons[i]
+			if other_cb:
+				other_cb.button_pressed = false
+		_suppress_check_signal = false
+		
+		# Рисуем график для выбранной функции
 		track_drawer.draw_track(func_str)
 		track.visible = true
 	else:
-		track.visible = false
+		# Полностью убираем текущий график: и визуально, и физически
+		if track:
+			track.visible = false
+			if line2d:
+				line2d.points = PackedVector2Array()
+			for child in track.get_children():
+				if child is CollisionShape2D:
+					child.queue_free()
 		if track2:
 			track2.visible = false
+			if line2d2:
+				line2d2.points = PackedVector2Array()
+			for child2 in track2.get_children():
+				if child2 is CollisionShape2D:
+					child2.queue_free()
 	if forward_button:
 		forward_button.disabled = false
 
@@ -369,6 +426,10 @@ func _on_roll_button_pressed():
 			var c = children[i]
 			if c is CanvasItem:
 				c.visible = false
+		# При первом сворачивании запоминаем «правильную» полную высоту панели
+		if _bottom_panel_full_height == 0.0:
+			_bottom_panel_full_height = panel.size.y
+		# Делаем панель компактной, оставляя высоту только под заголовок
 		panel.custom_minimum_size.y = header.size.y + 40.0
 		var icon = roll_button.get_node_or_null("Icon")
 		if icon:
@@ -379,7 +440,10 @@ func _on_roll_button_pressed():
 			var c = children[i]
 			if c is CanvasItem:
 				c.visible = true
-		panel.custom_minimum_size.y = header.size.y + 160.0  # Достаточная высота, чтобы были видны ответы и белый фон
+		# При разворачивании возвращаем панель к сохранённой полной высоте,
+		# чтобы она выглядела так же, как в первый раз
+		if _bottom_panel_full_height > 0.0:
+			panel.custom_minimum_size.y = _bottom_panel_full_height
 		var icon2 = roll_button.get_node_or_null("Icon")
 		if icon2:
 			icon2.rotation_degrees = 0.0  # стрелка вниз

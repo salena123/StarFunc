@@ -30,8 +30,6 @@ func _prepare_ui():
 		return
 	for btn in root.option_buttons:
 		btn.hide()
-	if root.forward_button:
-		root.forward_button.hide()
 	if root.build_button:
 		root.build_button.disabled = false
 	if root.k_slider:

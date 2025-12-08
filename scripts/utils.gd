@@ -313,9 +313,6 @@ func on_forward_pressed(root, forward_button, option_buttons):
 	root.ball.freeze = false
 	root.ball.apply_impulse(Vector2.ZERO, Vector2(0, 50))
 
-	# Не скрываем кнопку, а просто отключаем её
-	forward_button.disabled = true
-
 	var lvl_type = root.level_gen.get_level_type(root.level)
 	if lvl_type == root.level_gen.LevelType.INPUT_LINEAR or lvl_type == root.level_gen.LevelType.INPUT_SLIDER:
 		if root.build_button:
