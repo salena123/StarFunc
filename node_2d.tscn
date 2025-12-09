@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=3 uid="uid://c2cdbk2ehc4o3"]
+[gd_scene load_steps=61 format=3 uid="uid://c2cdbk2ehc4o3"]
 
 [ext_resource type="Script" uid="uid://c7qx3hdq3vnhc" path="res://scripts/main.gd" id="1_kdubu"]
 [ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="1_wtcfe"]
@@ -99,14 +99,26 @@ shadow_color = Color(0, 0, 0, 0.36862746)
 shadow_size = 2
 shadow_offset = Vector2(0, 1)
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rjqkl"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_hsep"]
+color = Color(0.8, 0.8, 0.8, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2nhjh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_e8dv2"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ei405"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7vxoj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fs4d3"]
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2u7jv"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bjha6"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gt76g"]
-
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_hsep"]
-color = Color(0.8, 0.8, 0.8, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1fr6y"]
 
@@ -144,18 +156,6 @@ shadow_offset = Vector2(0, 1)
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_flf07"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k73cj"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rjqkl"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2nhjh"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_e8dv2"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ei405"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7vxoj"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fs4d3"]
 
 [sub_resource type="SystemFont" id="SystemFont_kdubu"]
 
@@ -972,7 +972,6 @@ offset_right = 151.0
 offset_bottom = 23.0
 
 [node name="InputPanel2" type="VBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel"]
-visible = false
 layout_mode = 0
 offset_right = 128.0
 offset_bottom = 74.0
@@ -1037,7 +1036,6 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_ebxd8")
 placeholder_text = "ввод"
 
 [node name="Slider2" type="VBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel"]
-visible = false
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0

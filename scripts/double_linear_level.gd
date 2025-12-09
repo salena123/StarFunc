@@ -24,8 +24,8 @@ func prepare_from_saved(primary_func: String, secondary_func: String, options_a:
 
 func apply_ui(options_a: Array, options_b: Array):
 	print("[DOUBLE_LINEAR] apply_ui: options_a.size() = ", options_a.size(), ", options_b.size() = ", options_b.size())
-	if root.input_panel:
-		root.input_panel.visible = false
+	# if root.input_panel:
+	#	root.input_panel.visible = false
 	if root.build_button:
 		root.build_button.disabled = false
 	

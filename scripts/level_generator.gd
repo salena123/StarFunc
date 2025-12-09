@@ -28,17 +28,19 @@ func init(r):
 		root.utils.calc_base_unit()
 
 func get_level_type(level: int) -> LevelType:
-	if level <= 1:
-		return LevelType.SIMPLE
-	elif level <= 2:
-		return LevelType.VARY_B
-	elif level <= 3:
-		return LevelType.VARY_K
-	elif level <= 4:
+	if level == 1:  # Уровень 14 точно будет INPUT_LINEAR для теста
 		return LevelType.INPUT_LINEAR
-	elif level <= 5:
-		return LevelType.INPUT_SLIDER
+	elif level <= 3: 
+		return LevelType.SIMPLE
 	elif level <= 6:
+		return LevelType.VARY_B
+	elif level <= 9:
+		return LevelType.VARY_K
+	elif level <= 13:  # Временно расширим до 13 для теста
+		return LevelType.INPUT_LINEAR
+	elif level <= 15:
+		return LevelType.INPUT_SLIDER
+	elif level <= 18:
 		return LevelType.DOUBLE_LINEAR
 	elif level <= 35:
 		return LevelType.TRIG
@@ -393,9 +395,45 @@ func generate_new_level():
 			root.b_input.clear()
 		var input_panel2_l = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2")
 		if input_panel2_l:
+			print("[INPUT_LINEAR] InputPanel2 found")
+			print("[INPUT_LINEAR] InputPanel2 visible: ", input_panel2_l.visible)
 			input_panel2_l.show()
-		if root.input_panel:
-			root.input_panel.hide()
+			print("[INPUT_LINEAR] After show, InputPanel2 visible: ", input_panel2_l.visible)
+			
+			# Проверить видимость контейнеров K и B
+			var k_container = input_panel2_l.get_node_or_null("K")
+			var b_container = input_panel2_l.get_node_or_null("B")
+			
+			if k_container:
+				print("[INPUT_LINEAR] K container visible: ", k_container.visible)
+				k_container.show()
+				print("[INPUT_LINEAR] After show, K container visible: ", k_container.visible)
+			else:
+				print("[INPUT_LINEAR] K container not found!")
+				
+			if b_container:
+				print("[INPUT_LINEAR] B container visible: ", b_container.visible)
+				b_container.show()
+				print("[INPUT_LINEAR] After show, B container visible: ", b_container.visible)
+			else:
+				print("[INPUT_LINEAR] B container not found!")
+			
+			# Проверить видимость полей ввода
+			if root.k_input:
+				print("[INPUT_LINEAR] KLineEdit visible: ", root.k_input.visible)
+				root.k_input.show()
+				print("[INPUT_LINEAR] After show, KLineEdit visible: ", root.k_input.visible)
+			else:
+				print("[INPUT_LINEAR] KLineEdit not found!")
+				
+			if root.b_input:
+				print("[INPUT_LINEAR] BLineEdit visible: ", root.b_input.visible)
+				root.b_input.show()
+				print("[INPUT_LINEAR] After show, BLineEdit visible: ", root.b_input.visible)
+			else:
+				print("[INPUT_LINEAR] BLineEdit not found!")
+		else:
+			print("[INPUT_LINEAR] InputPanel2 node not found!")
 		# спрятать старый Slider и новый Slider2
 		if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider"):
 			root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider").hide()
