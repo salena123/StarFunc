@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://c2cdbk2ehc4o3"]
+[gd_scene load_steps=53 format=3 uid="uid://c2cdbk2ehc4o3"]
 
 [ext_resource type="Script" uid="uid://c7qx3hdq3vnhc" path="res://scripts/main.gd" id="1_kdubu"]
 [ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="1_wtcfe"]
@@ -8,12 +8,15 @@
 [ext_resource type="Texture2D" uid="uid://du8swh2slpfph" path="res://BackgrondSprite.png" id="6_4d7sh"]
 [ext_resource type="Script" uid="uid://c8g543guoxhdl" path="res://grid.gd" id="6_kdubu"]
 [ext_resource type="Script" uid="uid://d5jhcclg2few" path="res://background.gd" id="6_rj586"]
+[ext_resource type="Texture2D" uid="uid://cs4hibj5o6kk0" path="res://Group 1000007242.svg" id="7_flf07"]
 [ext_resource type="Texture2D" uid="uid://dsphoe8vgna25" path="res://Group (3).png" id="8_4d7sh"]
 [ext_resource type="FontFile" uid="uid://bsi23ifa7ri5i" path="res://BlushesRegular.ttf" id="9_hqns4"]
 [ext_resource type="Texture2D" uid="uid://b5fglmbnou05n" path="res://chevrons-down.svg" id="9_ir8iy"]
 [ext_resource type="LabelSettings" uid="uid://bfdnoy5qkyfsp" path="res://OptionsText.tres" id="11_x0ka3"]
 [ext_resource type="Texture2D" uid="uid://cqlibuf564iea" path="res://Group 12562.png" id="12_nr8wp"]
 [ext_resource type="Texture2D" uid="uid://wg18bk1t7w55" path="res://Group 12562 (1).png" id="13_d2bti"]
+[ext_resource type="Texture2D" uid="uid://c4gstxpusfq5t" path="res://Group 12560.png" id="14_d2bti"]
+[ext_resource type="Texture2D" uid="uid://dyfqjabuibjth" path="res://Ellipse 653.png" id="15_ta5nu"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_y32ns"]
 
@@ -30,8 +33,15 @@ radius = 16.492422
 [sub_resource type="CircleShape2D" id="CircleShape2D_kdubu"]
 radius = 50.039986
 
-[sub_resource type="LabelSettings" id="LabelSettings_d21ai"]
-font_size = 24
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_24dk6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ornx7"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_cnnru"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mryly"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kq1c5"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_kdubu"]
 font_size = 18
@@ -89,21 +99,25 @@ shadow_color = Color(0, 0, 0, 0.36862746)
 shadow_size = 2
 shadow_offset = Vector2(0, 1)
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2u7jv"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bjha6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gt76g"]
+
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_hsep"]
 color = Color(0.8, 0.8, 0.8, 1)
-thickness = 1
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rjqkl"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1fr6y"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2nhjh"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2hxjc"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_e8dv2"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ebxd8"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ei405"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_540hr"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7vxoj"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fs4d3"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6ip5v"]
+bg_color = Color(0.9882353, 0.8980392, 0.8, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_forward_button"]
 bg_color = Color(1, 1, 1, 1)
@@ -130,6 +144,18 @@ shadow_offset = Vector2(0, 1)
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_flf07"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k73cj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rjqkl"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2nhjh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_e8dv2"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ei405"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7vxoj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fs4d3"]
 
 [sub_resource type="SystemFont" id="SystemFont_kdubu"]
 
@@ -249,14 +275,13 @@ offset_left = 2.0
 offset_top = 44.0
 offset_right = 69.0
 offset_bottom = 75.0
+theme_override_styles/normal = SubResource("StyleBoxEmpty_24dk6")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_ornx7")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_cnnru")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_mryly")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_kq1c5")
 text = "                     "
-
-[node name="Label" type="Label" parent="UI/Restart"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-text = "Заново"
-label_settings = SubResource("LabelSettings_d21ai")
+icon = ExtResource("7_flf07")
 
 [node name="ScoreLabel" type="Label" parent="UI"]
 offset_right = 40.0
@@ -349,6 +374,7 @@ offset_bottom = 46.5
 text = "Заново"
 
 [node name="Buttons2" type="Control" parent="UI"]
+visible = false
 layout_mode = 3
 anchors_preset = 1
 anchor_left = 1.0
@@ -383,6 +409,7 @@ offset_bottom = 47.0
 text = "y = -0.5*x + 2"
 
 [node name="Buttons" type="Control" parent="UI"]
+visible = false
 layout_mode = 3
 anchors_preset = 1
 anchor_left = 1.0
@@ -426,6 +453,7 @@ offset_bottom = 215.0
 text = "Вперед!"
 
 [node name="InputPanel" type="Control" parent="UI"]
+visible = false
 layout_mode = 3
 anchors_preset = 1
 anchor_left = 1.0
@@ -492,6 +520,7 @@ text = "Введите значения k и b"
 label_settings = SubResource("LabelSettings_kdubu")
 
 [node name="Slider" type="Control" parent="UI"]
+visible = false
 layout_mode = 3
 anchors_preset = 1
 anchor_left = 1.0
@@ -642,15 +671,21 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_hqns4")
 
-[node name="Buttons1" type="VBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel"]
+[node name="ButtonsRow" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel"]
 layout_mode = 0
+size_flags_horizontal = 3
+theme_override_constants/separation = 20
 
-[node name="Option0" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1"]
+[node name="Buttons1" type="VBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow"]
+visible = false
+layout_mode = 2
+
+[node name="Option0" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0"]
+[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option0"]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -658,14 +693,14 @@ text = "1."
 label_settings = ExtResource("11_x0ka3")
 vertical_alignment = 1
 
-[node name="FormulaLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0"]
+[node name="FormulaLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option0"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "y = -0.5*x + 2"
 label_settings = ExtResource("11_x0ka3")
 vertical_alignment = 1
 
-[node name="CheckButton" type="CheckButton" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0"]
+[node name="CheckButton" type="CheckButton" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option0"]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 2
@@ -673,19 +708,19 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_rjqkl")
 theme_override_icons/checked = ExtResource("12_nr8wp")
 theme_override_icons/unchecked = ExtResource("13_d2bti")
 
-[node name="HSeparator2" type="HSeparator" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1"]
-layout_mode = 2
+[node name="HSeparator2" type="HSeparator" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1"]
 custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
 theme_override_styles/separator = SubResource("StyleBoxLine_hsep")
 
-[node name="Option1" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1"]
+[node name="Option1" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1"]
+[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option1"]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -693,14 +728,14 @@ text = "2."
 label_settings = ExtResource("11_x0ka3")
 vertical_alignment = 1
 
-[node name="FormulaLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1"]
+[node name="FormulaLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option1"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "y = -0.2*x + 1"
 label_settings = ExtResource("11_x0ka3")
 vertical_alignment = 1
 
-[node name="CheckButton" type="CheckButton" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1"]
+[node name="CheckButton" type="CheckButton" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option1"]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 2
@@ -708,19 +743,19 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_2nhjh")
 theme_override_icons/checked = ExtResource("12_nr8wp")
 theme_override_icons/unchecked = ExtResource("13_d2bti")
 
-[node name="HSeparator" type="HSeparator" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1"]
-layout_mode = 2
+[node name="HSeparator" type="HSeparator" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1"]
 custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
 theme_override_styles/separator = SubResource("StyleBoxLine_hsep")
 
-[node name="Option2" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1"]
+[node name="Option2" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2"]
+[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option2"]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -728,14 +763,14 @@ text = "3."
 label_settings = ExtResource("11_x0ka3")
 vertical_alignment = 1
 
-[node name="FormulaLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2"]
+[node name="FormulaLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option2"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "y = -x"
 label_settings = ExtResource("11_x0ka3")
 vertical_alignment = 1
 
-[node name="CheckButton" type="CheckButton" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2"]
+[node name="CheckButton" type="CheckButton" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option2"]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 2
@@ -743,15 +778,16 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_e8dv2")
 theme_override_icons/checked = ExtResource("12_nr8wp")
 theme_override_icons/unchecked = ExtResource("13_d2bti")
 
-[node name="Buttons2" type="VBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel"]
-layout_mode = 0
+[node name="Buttons2" type="VBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow"]
+visible = false
+layout_mode = 2
 
-[node name="Option0" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2"]
+[node name="Option0" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option0"]
+[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option0"]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -759,14 +795,14 @@ text = "1."
 label_settings = ExtResource("11_x0ka3")
 vertical_alignment = 1
 
-[node name="FormulaLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option0"]
+[node name="FormulaLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option0"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "y = -0.5*x + 2"
 label_settings = ExtResource("11_x0ka3")
 vertical_alignment = 1
 
-[node name="CheckButton" type="CheckButton" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option0"]
+[node name="CheckButton" type="CheckButton" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option0"]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 2
@@ -774,19 +810,19 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_ei405")
 theme_override_icons/checked = ExtResource("12_nr8wp")
 theme_override_icons/unchecked = ExtResource("13_d2bti")
 
-[node name="HSeparator3" type="HSeparator" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2"]
-layout_mode = 2
+[node name="HSeparator3" type="HSeparator" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2"]
 custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
 theme_override_styles/separator = SubResource("StyleBoxLine_hsep")
 
-[node name="Option1" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2"]
+[node name="Option1" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option1"]
+[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option1"]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -794,14 +830,14 @@ text = "2."
 label_settings = ExtResource("11_x0ka3")
 vertical_alignment = 1
 
-[node name="FormulaLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option1"]
+[node name="FormulaLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option1"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "y = -0.2*x + 1"
 label_settings = ExtResource("11_x0ka3")
 vertical_alignment = 1
 
-[node name="CheckButton" type="CheckButton" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option1"]
+[node name="CheckButton" type="CheckButton" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option1"]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 2
@@ -809,19 +845,19 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_7vxoj")
 theme_override_icons/checked = ExtResource("12_nr8wp")
 theme_override_icons/unchecked = ExtResource("13_d2bti")
 
-[node name="HSeparator4" type="HSeparator" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2"]
-layout_mode = 2
+[node name="HSeparator4" type="HSeparator" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2"]
 custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
 theme_override_styles/separator = SubResource("StyleBoxLine_hsep")
 
-[node name="Option2" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2"]
+[node name="Option2" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option2"]
+[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option2"]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -829,14 +865,14 @@ text = "3."
 label_settings = ExtResource("11_x0ka3")
 vertical_alignment = 1
 
-[node name="FormulaLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option2"]
+[node name="FormulaLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option2"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "y = -x"
 label_settings = ExtResource("11_x0ka3")
 vertical_alignment = 1
 
-[node name="CheckButton" type="CheckButton" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option2"]
+[node name="CheckButton" type="CheckButton" parent="UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option2"]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 2
@@ -844,39 +880,39 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_fs4d3")
 theme_override_icons/checked = ExtResource("12_nr8wp")
 theme_override_icons/unchecked = ExtResource("13_d2bti")
 
-[node name="InputPanel" type="Control" parent="UI/BottomLayout/Panel/Items/Answers/Panel"]
+[node name="InputPanel1" type="Control" parent="UI/BottomLayout/Panel/Items/Answers/Panel"]
 visible = false
 anchors_preset = 0
 
-[node name="YLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel"]
+[node name="YLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel1"]
 layout_mode = 0
 offset_left = 7.0
 offset_right = 47.0
 offset_bottom = 23.0
 text = "y ="
 
-[node name="KInput" type="LineEdit" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel"]
+[node name="KInput" type="LineEdit" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel1"]
 layout_mode = 0
 offset_left = 42.0
 offset_right = 110.5625
 offset_bottom = 31.0
 placeholder_text = "k"
 
-[node name="XLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel"]
+[node name="XLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel1"]
 layout_mode = 0
 offset_left = 111.0
 offset_right = 151.0
 offset_bottom = 23.0
 text = "*x + "
 
-[node name="BInput" type="LineEdit" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel"]
+[node name="BInput" type="LineEdit" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel1"]
 layout_mode = 0
 offset_left = 149.0
 offset_right = 217.5625
 offset_bottom = 31.0
 placeholder_text = "b"
 
-[node name="BuildButton" type="Button" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel"]
+[node name="BuildButton" type="Button" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel1"]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 48.0
@@ -884,7 +920,7 @@ offset_right = 100.0
 offset_bottom = 79.0
 text = "Построить"
 
-[node name="ForwardButtonInput" type="Button" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel"]
+[node name="ForwardButtonInput" type="Button" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel1"]
 visible = false
 layout_mode = 0
 offset_left = 126.0
@@ -893,7 +929,7 @@ offset_right = 198.0
 offset_bottom = 79.0
 text = "Вперед!"
 
-[node name="ErrorLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel"]
+[node name="ErrorLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel1"]
 visible = false
 layout_mode = 0
 offset_left = 15.0
@@ -903,11 +939,11 @@ offset_bottom = 125.0
 text = "Введите значения k и b"
 label_settings = SubResource("LabelSettings_kdubu")
 
-[node name="Slider" type="Control" parent="UI/BottomLayout/Panel/Items/Answers/Panel"]
+[node name="Slider1" type="Control" parent="UI/BottomLayout/Panel/Items/Answers/Panel"]
 visible = false
 anchors_preset = 0
 
-[node name="KLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider"]
+[node name="KLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider1"]
 visible = false
 layout_mode = 0
 offset_left = 42.0
@@ -915,25 +951,168 @@ offset_right = 82.0
 offset_bottom = 23.0
 label_settings = SubResource("LabelSettings_rj586")
 
-[node name="BLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider"]
+[node name="BLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider1"]
 visible = false
 layout_mode = 0
 offset_left = 149.0
 offset_right = 189.0
 offset_bottom = 23.0
 
-[node name="YLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider"]
+[node name="YLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider1"]
 layout_mode = 0
 offset_left = 7.0
 offset_right = 47.0
 offset_bottom = 23.0
 text = "y ="
 
-[node name="XLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider"]
+[node name="XLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider1"]
 layout_mode = 0
 offset_left = 111.0
 offset_right = 151.0
 offset_bottom = 23.0
+
+[node name="InputPanel2" type="VBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel"]
+visible = false
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 74.0
+
+[node name="K" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2"]
+layout_mode = 2
+
+[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2/K"]
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "1."
+label_settings = ExtResource("11_x0ka3")
+vertical_alignment = 1
+
+[node name="KLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2/K"]
+layout_mode = 2
+text = "k = "
+label_settings = ExtResource("11_x0ka3")
+
+[node name="KLineEdit" type="LineEdit" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2/K"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_placeholder_color = Color(0.7647059, 0.7647059, 0.7647059, 1)
+theme_override_fonts/font = ExtResource("9_hqns4")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_2u7jv")
+theme_override_styles/read_only = SubResource("StyleBoxEmpty_bjha6")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gt76g")
+placeholder_text = "ввод"
+
+[node name="HSeparator5" type="HSeparator" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_styles/separator = SubResource("StyleBoxLine_hsep")
+
+[node name="B" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2"]
+layout_mode = 2
+
+[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2/B"]
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "2."
+label_settings = ExtResource("11_x0ka3")
+vertical_alignment = 1
+
+[node name="BLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2/B"]
+layout_mode = 2
+text = "b = "
+label_settings = ExtResource("11_x0ka3")
+
+[node name="BLineEdit" type="LineEdit" parent="UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2/B"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_placeholder_color = Color(0.7647059, 0.7647059, 0.7647059, 1)
+theme_override_fonts/font = ExtResource("9_hqns4")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_1fr6y")
+theme_override_styles/read_only = SubResource("StyleBoxEmpty_2hxjc")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ebxd8")
+placeholder_text = "ввод"
+
+[node name="Slider2" type="VBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="K" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider2"]
+layout_mode = 2
+
+[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider2/K"]
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "1."
+label_settings = ExtResource("11_x0ka3")
+vertical_alignment = 1
+
+[node name="KLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider2/K"]
+layout_mode = 2
+text = "k = "
+label_settings = ExtResource("11_x0ka3")
+
+[node name="KLabelValue" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider2/K"]
+layout_mode = 2
+label_settings = ExtResource("11_x0ka3")
+
+[node name="KSlider" type="HSlider" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider2/K"]
+custom_minimum_size = Vector2(260, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_icons/grabber = ExtResource("15_ta5nu")
+theme_override_icons/tick = ExtResource("14_d2bti")
+theme_override_styles/slider = SubResource("StyleBoxEmpty_540hr")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_6ip5v")
+min_value = -1.5
+max_value = 1.5
+step = 0.1
+value = 0.5
+
+[node name="HSeparator5" type="HSeparator" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider2"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_styles/separator = SubResource("StyleBoxLine_hsep")
+
+[node name="B" type="HBoxContainer" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider2"]
+layout_mode = 2
+
+[node name="NumberLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider2/B"]
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "2."
+label_settings = ExtResource("11_x0ka3")
+vertical_alignment = 1
+
+[node name="BLabel" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider2/B"]
+layout_mode = 2
+text = "b = "
+label_settings = ExtResource("11_x0ka3")
+
+[node name="BLabelValue" type="Label" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider2/B"]
+layout_mode = 2
+label_settings = ExtResource("11_x0ka3")
+
+[node name="BSlider" type="HSlider" parent="UI/BottomLayout/Panel/Items/Answers/Panel/Slider2/B"]
+custom_minimum_size = Vector2(260, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_icons/grabber = ExtResource("15_ta5nu")
+theme_override_icons/tick = ExtResource("14_d2bti")
+theme_override_styles/slider = SubResource("StyleBoxEmpty_540hr")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_6ip5v")
+min_value = -10.0
+max_value = 10.0
+step = 0.1
 
 [node name="ForwardButton" type="Button" parent="UI/BottomLayout/Panel/Items"]
 custom_minimum_size = Vector2(200, 35)

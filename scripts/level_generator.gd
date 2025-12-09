@@ -94,8 +94,8 @@ func load_saved_level(level_number: int) -> bool:
 			root.k_slider.visible = false
 		if root.b_slider:
 			root.b_slider.visible = false
-		if root.has_node("UI/BottomLayout/Panel/Items/Answers/Slider"):
-			root.get_node("UI/BottomLayout/Panel/Items/Answers/Slider").visible = false
+		if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider1"):
+			root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider1").visible = false
 		if root.k_slider_label:
 			root.k_slider_label.visible = false
 		if root.b_slider_label:
@@ -114,6 +114,15 @@ func load_saved_level(level_number: int) -> bool:
 	elif saved_lvl_type == LevelType.INPUT_SLIDER:
 		if root.input_slider_module:
 			root.input_slider_module.setup_ui_with_function(current_correct_func)
+			# Показать новый Slider2, скрыть InputPanel/InputPanel2
+			var slider2 = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider2")
+			if slider2:
+				slider2.show()
+			if root.input_panel:
+				root.input_panel.hide()
+			var input_panel2 = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2")
+			if input_panel2:
+				input_panel2.hide()
 			if root.k_value_label:
 				root.k_value_label.visible = true
 			if root.b_value_label:
@@ -186,23 +195,23 @@ func load_saved_level(level_number: int) -> bool:
 	else:
 		root.input_panel.visible = false
 		# Показать Buttons1 для обычных уровней
-		var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
+		var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1")
 		if buttons1_node:
 			buttons1_node.show()
 			for cb in root.option_check_buttons:
 				if cb:
 					cb.disabled = false
 		# Скрыть Buttons2 для обычных уровней
-		var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
+		var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2")
 		if buttons2_node:
 			buttons2_node.hide()
-		var button_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0/FormulaLabel")
+		var button_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option0/FormulaLabel")
 		if button_node:
 			button_node.text = root.utils.format_function_from_string(options[0])
-		var button2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1/FormulaLabel")
+		var button2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option1/FormulaLabel")
 		if button2_node:
 			button2_node.text = root.utils.format_function_from_string(options[1])
-		var button3_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2/FormulaLabel")
+		var button3_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option2/FormulaLabel")
 		if button3_node:
 			button3_node.text = root.utils.format_function_from_string(options[2])
 		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
@@ -212,6 +221,30 @@ func load_saved_level(level_number: int) -> bool:
 
 
 func generate_new_level():
+	# Сначала скрыть все UI-элементы для чистого состояния
+	var input_panel2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2")
+	if input_panel2_node:
+		input_panel2_node.hide()
+	var slider2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider2")
+	if slider2_node:
+		slider2_node.hide()
+	if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1"):
+		root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1").hide()
+	if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2"):
+		root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2").hide()
+	if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider1"):
+		root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider1").hide()
+	
+	# Очистить поля ввода и сбросить слайдеры
+	if root.k_input:
+		root.k_input.clear()
+	if root.b_input:
+		root.b_input.clear()
+	if root.k_slider:
+		root.k_slider.value = 0.0
+	if root.b_slider:
+		root.b_slider.value = 0.0
+	
 	if root.k_value_label:
 		root.k_value_label.visible = false
 		root.k_value_label.text = ""
@@ -277,6 +310,10 @@ func generate_new_level():
 
 	var lvl_type = get_level_type(root.level)
 	print("Тип уровня:", lvl_type)
+	
+	# Объявить переменные для кнопок один раз
+	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1")
+	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2")
 
 	var valid_correct_func = ""
 	var used_slider_generator = false
@@ -316,6 +353,11 @@ func generate_new_level():
 	if lvl_type == LevelType.DOUBLE_LINEAR:
 		var double_module = root.double_linear_module
 		if double_module:
+			# Hide Buttons1 and Buttons2 containers
+			if buttons1_node:
+				buttons1_node.hide()
+			if buttons2_node:
+				buttons2_node.hide()
 			var state = double_module.prepare_new_level(valid_correct_func)
 			current_correct_func = state.primary
 			current_correct_func_b = state.secondary
@@ -334,25 +376,32 @@ func generate_new_level():
 		for cb in root.option_check_buttons:
 			cb.hide()
 			cb.disabled = true
+		# Hide Buttons1 and Buttons2 containers
+		if buttons1_node:
+			buttons1_node.hide()
+		if buttons2_node:
+			buttons2_node.hide()
 		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
 			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
 		if root.build_button:
 			root.build_button.disabled = false
 
+		# INPUT_LINEAR: показываем новый InputPanel2, скрываем оба Slider контейнера
 		if root.k_input:
 			root.k_input.clear()
 		if root.b_input:
 			root.b_input.clear()
-		if root.k_input:
-			root.k_input.visible = true
-		if root.b_input:
-			root.b_input.visible = true
-		if root.k_slider:
-			root.k_slider.visible = false
-		if root.b_slider:
-			root.b_slider.visible = false
+		var input_panel2_l = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2")
+		if input_panel2_l:
+			input_panel2_l.show()
+		if root.input_panel:
+			root.input_panel.hide()
+		# спрятать старый Slider и новый Slider2
 		if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider"):
-			root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider").visible = false
+			root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider").hide()
+		var slider2_l = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider2")
+		if slider2_l:
+			slider2_l.hide()
 		if root.k_slider_label:
 			root.k_slider_label.visible = false
 		if root.b_slider_label:
@@ -367,7 +416,6 @@ func generate_new_level():
 		if root.b_value_label:
 			root.b_value_label.visible = false
 			root.b_value_label.text = ""
-		root.input_panel.visible = true
 		var expr = Expression.new()
 		if expr.parse(current_correct_func, ["x"]) == OK:
 			print("[LevelGen] setup_level_positions using input-linear func:", current_correct_func)
@@ -378,6 +426,11 @@ func generate_new_level():
 		for cb in root.option_check_buttons:
 			cb.hide()
 			cb.disabled = true
+		# Hide Buttons1 and Buttons2 containers
+		if buttons1_node:
+			buttons1_node.hide()
+		if buttons2_node:
+			buttons2_node.hide()
 		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
 			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
 		if root.k_value_label:
@@ -427,18 +480,28 @@ func generate_new_level():
 		_save_current_level(lvl_type, level_seed)
 
 	else:
+		# Обычные уровни: скрываем инпуты и слайдеры, показываем варианты Buttons1
 		root.input_panel.visible = false
+		var input_panel2_e = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2")
+		if input_panel2_e:
+			input_panel2_e.hide()
+		var slider2_e = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider2")
+		if slider2_e:
+			slider2_e.hide()
+		if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider"):
+			root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider").hide()
 		if root.build_button:
 			root.build_button.disabled = false
+		
 		# Показать Buttons1 для обычных уровней
-		var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
 		if buttons1_node:
 			buttons1_node.show()
-			for cb in root.option_check_buttons:
-				if cb:
-					cb.disabled = false
+			# Сначала скрыть все OptionX
+			for i in range(3):
+				var option_node = buttons1_node.get_node_or_null("Option" + str(i))
+				if option_node:
+					option_node.visible = false
 		# Скрыть Buttons2 для обычных уровней
-		var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
 		if buttons2_node:
 			buttons2_node.hide()
 
@@ -454,15 +517,24 @@ func generate_new_level():
 			print("[LevelGen] setup_level_positions using generated func:", valid_correct_func)
 			root.utils.setup_level_positions(expr)
 
-		var button_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0/FormulaLabel")
-		if button_node:
-			button_node.text = root.utils.format_function_from_string(options[0])
-		var button2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1/FormulaLabel")
-		if button2_node:
-			button2_node.text = root.utils.format_function_from_string(options[1])
-		var button3_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2/FormulaLabel")
-		if button3_node:
-			button3_node.text = root.utils.format_function_from_string(options[2])
+		# Показать только нужные варианты и обновить тексты
+		if buttons1_node:
+			for i in range(min(3, options.size())):
+				var option_node = buttons1_node.get_node_or_null("Option" + str(i))
+				if option_node:
+					option_node.visible = true
+					# Показать дочерние элементы
+					for child in option_node.get_children():
+						if child is CanvasItem:
+							child.visible = true
+					# Обновить текст и сбросить чекбокс
+					var label = option_node.get_node_or_null("FormulaLabel")
+					if label:
+						label.text = root.utils.format_function_from_string(options[i])
+					var cb = option_node.get_node_or_null("CheckButton")
+					if cb:
+						cb.button_pressed = false
+						cb.disabled = false
 		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
 			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
 
@@ -610,6 +682,11 @@ func reset_current_level():
 		for cb in root.option_check_buttons:
 			if cb:
 				cb.button_pressed = false
+	# Снять все галочки с CheckButton в Buttons2 при перезапуске уровня
+	if root.option_buttons2:
+		for cb in root.option_buttons2:
+			if cb:
+				cb.button_pressed = false
 	# Показать ForwardButton при перезапуске
 	if root.forward_button:
 		root.forward_button.disabled = false
@@ -631,17 +708,32 @@ func reset_current_level():
 	
 	var lvl_type = get_level_type(root.level)
 	if lvl_type == LevelType.INPUT_LINEAR:
+		# Очистить поля InputPanel2
 		if root.k_input:
 			root.k_input.clear()
 		if root.b_input:
 			root.b_input.clear()
-		root.forward_button_input.hide()
+		if root.forward_button_input:
+			root.forward_button_input.hide()
 	elif lvl_type == LevelType.INPUT_SLIDER:
+		# Сбросить слайдеры Slider2
 		if root.k_slider:
 			root.k_slider.value = 0.0
 		if root.b_slider:
 			root.b_slider.value = 0.0
-		root.forward_button_input.hide()
+		if root.forward_button_input:
+			root.forward_button_input.hide()
+	
+	# Всегда очищать поля InputPanel2 и Slider2 при сбросе уровня
+	if root.k_input:
+		root.k_input.clear()
+	if root.b_input:
+		root.b_input.clear()
+	if root.k_slider:
+		root.k_slider.value = 0.0
+	if root.b_slider:
+		root.b_slider.value = 0.0
+	
 	root.track.visible = false
 	if root.track2:
 		root.track2.visible = false

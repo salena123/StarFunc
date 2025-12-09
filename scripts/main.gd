@@ -20,35 +20,36 @@ var level_saver
 @onready var line2d2 = $track2/Line2D
 @onready var forward_button = get_node_or_null("UI/BottomLayout/Panel/Items/ForwardButton")
 @onready var option_check_buttons = [
-	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0/CheckButton"),
-	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1/CheckButton"),
-	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2/CheckButton")
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option0/CheckButton"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option1/CheckButton"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option2/CheckButton")
 ]
 @onready var option_formula_labels = [
-	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0/FormulaLabel"),
-	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1/FormulaLabel"),
-	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2/FormulaLabel")
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option0/FormulaLabel"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option1/FormulaLabel"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option2/FormulaLabel")
 ]
 @onready var option_buttons = [
-	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option0/CheckButton"),
-	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option1/CheckButton"),
-	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1/Option2/CheckButton")
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option0/CheckButton"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option1/CheckButton"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option2/CheckButton")
 ]
 @onready var option_buttons2 = [
-	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option0/CheckButton"),
-	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option1/CheckButton"),
-	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2/Option2/CheckButton")
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option0/CheckButton"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option1/CheckButton"),
+	get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option2/CheckButton")
 ]
-@onready var input_panel = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel")
-@onready var k_input = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/KInput")
-@onready var b_input = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/BInput")
-@onready var k_slider = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/KSlider")
-@onready var k_value_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/KLabel")
-@onready var b_slider = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/BSlider")
-@onready var b_value_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/BLabel")
+@onready var input_panel = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2")
+## Старые input/slider узлы больше не используются напрямую, но свойства
+## k_value_label / b_value_label всё ещё дергаются из других скриптов.
+## Поэтому ниже мы переназначаем их на новые лейблы из Slider2.
+#@onready var k_input = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/KInput")
+#@onready var b_input = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/BInput")
+#@onready var k_slider = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/KSlider")
+#@onready var b_slider = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/BSlider")
 @onready var build_button = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/BuildButton")
-@onready var forward_button_input = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/ForwardButtonInput")
-@onready var error_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/ErrorLabel")
+@onready var forward_button_input = get_node_or_null("$UI/BottomLayout/Panel/Items/ForwardButton")
+
 @onready var restart = $UI/Restart
 @onready var timer_label: Label = $UI/TimerContainer/ContentHBox/Label
 # Исходная высота нижней панели с ответами, чтобы при разворачивании
@@ -60,10 +61,22 @@ var _bottom_panel_full_height: float = 0.0
 
 # Флаг, чтобы не реагировать на сигналы CheckButton, когда мы меняем их состояние из кода
 var _suppress_check_signal := false
-@onready var k_slider_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/KLabel")
-@onready var b_slider_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/BLabel")
 @onready var x_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/XLabel")
 @onready var y_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider/YLabel")
+
+@onready var k_slider = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider2/K/KSlider")
+@onready var k_slider_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider2/K/KLabelValue")
+@onready var b_slider = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider2/B/BSlider")
+@onready var b_slider_label = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider2/B/BLabelValue")
+
+@onready var k_input = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2/K/KLineEdit")
+@onready var b_input = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2/B/BLineEdit")
+
+# Совместимость: другие скрипты обращаются к k_value_label/b_value_label,
+# поэтому даём им ссылку на те же узлы, что и k_slider_label/b_slider_label.
+@onready var k_value_label = k_slider_label
+@onready var b_value_label = b_slider_label
+
 
 var score: int = 0
 var level: int = 1
@@ -159,16 +172,14 @@ func _ready():
 			cb.button_pressed = false
 	_suppress_check_signal = false
 	# Скрыть все контейнеры кнопок при старте
-	var buttons1_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
+	var buttons1_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1")
 	if buttons1_node:
 		buttons1_node.hide()
-	var buttons2_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
+	var buttons2_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2")
 	if buttons2_node:
 		buttons2_node.hide()
 	
 	level_gen.generate_new_level()
-	build_button.pressed.connect(func():
-		utils.on_build_button_pressed(self, k_input, b_input, track_drawer, track, forward_button_input, level_gen))
 	
 	
 func _process(_delta):
@@ -232,85 +243,94 @@ func print_scene_info():
 		print("Star", i + 1, ":", stars[i].global_position)
 
 func setup_sliders():
-	# === K SLIDER ===
-	if not has_node("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/KSlider"):
-		var k_slider_node = HSlider.new()
-		k_slider_node.name = "KSlider"
-		k_slider_node.min_value = -1.5
-		k_slider_node.max_value = 1.5
-		k_slider_node.step = 0.1
-		k_slider_node.value = 0.0
-		k_slider_node.position = Vector2(42, 25)
-		k_slider_node.size = Vector2(100, 20)
-		get_node("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel").add_child(k_slider_node)
-		k_slider = k_slider_node
-	else:
-		k_slider = get_node("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/KSlider")
+	# Слайдеры уже есть в сцене (Slider2): настраиваем диапазоны и сигналы
+	if k_slider:
 		k_slider.min_value = -1.5
 		k_slider.max_value = 1.5
-
-	# === B SLIDER ===
-	if not has_node("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/BSlider"):
-		var b_slider_node = HSlider.new()
-		b_slider_node.name = "BSlider"
-		b_slider_node.min_value = -10.0
-		b_slider_node.max_value = 10.0
-		b_slider_node.step = 0.1
-		b_slider_node.value = 0.0
-		b_slider_node.position = Vector2(149, 25)
-		b_slider_node.size = Vector2(100, 20)
-		get_node("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel").add_child(b_slider_node)
-		b_slider = b_slider_node
-	else:
-		b_slider = get_node("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel/BSlider")
-		b_slider.min_value = -10.0
-		b_slider.max_value = 10.0
-
-	# === Connect ===
-	if k_slider:
-		k_slider.value_changed.connect(_on_k_slider_changed)
+		k_slider.step = 0.1
+		if not k_slider.value_changed.is_connected(_on_k_slider_changed):
+			k_slider.value_changed.connect(_on_k_slider_changed)
 
 	if b_slider:
-		b_slider.value_changed.connect(_on_b_slider_changed)
+		b_slider.min_value = -10.0
+		b_slider.max_value = 10.0
+		b_slider.step = 0.1
+		if not b_slider.value_changed.is_connected(_on_b_slider_changed):
+			b_slider.value_changed.connect(_on_b_slider_changed)
+
+	# Подключаем поля ввода k/b из InputPanel2
+	if k_input and not k_input.text_changed.is_connected(_on_k_input_changed):
+		k_input.text_changed.connect(_on_k_input_changed)
+	if b_input and not b_input.text_changed.is_connected(_on_b_input_changed):
+		b_input.text_changed.connect(_on_b_input_changed)
+
+	# Начальные значения в метках
+	if k_slider and k_slider_label:
+		k_slider_label.text = utils.format_number(k_slider.value)
+	if b_slider and b_slider_label:
+		b_slider_label.text = utils.format_number(b_slider.value)
 
 
 func _on_k_slider_changed(value: float):
-	var lvl_type = level_gen.get_level_type(level)
-	if lvl_type == level_gen.LevelType.INPUT_SLIDER:
-		var formatted_value = utils.format_number(value)
-
-		if k_slider_label:
-			k_slider_label.text = formatted_value
+	# Обновляем текст и график при любом изменении слайдера
+	var formatted_value = utils.format_number(value)
+	if k_slider_label:
+		k_slider_label.text = formatted_value
+	redraw_input_graph()
 
 
 func _on_b_slider_changed(value: float):
-	if level_gen.get_level_type(level) == level_gen.LevelType.INPUT_SLIDER:
-		if b_slider_label:
-			b_slider_label.text = utils.format_number(value)
+	var formatted_value = utils.format_number(value)
+	if b_slider_label:
+		b_slider_label.text = formatted_value
+	redraw_input_graph()
 
 
 func _on_k_input_changed(new_text: String):
-	var lvl_type = level_gen.get_level_type(level)
-	if lvl_type == level_gen.LevelType.INPUT_SLIDER and k_slider and k_slider.visible:
-		if new_text != "":
-			if new_text.is_valid_float() or new_text.is_valid_int():
-				var val = float(new_text)
-				val = clamp(val, k_slider.min_value, k_slider.max_value)
-				k_slider.value = val
+	if new_text == "":
+		return
+	if not new_text.is_valid_float() and not new_text.is_valid_int():
+		return
+	var val = float(new_text)
+	if k_slider:
+		val = clamp(val, k_slider.min_value, k_slider.max_value)
+		k_slider.value = val
+	if k_slider_label:
+		k_slider_label.text = utils.format_number(val)
+	redraw_input_graph()
+
 
 func _on_b_input_changed(new_text: String):
-	var lvl_type = level_gen.get_level_type(level)
-	if lvl_type == level_gen.LevelType.INPUT_SLIDER and b_slider and b_slider.visible:
-		if new_text != "":
-			if new_text.is_valid_float() or new_text.is_valid_int():
-				var val = float(new_text)
-				val = clamp(val, b_slider.min_value, b_slider.max_value)
-				b_slider.value = val
+	if new_text == "":
+		return
+	if not new_text.is_valid_float() and not new_text.is_valid_int():
+		return
+	var val = float(new_text)
+	if b_slider:
+		val = clamp(val, b_slider.min_value, b_slider.max_value)
+		b_slider.value = val
+	if b_slider_label:
+		b_slider_label.text = utils.format_number(val)
+	redraw_input_graph()
+
+
+func redraw_input_graph():
+	if not k_slider or not b_slider:
+		return
+	var k_val = k_slider.value
+	var b_val = b_slider.value
+	var func_str = str(k_val) + "*x + " + str(b_val)
+	var expr = Expression.new()
+	if expr.parse(func_str, ["x"]) == OK:
+		track_drawer.draw_track(func_str)
+		track.visible = true
+	else:
+		print("Ошибка парсинга функции из слайдеров: ", func_str)
 
 func setup_ui_buttons():
 	setup_check_buttons()
 	# Подключение CheckButton для DOUBLE_LINEAR режима
-	var buttons1_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
+	var buttons1_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1")
 	if buttons1_node:
 		if buttons1_node.get_node_or_null("Option0/CheckButton"):
 			buttons1_node.get_node("Option0/CheckButton").toggled.connect(func(pressed):
@@ -328,21 +348,42 @@ func setup_ui_buttons():
 					select_option(2, 0)
 			)
 	
-	var buttons2_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
+	var buttons2_node = get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2")
 	if buttons2_node:
 		if buttons2_node.get_node_or_null("Option0/CheckButton"):
 			buttons2_node.get_node("Option0/CheckButton").toggled.connect(func(pressed):
 				if pressed:
+					# Выключаем остальные чекбоксы в Buttons2
+					_suppress_check_signal = true
+					if buttons2_node.get_node_or_null("Option1/CheckButton"):
+						buttons2_node.get_node("Option1/CheckButton").button_pressed = false
+					if buttons2_node.get_node_or_null("Option2/CheckButton"):
+						buttons2_node.get_node("Option2/CheckButton").button_pressed = false
+					_suppress_check_signal = false
 					select_option(0, 1)
 			)
 		if buttons2_node.get_node_or_null("Option1/CheckButton"):
 			buttons2_node.get_node("Option1/CheckButton").toggled.connect(func(pressed):
 				if pressed:
+					# Выключаем остальные чекбоксы в Buttons2
+					_suppress_check_signal = true
+					if buttons2_node.get_node_or_null("Option0/CheckButton"):
+						buttons2_node.get_node("Option0/CheckButton").button_pressed = false
+					if buttons2_node.get_node_or_null("Option2/CheckButton"):
+						buttons2_node.get_node("Option2/CheckButton").button_pressed = false
+					_suppress_check_signal = false
 					select_option(1, 1)
 			)
 		if buttons2_node.get_node_or_null("Option2/CheckButton"):
 			buttons2_node.get_node("Option2/CheckButton").toggled.connect(func(pressed):
 				if pressed:
+					# Выключаем остальные чекбоксы в Buttons2
+					_suppress_check_signal = true
+					if buttons2_node.get_node_or_null("Option0/CheckButton"):
+						buttons2_node.get_node("Option0/CheckButton").button_pressed = false
+					if buttons2_node.get_node_or_null("Option1/CheckButton"):
+						buttons2_node.get_node("Option1/CheckButton").button_pressed = false
+					_suppress_check_signal = false
 					select_option(2, 1)
 			)
 	
@@ -392,6 +433,57 @@ func _on_check_toggled(pressed: bool, index: int):
 				if child is CollisionShape2D:
 					child.queue_free()
 		if track2:
+			track2.visible = false
+			if line2d2:
+				line2d2.points = PackedVector2Array()
+			for child2 in track2.get_children():
+				if child2 is CollisionShape2D:
+					child2.queue_free()
+
+func _on_double_linear_check_toggled(pressed: bool, index: int, group: int):
+	# Игнорируем сигналы, когда мы сами программно меняем чекбоксы
+	if _suppress_check_signal:
+		return
+	# После нажатия ForwardButton запрещаем включать новые графики,
+	# но разрешаем выключать текущий, чтобы убрать его со сцены
+	if first_selection_done and pressed:
+		return
+	var func_str = ""
+	if group == 0:
+		func_str = level_gen.get_option_for_group(0, index)
+	else:
+		func_str = level_gen.get_option_for_group(1, index)
+	if func_str == "":
+		return
+	if pressed:
+		# Выключаем остальные CheckButton в той же группе
+		_suppress_check_signal = true
+		var target_buttons = option_buttons if group == 0 else option_buttons2
+		for i in range(target_buttons.size()):
+			if i == index:
+				continue
+			var other_cb = target_buttons[i]
+			if other_cb:
+				other_cb.button_pressed = false
+		_suppress_check_signal = false
+		
+		# Рисуем график для выбранной функции
+		if group == 0:
+			track_drawer.draw_track(func_str)
+			track.visible = true
+		else:
+			track_drawer.draw_track_secondary(func_str)
+			track2.visible = true
+	else:
+		# Полностью убираем текущий график: и визуально, и физически
+		if group == 0 and track:
+			track.visible = false
+			if line2d:
+				line2d.points = PackedVector2Array()
+			for child in track.get_children():
+				if child is CollisionShape2D:
+					child.queue_free()
+		elif group == 1 and track2:
 			track2.visible = false
 			if line2d2:
 				line2d2.points = PackedVector2Array()
