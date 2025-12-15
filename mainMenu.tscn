@@ -1,0 +1,264 @@
+[gd_scene load_steps=17 format=3 uid="uid://cxhoiefppvdor"]
+
+[ext_resource type="Script" uid="uid://cl02wlv6cd3uh" path="res://scripts/ui/main_menu.gd" id="1_fy5us"]
+[ext_resource type="Texture2D" uid="uid://d1dgyyrgvmgbr" path="res://main menu/фон.svg" id="1_wut1r"]
+[ext_resource type="Texture2D" uid="uid://2curnyiogkg3" path="res://main menu/Title.svg" id="2_wc2lj"]
+[ext_resource type="Texture2D" uid="uid://blbyw7qyyd3k1" path="res://main menu/button.svg" id="3_wked4"]
+[ext_resource type="Texture2D" uid="uid://ctkg625xlub0y" path="res://main menu/MainName.svg" id="4_0ei6b"]
+[ext_resource type="Texture2D" uid="uid://bvv1vdriw0o15" path="res://main menu/buttonPressed.svg" id="4_wked4"]
+[ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="6_c3jr6"]
+[ext_resource type="FontFile" uid="uid://c2c6tvuqa22ne" path="res://main menu/KleeOne-Regular.ttf" id="7_fy5us"]
+[ext_resource type="FontFile" uid="uid://cff6wwsmyyo52" path="res://main menu/KleeOne-SemiBold.ttf" id="8_o0ref"]
+[ext_resource type="Texture2D" uid="uid://bd0iam6ugaond" path="res://main menu/Group 1000007240.svg" id="9_o0ref"]
+[ext_resource type="Texture2D" uid="uid://cb6cer1nlmw6j" path="res://main menu/Group 1000007236.svg" id="11_qyr6b"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_83s16"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wc2lj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wked4"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_c3jr6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hvu0j"]
+
+[node name="mainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_fy5us")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("CanvasTexture_83s16")
+stretch_mode = 6
+
+[node name="TextureRect" type="TextureRect" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_wut1r")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.05
+anchor_right = 0.95
+anchor_bottom = 0.95
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+clip_contents = true
+layout_mode = 2
+theme_override_constants/separation = 100
+
+[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.7
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wc2lj")
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/Panel"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -233.19376
+offset_top = -84.017876
+offset_right = 233.19376
+offset_bottom = 84.017876
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_wc2lj")
+expand_mode = 5
+stretch_mode = 5
+
+[node name="TextureRect2" type="TextureRect" parent="MarginContainer/VBoxContainer/Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.45
+anchor_right = 0.5
+anchor_bottom = 0.45
+offset_left = -157.0
+offset_top = -25.147064
+offset_right = 157.0
+offset_bottom = 25.147064
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_0ei6b")
+expand_mode = 5
+stretch_mode = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.2
+theme_override_constants/separation = 100
+
+[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wked4")
+
+[node name="PlayButton" type="TextureButton" parent="MarginContainer/VBoxContainer/VBoxContainer/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -195.11249
+offset_top = -54.009384
+offset_right = 195.11249
+offset_bottom = 49.34999
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("3_wked4")
+texture_pressed = ExtResource("4_wked4")
+stretch_mode = 5
+
+[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer/VBoxContainer/Panel/PlayButton"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.767
+offset_bottom = 0.008979797
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 10
+theme_override_fonts/normal_font = ExtResource("7_fy5us")
+theme_override_fonts/bold_font = ExtResource("8_o0ref")
+theme_override_font_sizes/normal_font_size = 70
+theme_override_font_sizes/bold_font_size = 50
+bbcode_enabled = true
+text = "[b]Играть
+"
+tab_size = 1
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Panel2" type="Panel" parent="MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wked4")
+
+[node name="xButton" type="TextureButton" parent="MarginContainer/VBoxContainer/VBoxContainer/Panel2"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -195.11249
+offset_top = -54.009384
+offset_right = 195.11249
+offset_bottom = 48.34999
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("3_wked4")
+texture_pressed = ExtResource("4_wked4")
+stretch_mode = 5
+
+[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer/VBoxContainer/Panel2/xButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -25.159393
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 10
+theme_override_fonts/normal_font = ExtResource("7_fy5us")
+theme_override_fonts/bold_font = ExtResource("8_o0ref")
+theme_override_font_sizes/normal_font_size = 70
+theme_override_font_sizes/bold_font_size = 50
+bbcode_enabled = true
+text = "[b]M
+"
+tab_size = 1
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Panel2" type="Panel" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxEmpty_c3jr6")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Panel2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -48.150024
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 5
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.4
+theme_override_constants/separation = 50
+
+[node name="Panel2" type="Panel" parent="MarginContainer/VBoxContainer/Panel2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxEmpty_hvu0j")
+
+[node name="SettingsButton" type="TextureButton" parent="MarginContainer/VBoxContainer/Panel2/HBoxContainer/Panel2"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -100.850006
+offset_bottom = 105.0
+grow_horizontal = 0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.6
+texture_normal = ExtResource("9_o0ref")
+texture_pressed = ExtResource("6_c3jr6")
+stretch_mode = 5
+
+[node name="Panel4" type="Panel" parent="MarginContainer/VBoxContainer/Panel2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxEmpty_hvu0j")
+
+[node name="TextureButton2" type="TextureButton" parent="MarginContainer/VBoxContainer/Panel2/HBoxContainer/Panel4"]
+layout_mode = 1
+offset_right = 100.850006
+offset_bottom = 105.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.6
+texture_normal = ExtResource("11_qyr6b")
+texture_pressed = ExtResource("6_c3jr6")
+stretch_mode = 5
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/VBoxContainer/Panel/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Panel2/HBoxContainer/Panel2/SettingsButton" to="." method="_on_settings_button_pressed"]

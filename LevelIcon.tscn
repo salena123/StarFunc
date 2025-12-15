@@ -1,0 +1,81 @@
+[gd_scene load_steps=9 format=3 uid="uid://d4cymg4ywawnr"]
+
+[ext_resource type="Texture2D" uid="uid://btn0q05vk47b4" path="res://main menu/Group 1000007203 (2).svg" id="1_xwiqk"]
+[ext_resource type="Script" uid="uid://t0ftdc78uta8" path="res://scripts/ui/level_icon.gd" id="2_l7ty2"]
+[ext_resource type="FontFile" uid="uid://cff6wwsmyyo52" path="res://main menu/KleeOne-SemiBold.ttf" id="3_0vkdr"]
+[ext_resource type="Texture2D" uid="uid://3d7vupxr18ub" path="res://main menu/Group 1000007243.svg" id="3_l7ty2"]
+[ext_resource type="Texture2D" uid="uid://cstsshs2k40ki" path="res://main menu/Vector.svg" id="4_gjpoj"]
+[ext_resource type="Texture2D" uid="uid://urem1it2h053" path="res://main menu/Group 12620.svg" id="5_gjpoj"]
+[ext_resource type="Texture2D" uid="uid://cf52qwr6v3paq" path="res://main menu/Group 12621.svg" id="6_4qjbx"]
+[ext_resource type="FontFile" uid="uid://c2c6tvuqa22ne" path="res://main menu/KleeOne-Regular.ttf" id="7_4qjbx"]
+
+[node name="LevelIcon" type="Node2D"]
+script = ExtResource("2_l7ty2")
+star_filled = ExtResource("3_l7ty2")
+star_empty = ExtResource("4_gjpoj")
+lock_texture = ExtResource("1_xwiqk")
+tex_star1_2 = ExtResource("5_gjpoj")
+tex_star3 = ExtResource("6_4qjbx")
+
+[node name="LevelIcon1" type="TextureButton" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -42.0
+offset_top = -42.0
+offset_right = 42.0
+offset_bottom = 42.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("1_xwiqk")
+stretch_mode = 5
+
+[node name="LevelNumber" type="RichTextLabel" parent="LevelIcon1"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.50600004
+anchor_top = 0.36900002
+anchor_right = 0.50600004
+anchor_bottom = 0.36900002
+offset_left = -28.004005
+offset_top = -23.496002
+offset_right = 25.495995
+offset_bottom = 26.503998
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("7_4qjbx")
+theme_override_fonts/bold_font = ExtResource("3_0vkdr")
+theme_override_font_sizes/normal_font_size = 38
+theme_override_font_sizes/bold_font_size = 35
+bbcode_enabled = true
+text = "[b]1"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StarBox" type="HBoxContainer" parent="LevelIcon1"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.82100004
+anchor_right = 0.5
+anchor_bottom = 0.82100004
+offset_left = -28.5
+offset_top = -16.964005
+offset_right = 28.5
+offset_bottom = 0.035995483
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="star_1" type="TextureRect" parent="LevelIcon1/StarBox"]
+layout_mode = 2
+texture = ExtResource("4_gjpoj")
+
+[node name="star_2" type="TextureRect" parent="LevelIcon1/StarBox"]
+layout_mode = 2
+texture = ExtResource("4_gjpoj")
+
+[node name="star_3" type="TextureRect" parent="LevelIcon1/StarBox"]
+layout_mode = 2
+texture = ExtResource("4_gjpoj")
