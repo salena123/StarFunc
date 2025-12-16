@@ -30,8 +30,8 @@ func apply_ui(options_a: Array, options_b: Array):
 		root.build_button.disabled = false
 	
 	# Сначала скрыть все OptionX в обоих столбцах
-	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1")
-	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2")
+	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1")
+	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2")
 	
 	# Скрыть все в Buttons1
 	if buttons1_node:
@@ -39,7 +39,10 @@ func apply_ui(options_a: Array, options_b: Array):
 		for i in range(3):
 			var option_node = buttons1_node.get_node_or_null("Option" + str(i))
 			if option_node:
-				option_node.visible = false
+				if root and root.has_method("set_panel_section_active"):
+					root.set_panel_section_active(option_node, false)
+				else:
+					option_node.visible = false
 	
 	# Скрыть все в Buttons2
 	if buttons2_node:
@@ -47,14 +50,22 @@ func apply_ui(options_a: Array, options_b: Array):
 		for i in range(3):
 			var option_node = buttons2_node.get_node_or_null("Option" + str(i))
 			if option_node:
-				option_node.visible = false
+				if root and root.has_method("set_panel_section_active"):
+					root.set_panel_section_active(option_node, false)
+				else:
+					option_node.visible = false
 	
 	# Показать только нужные варианты в Buttons1
 	if buttons1_node:
 		for i in range(min(3, options_a.size())):
 			var option_node = buttons1_node.get_node_or_null("Option" + str(i))
 			if option_node:
-				option_node.visible = true
+				if option_node is Control:
+					(option_node as Control).mouse_filter = Control.MOUSE_FILTER_PASS
+				if root and root.has_method("set_panel_section_active"):
+					root.set_panel_section_active(option_node, true)
+				else:
+					option_node.visible = true
 				# Показать дочерние элементы
 				for child in option_node.get_children():
 					if child is CanvasItem:
@@ -66,6 +77,12 @@ func apply_ui(options_a: Array, options_b: Array):
 				var cb = option_node.get_node_or_null("CheckButton")
 				if cb:
 					cb.button_pressed = false
+					if cb is CanvasItem:
+						(cb as CanvasItem).visible = true
+						(cb as CanvasItem).modulate.a = 1.0
+					if cb is Control:
+						(cb as Control).mouse_filter = Control.MOUSE_FILTER_STOP
+						(cb as Control).focus_mode = Control.FOCUS_ALL
 					cb.disabled = false
 	
 	# Показать только нужные варианты в Buttons2
@@ -73,7 +90,12 @@ func apply_ui(options_a: Array, options_b: Array):
 		for i in range(min(3, options_b.size())):
 			var option_node = buttons2_node.get_node_or_null("Option" + str(i))
 			if option_node:
-				option_node.visible = true
+				if option_node is Control:
+					(option_node as Control).mouse_filter = Control.MOUSE_FILTER_PASS
+				if root and root.has_method("set_panel_section_active"):
+					root.set_panel_section_active(option_node, true)
+				else:
+					option_node.visible = true
 				# Показать дочерние элементы
 				for child in option_node.get_children():
 					if child is CanvasItem:
@@ -85,10 +107,15 @@ func apply_ui(options_a: Array, options_b: Array):
 				var cb = option_node.get_node_or_null("CheckButton")
 				if cb:
 					cb.button_pressed = false
+					if cb is CanvasItem:
+						(cb as CanvasItem).visible = true
+						(cb as CanvasItem).modulate.a = 1.0
+					if cb is Control:
+						(cb as Control).mouse_filter = Control.MOUSE_FILTER_STOP
+						(cb as Control).focus_mode = Control.FOCUS_ALL
 					cb.disabled = false
 	
-	if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
-		root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
+	# Answers container stays in layout; section visibility is managed by root.apply_bottom_ui_for_level_type
 
 
 func draw_tracks(primary_func: String, secondary_func: String):
@@ -337,9 +364,9 @@ func _set_button_texts(buttons: Array, values: Array):
 			if buttons[i].get_parent() and buttons[i].get_parent().get_parent():
 				grandparent_name = buttons[i].get_parent().get_parent().name  # Buttons1 or Buttons2
 			if grandparent_name == "Buttons1":
-				path = "UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option" + str(i) + "/FormulaLabel"
+				path = "UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option" + str(i) + "/FormulaLabel"
 			else:
-				path = "UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option" + str(i) + "/FormulaLabel"
+				path = "UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2/Option" + str(i) + "/FormulaLabel"
 			var label = root.get_node_or_null(path)
 			if label:
 				label.text = root.utils.format_function_from_string(values[i])

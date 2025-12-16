@@ -22,26 +22,57 @@ enum LevelType {
 	DOUBLE_LINEAR   # два графика
 }
 
+func level_type_to_name(lvl_type: int) -> String:
+	for k in LevelType.keys():
+		if int(LevelType[k]) == int(lvl_type):
+			return str(k)
+	return str(lvl_type)
+
+var TaskText = {
+	"SIMPLE": "задание для увроня SIMPLE",
+	"VARY_B": "задание для увроня VARY_B",
+	"VARY_K": "задание для увроня VARY_K",
+	"INPUT_LINEAR": "задание для увроня INPUT_LINEAR",
+	"INPUT_SLIDER": "задание для увроня INPUT_SLIDER",
+	"DOUBLE_LINEAR": "задание для увроня DOUBLE_LINEAR",
+	"QUADRATIC": "задание для увроня QUADRATIC",
+	"TRIG": "задание для увроня TRIG",
+}
+
+func _apply_task_text_for_level_type(lvl_type: int) -> void:
+	if root == null:
+		return
+	var label = root.get_node_or_null("UI/BottomLayout/Items/Items/HBoxContainer/Label")
+	if label == null:
+		return
+	var key := level_type_to_name(int(lvl_type))
+	var text_val := ""
+	if TaskText.has(key):
+		text_val = str(TaskText[key])
+	else:
+		text_val = str(key)
+	label.text = text_val
+
 func init(r):
 	root = r
 	if root.utils:
 		root.utils.calc_base_unit()
 
 func get_level_type(level: int) -> LevelType:
-	if level == 1:  # Уровень 14 точно будет INPUT_LINEAR для теста
-		return LevelType.INPUT_LINEAR
-	elif level <= 3: 
+	if level <= 3: 
 		return LevelType.SIMPLE
-	elif level <= 6:
+	elif level <= 6: 
 		return LevelType.VARY_B
 	elif level <= 9:
 		return LevelType.VARY_K
-	elif level <= 13:  # Временно расширим до 13 для теста
+	elif level <= 12:
 		return LevelType.INPUT_LINEAR
-	elif level <= 15:
+	elif level <= 15: 
 		return LevelType.INPUT_SLIDER
 	elif level <= 18:
 		return LevelType.DOUBLE_LINEAR
+	elif level <= 21:
+		return LevelType.QUADRATIC
 	elif level <= 35:
 		return LevelType.TRIG
 	else:
@@ -60,7 +91,12 @@ func load_saved_level(level_number: int) -> bool:
 		print("Уровень ", level_number, " не найден в levels.json")
 		is_level_loaded_from_save = false
 		return false
-	print("Найден сохранённый уровень ", level_number, " (тип: ", level_data.level_type, ")")
+	var saved_type_str := ""
+	if "level_type_name" in level_data and str(level_data.level_type_name) != "":
+		saved_type_str = str(level_data.level_type_name)
+	else:
+		saved_type_str = level_type_to_name(int(level_data.level_type))
+	print("Найден сохранённый уровень ", level_number, " (тип: ", saved_type_str, ")")
 	
 	is_level_loaded_from_save = true
 	current_correct_func = level_data.correct_func
@@ -75,6 +111,10 @@ func load_saved_level(level_number: int) -> bool:
 	var saved_lvl_type = level_data.level_type
 	if saved_lvl_type == null:
 		saved_lvl_type = get_level_type(level_number)
+
+	if root.has_method("apply_bottom_ui_for_level_type"):
+		root.apply_bottom_ui_for_level_type(saved_lvl_type)
+	_apply_task_text_for_level_type(int(saved_lvl_type))
 	var expr = Expression.new()
 	if saved_lvl_type != LevelType.DOUBLE_LINEAR and expr.parse(current_correct_func, ["x"]) == OK:
 		print("[LevelGen] setup_level_positions using saved func:", current_correct_func)
@@ -82,10 +122,11 @@ func load_saved_level(level_number: int) -> bool:
 	
 	if saved_lvl_type == LevelType.INPUT_LINEAR:
 		for btn in root.option_buttons:
-			btn.hide()
+			if btn and btn is CanvasItem:
+				(btn as CanvasItem).visible = true
+				(btn as CanvasItem).modulate.a = 0.0
 		_show_buttons(root.option_buttons2, false)
-		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
-			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
+		# Answers container stays in layout; section visibility is managed by root.apply_bottom_ui_for_level_type
 		if root.build_button:
 			root.build_button.disabled = false
 		if root.k_input:
@@ -96,8 +137,8 @@ func load_saved_level(level_number: int) -> bool:
 			root.k_slider.visible = false
 		if root.b_slider:
 			root.b_slider.visible = false
-		if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider1"):
-			root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider1").visible = false
+		if root.has_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider1"):
+			root.get_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider1").visible = false
 		if root.k_slider_label:
 			root.k_slider_label.visible = false
 		if root.b_slider_label:
@@ -116,15 +157,7 @@ func load_saved_level(level_number: int) -> bool:
 	elif saved_lvl_type == LevelType.INPUT_SLIDER:
 		if root.input_slider_module:
 			root.input_slider_module.setup_ui_with_function(current_correct_func)
-			# Показать новый Slider2, скрыть InputPanel/InputPanel2
-			var slider2 = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider2")
-			if slider2:
-				slider2.show()
-			if root.input_panel:
-				root.input_panel.hide()
-			var input_panel2 = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2")
-			if input_panel2:
-				input_panel2.hide()
+			# Section visibility is managed by root.apply_bottom_ui_for_level_type
 			if root.k_value_label:
 				root.k_value_label.visible = true
 			if root.b_value_label:
@@ -133,10 +166,11 @@ func load_saved_level(level_number: int) -> bool:
 				root.refresh_input_slider_value_labels()
 		else:
 			for cb in root.option_check_buttons:
-				cb.hide()
+				if cb and cb is CanvasItem:
+					(cb as CanvasItem).visible = true
+					(cb as CanvasItem).modulate.a = 0.0
 				cb.disabled = true
-			if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
-				root.get_node("UI/BottomLayout/Panel/Items/Answers").hide()
+			# Answers container stays in layout; section visibility is managed by root.apply_bottom_ui_for_level_type
 			if root.build_button:
 				root.build_button.disabled = false
 			if root.k_slider:
@@ -157,8 +191,8 @@ func load_saved_level(level_number: int) -> bool:
 				root.k_slider.visible = true
 			if root.b_slider:
 				root.b_slider.visible = true
-			if root.has_node("UI/BottomLayout/Panel/Items/Answers/Slider"):
-				root.get_node("UI/BottomLayout/Panel/Items/Answers/Slider").visible = true
+			if root.has_node("UI/BottomLayout/Items/Items/Answers/Slider"):
+				root.get_node("UI/BottomLayout/Items/Items/Answers/Slider").visible = true
 			if root.x_label:
 				root.x_label.visible = false
 			if root.y_label:
@@ -195,47 +229,48 @@ func load_saved_level(level_number: int) -> bool:
 			push_warning("DOUBLE_LINEAR: module not initialized; cannot restore saved state")
 		return true
 	else:
-		root.input_panel.visible = false
+		if root.input_panel:
+			root.input_panel.visible = false
 		# Показать Buttons1 для обычных уровней
-		var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1")
+		var buttons1_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1")
 		if buttons1_node:
 			buttons1_node.show()
+			if root.has_method("set_panel_section_active"):
+				root.set_panel_section_active(buttons1_node, true)
 			for cb in root.option_check_buttons:
 				if cb:
 					cb.disabled = false
 		# Скрыть Buttons2 для обычных уровней
-		var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2")
+		var buttons2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2")
 		if buttons2_node:
-			buttons2_node.hide()
-		var button_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option0/FormulaLabel")
+			if root.has_method("set_panel_section_active"):
+				root.set_panel_section_active(buttons2_node, false)
+		var button_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option0/FormulaLabel")
 		if button_node:
 			button_node.text = root.utils.format_function_from_string(options[0])
-		var button2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option1/FormulaLabel")
+		var button2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option1/FormulaLabel")
 		if button2_node:
 			button2_node.text = root.utils.format_function_from_string(options[1])
-		var button3_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option2/FormulaLabel")
+		var button3_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option2/FormulaLabel")
 		if button3_node:
 			button3_node.text = root.utils.format_function_from_string(options[2])
-		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
-			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
+		# Answers container stays in layout; section visibility is managed by root.apply_bottom_ui_for_level_type
 	
 	return true
 
 
 func generate_new_level():
 	# Сначала скрыть все UI-элементы для чистого состояния
-	var input_panel2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2")
-	if input_panel2_node:
-		input_panel2_node.hide()
-	var slider2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider2")
-	if slider2_node:
-		slider2_node.hide()
-	if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1"):
-		root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1").hide()
-	if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2"):
-		root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2").hide()
-	if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider1"):
-		root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider1").hide()
+	if root.has_method("answers_panel_reset_and_hide"):
+		root.answers_panel_reset_and_hide()
+	# Clear legacy UI state BEFORE applying per-level composition
+	root.utils.clear_ui_before_level_load()
+	# Apply per-level UI composition (which section is active)
+	var lvl_type = get_level_type(root.level)
+	print(level_type_to_name(lvl_type))
+	_apply_task_text_for_level_type(int(lvl_type))
+	root.apply_bottom_ui_for_level_type(lvl_type)
+		
 	
 	# Очистить поля ввода и сбросить слайдеры
 	if root.k_input:
@@ -253,7 +288,6 @@ func generate_new_level():
 	if root.b_value_label:
 		root.b_value_label.visible = false
 		root.b_value_label.text = ""
-	root.utils.clear_ui_before_level_load()
 	_reset_slider_ui()
 	
 	# Сброс таймера в начале нового уровня
@@ -310,12 +344,13 @@ func generate_new_level():
 	seed(level_seed)
 	root.ball_side = Side.RIGHT if randi() % 2 == 0 else Side.LEFT
 
-	var lvl_type = get_level_type(root.level)
-	print("Тип уровня:", lvl_type)
+	# lvl_type already computed above
+	print("Тип уровня:", level_type_to_name(lvl_type))
 	
 	# Объявить переменные для кнопок один раз
-	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1")
-	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2")
+	var buttons_row_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow")
+	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1")
+	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2")
 
 	var valid_correct_func = ""
 	var used_slider_generator = false
@@ -355,11 +390,14 @@ func generate_new_level():
 	if lvl_type == LevelType.DOUBLE_LINEAR:
 		var double_module = root.double_linear_module
 		if double_module:
-			# Hide Buttons1 and Buttons2 containers
-			if buttons1_node:
-				buttons1_node.hide()
-			if buttons2_node:
-				buttons2_node.hide()
+			# Ensure ButtonsRow is active so options are visible.
+			if buttons_row_node and root.has_method("set_panel_section_active"):
+				root.set_panel_section_active(buttons_row_node, true)
+			# Keep Buttons1 and Buttons2 containers active; DOUBLE_LINEAR UI manages Option visibility.
+			if buttons1_node and root.has_method("set_panel_section_active"):
+				root.set_panel_section_active(buttons1_node, true)
+			if buttons2_node and root.has_method("set_panel_section_active"):
+				root.set_panel_section_active(buttons2_node, true)
 			var state = double_module.prepare_new_level(valid_correct_func)
 			current_correct_func = state.primary
 			current_correct_func_b = state.secondary
@@ -376,15 +414,19 @@ func generate_new_level():
 	elif lvl_type == LevelType.INPUT_LINEAR:
 		options = []
 		for cb in root.option_check_buttons:
-			cb.hide()
+			if cb and cb is CanvasItem:
+				(cb as CanvasItem).visible = true
+				(cb as CanvasItem).modulate.a = 0.0
 			cb.disabled = true
 		# Hide Buttons1 and Buttons2 containers
 		if buttons1_node:
-			buttons1_node.hide()
+			if root.has_method("set_panel_section_active"):
+				root.set_panel_section_active(buttons1_node, false)
 		if buttons2_node:
-			buttons2_node.hide()
-		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
-			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
+			if root.has_method("set_panel_section_active"):
+				root.set_panel_section_active(buttons2_node, false)
+		if root.has_node("UI/BottomLayout/Items/Items/Answers"):
+			root.get_node("UI/BottomLayout/Items/Items/Answers").show()
 		if root.build_button:
 			root.build_button.disabled = false
 
@@ -393,11 +435,12 @@ func generate_new_level():
 			root.k_input.clear()
 		if root.b_input:
 			root.b_input.clear()
-		var input_panel2_l = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2")
+		var input_panel2_l = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/InputPanel2")
 		if input_panel2_l:
 			print("[INPUT_LINEAR] InputPanel2 found")
 			print("[INPUT_LINEAR] InputPanel2 visible: ", input_panel2_l.visible)
-			input_panel2_l.show()
+			if root.has_method("set_panel_section_active"):
+				root.set_panel_section_active(input_panel2_l, true)
 			print("[INPUT_LINEAR] After show, InputPanel2 visible: ", input_panel2_l.visible)
 			
 			# Проверить видимость контейнеров K и B
@@ -435,11 +478,12 @@ func generate_new_level():
 		else:
 			print("[INPUT_LINEAR] InputPanel2 node not found!")
 		# спрятать старый Slider и новый Slider2
-		if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider"):
-			root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider").hide()
-		var slider2_l = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider2")
-		if slider2_l:
-			slider2_l.hide()
+		if root.has_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider"):
+			if root.has_method("set_panel_section_active"):
+				root.set_panel_section_active(root.get_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider"), false)
+		var slider2_l = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider2")
+		if slider2_l and root.has_method("set_panel_section_active"):
+			root.set_panel_section_active(slider2_l, false)
 		if root.k_slider_label:
 			root.k_slider_label.visible = false
 		if root.b_slider_label:
@@ -462,15 +506,19 @@ func generate_new_level():
 	elif lvl_type == LevelType.INPUT_SLIDER:
 		options = []
 		for cb in root.option_check_buttons:
-			cb.hide()
+			if cb and cb is CanvasItem:
+				(cb as CanvasItem).visible = true
+				(cb as CanvasItem).modulate.a = 0.0
 			cb.disabled = true
 		# Hide Buttons1 and Buttons2 containers
 		if buttons1_node:
-			buttons1_node.hide()
+			if root.has_method("set_panel_section_active"):
+				root.set_panel_section_active(buttons1_node, false)
 		if buttons2_node:
-			buttons2_node.hide()
-		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
-			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
+			if root.has_method("set_panel_section_active"):
+				root.set_panel_section_active(buttons2_node, false)
+		if root.has_node("UI/BottomLayout/Items/Items/Answers"):
+			root.get_node("UI/BottomLayout/Items/Items/Answers").show()
 		if root.k_value_label:
 			root.k_value_label.visible = true
 		if root.b_value_label:
@@ -503,8 +551,8 @@ func generate_new_level():
 				root.k_slider.visible = true
 			if root.b_slider:
 				root.b_slider.visible = true
-			if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider"):
-				root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider").visible = true
+			if root.has_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider"):
+				root.get_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider").visible = true
 			if root.x_label:
 				root.x_label.visible = false
 			if root.y_label:
@@ -519,17 +567,18 @@ func generate_new_level():
 
 	else:
 		# Обычные уровни: скрываем инпуты и слайдеры, показываем варианты Buttons1
-		root.input_panel.visible = false
-		var input_panel2_e = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/InputPanel2")
-		if input_panel2_e:
-			input_panel2_e.hide()
-		var slider2_e = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Slider2")
-		if slider2_e:
-			slider2_e.hide()
-		if root.has_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider"):
-			root.get_node("UI/BottomLayout/Panel/Items/Answers/Panel/Slider").hide()
+		if root.input_panel:
+			root.input_panel.visible = false
+		if root.has_method("set_panel_section_active"):
+			root.set_panel_section_active(root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/InputPanel2"), false)
+			root.set_panel_section_active(root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider2"), false)
+			root.set_panel_section_active(root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider"), false)
 		if root.build_button:
 			root.build_button.disabled = false
+		# Ensure ButtonsRow and Buttons1 are active so options are visible.
+		if root.has_method("set_panel_section_active"):
+			root.set_panel_section_active(buttons_row_node, true)
+			root.set_panel_section_active(buttons1_node, true)
 		
 		# Показать Buttons1 для обычных уровней
 		if buttons1_node:
@@ -538,10 +587,15 @@ func generate_new_level():
 			for i in range(3):
 				var option_node = buttons1_node.get_node_or_null("Option" + str(i))
 				if option_node:
-					option_node.visible = false
+					option_node.visible = true
+					if option_node is CanvasItem:
+						option_node.modulate.a = 0.0
+					var cb0 = option_node.get_node_or_null("CheckButton")
+					if cb0:
+						cb0.disabled = true
 		# Скрыть Buttons2 для обычных уровней
-		if buttons2_node:
-			buttons2_node.hide()
+		if buttons2_node and root.has_method("set_panel_section_active"):
+			root.set_panel_section_active(buttons2_node, false)
 
 		options = generate_options_for_type(lvl_type, valid_correct_func)
 		while options.size() < 3:
@@ -561,10 +615,8 @@ func generate_new_level():
 				var option_node = buttons1_node.get_node_or_null("Option" + str(i))
 				if option_node:
 					option_node.visible = true
-					# Показать дочерние элементы
-					for child in option_node.get_children():
-						if child is CanvasItem:
-							child.visible = true
+					if option_node is CanvasItem:
+						option_node.modulate.a = 1.0
 					# Обновить текст и сбросить чекбокс
 					var label = option_node.get_node_or_null("FormulaLabel")
 					if label:
@@ -573,8 +625,8 @@ func generate_new_level():
 					if cb:
 						cb.button_pressed = false
 						cb.disabled = false
-		if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
-			root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
+		if root.has_node("UI/BottomLayout/Items/Items/Answers"):
+			root.get_node("UI/BottomLayout/Items/Items/Answers").show()
 
 		print("Сторона шара:", "RIGHT" if root.ball_side == Side.RIGHT else "LEFT")
 		print("Правильная функция:", current_correct_func)
@@ -583,11 +635,7 @@ func generate_new_level():
 			print("  [", i, "] ", options[i])
 		
 		_save_current_level(lvl_type, level_seed)
-		
-		# Убедиться, что ForwardButton видна и активна
-		if root.forward_button:
-			root.forward_button.disabled = false
-			root.forward_button.show()
+		# ForwardButton must stay visible but become active only after user action (select/build)
 
 
 
@@ -621,6 +669,8 @@ func _save_current_level(lvl_type: int, level_seed: int = 0):
 	var level_data = LevelSaver.LevelData.new()
 	level_data.level_number = root.level
 	level_data.level_type = lvl_type
+	if "level_type_name" in level_data:
+		level_data.level_type_name = level_type_to_name(lvl_type)
 	level_data.correct_func = current_correct_func
 	level_data.correct_func_b = current_correct_func_b
 	level_data.options = options.duplicate()
@@ -725,10 +775,9 @@ func reset_current_level():
 		for cb in root.option_buttons2:
 			if cb:
 				cb.button_pressed = false
-	# Показать ForwardButton при перезапуске
-	if root.forward_button:
-		root.forward_button.disabled = false
-		root.forward_button.show()
+	# ForwardButton should be visible but inactive at the start of the level/reset
+	if root.has_method("set_forward_button_active"):
+		root.set_forward_button_active(false)
 	for child in root.track.get_children():
 		if child is CollisionShape2D:
 			child.queue_free()
@@ -751,16 +800,12 @@ func reset_current_level():
 			root.k_input.clear()
 		if root.b_input:
 			root.b_input.clear()
-		if root.forward_button_input:
-			root.forward_button_input.hide()
 	elif lvl_type == LevelType.INPUT_SLIDER:
 		# Сбросить слайдеры Slider2
 		if root.k_slider:
 			root.k_slider.value = 0.0
 		if root.b_slider:
 			root.b_slider.value = 0.0
-		if root.forward_button_input:
-			root.forward_button_input.hide()
 	
 	# Всегда очищать поля InputPanel2 и Slider2 при сбросе уровня
 	if root.k_input:

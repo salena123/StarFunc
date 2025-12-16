@@ -29,7 +29,15 @@ func _prepare_ui():
 	if root == null:
 		return
 	for btn in root.option_buttons:
-		btn.hide()
+		if btn == null:
+			continue
+		if btn is CanvasItem:
+			(btn as CanvasItem).visible = true
+			(btn as CanvasItem).modulate.a = 0.0
+		if btn is Control:
+			(btn as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if btn is BaseButton:
+			(btn as BaseButton).disabled = true
 	if root.build_button:
 		root.build_button.disabled = false
 	if root.k_slider:

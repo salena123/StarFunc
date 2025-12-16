@@ -5,6 +5,8 @@ var top_margin = 50
 var bottom_margin = 50
 var vertical_offset_pixels = 15
 
+var _bottom_margin_effective: float = 50.0
+
 var x_min: float = -10.0
 var x_max: float = 10.0
 var y_min: float = -5.0
@@ -39,7 +41,14 @@ func calc_base_unit():
 	x_min = -10.0
 	x_max = 10.0
 
-	var vertical_span = screen_h - top_margin - bottom_margin
+	# Adjust available play height so the graph is centered above BottomLayout.
+	var ui_top := _get_bottom_layout_top_y()
+	_bottom_margin_effective = float(bottom_margin)
+	if ui_top != INF:
+		# Reserve everything below BottomLayout top as UI space (+ small safety padding).
+		var reserved_px: float = max(0.0, screen_h - float(ui_top))
+		_bottom_margin_effective = max(_bottom_margin_effective, reserved_px + 10.0)
+	var vertical_span = screen_h - float(top_margin) - _bottom_margin_effective
 	if vertical_span <= 0.0:
 		vertical_span = 100.0
 
@@ -65,9 +74,18 @@ func fx_to_screen(x):
 func fy_to_screen(y):
 	if not ensure_coordinate_bounds():
 		return 0.0
-	var track_height = root.screen_size.y - top_margin - bottom_margin
+	var track_height = root.screen_size.y - float(top_margin) - _bottom_margin_effective
 	var t = (y - y_min) / (y_max - y_min)
-	return root.screen_size.y - bottom_margin - t * track_height
+	return root.screen_size.y - _bottom_margin_effective - t * track_height
+
+
+func _get_bottom_layout_top_y() -> float:
+	if root == null:
+		return INF
+	var bl = root.get_node_or_null("UI/BottomLayout")
+	if bl and bl is Control:
+		return (bl as Control).global_position.y
+	return INF
 
 func fy_to_screen_track(y):
 	return fy_to_screen(y)
@@ -185,7 +203,8 @@ func setup_level_positions(expr: Expression):
 	else:
 		ball_x = fx_start
 
-	root.ball.position = Vector2(fx_to_screen(ball_x), top_margin + vertical_offset_pixels)
+	ball_x = lerp(ball_x, 0.0, 0.35)
+	root.ball.position = Vector2(fx_to_screen(ball_x), float(top_margin) + float(vertical_offset_pixels))
 
 	var star_positions = []
 	var step_px = (x_end_screen - x_start_screen) / float(num_stars + 1)
@@ -212,7 +231,12 @@ func setup_level_positions(expr: Expression):
 			fy_val = 0.0
 
 		root.stars[i].visible = true
-		root.stars[i].position = Vector2(x_screen, fy_to_screen(fy_val) - vertical_offset_pixels)
+		var y_screen: float = float(fy_to_screen(fy_val)) - float(vertical_offset_pixels)
+		var ui_top := _get_bottom_layout_top_y()
+		if ui_top != INF:
+			# Keep stars above BottomLayout.
+			y_screen = min(y_screen, float(ui_top) - 8.0)
+		root.stars[i].position = Vector2(x_screen, y_screen)
 
 func setup_double_level_positions(expr_a: Expression, expr_b: Expression):
 	if root == null:
@@ -234,7 +258,9 @@ func setup_double_level_positions(expr_a: Expression, expr_b: Expression):
 	var fx_start = (x_start_screen - root.screen_center.x) / root.base_unit
 	var fx_end = (x_end_screen - root.screen_center.x) / root.base_unit
 	var ball_x: float = fx_end if root.ball_side == root.level_gen.Side.RIGHT else fx_start
-	root.ball.position = Vector2(fx_to_screen(ball_x), top_margin + vertical_offset_pixels)
+	# Move ball closer to the center only along X (keep original Y).
+	ball_x = lerp(ball_x, 0.0, 0.35)
+	root.ball.position = Vector2(fx_to_screen(ball_x), float(top_margin) + float(vertical_offset_pixels))
 	if root.double_linear_module == null:
 		setup_level_positions(expr_a)
 		return
@@ -302,7 +328,11 @@ func _place_segment_stars(expr: Expression, count: int, fx_start: float, fx_end:
 		else:
 			fy_val = 0.0
 		root.stars[current_index].visible = true
-		root.stars[current_index].position = Vector2(x_screen, fy_to_screen(fy_val) - vertical_offset_pixels)
+		var y_screen: float = float(fy_to_screen(fy_val)) - float(vertical_offset_pixels)
+		var ui_top := _get_bottom_layout_top_y()
+		if ui_top != INF:
+			y_screen = min(y_screen, float(ui_top) - 8.0)
+		root.stars[current_index].position = Vector2(x_screen, y_screen)
 		current_index += 1
 	return {"index": current_index, "prev_x": last_x}
 
@@ -472,7 +502,8 @@ func _build_function(root, func_str: String, track_drawer, track, forward_button
 	if expr.parse(func_str, ["x"]) == OK:
 		track_drawer.draw_track(func_str)
 		track.visible = true
-		forward_button_input.show()
+		if root.has_method("set_forward_button_active"):
+			root.set_forward_button_active(true)
 		
 		if not root.first_selection_done:
 			if root.timer and root.timer.is_stopped():
@@ -516,20 +547,15 @@ func clear_ui_before_level_load():
 		if cb:
 			cb.button_pressed = false
 			cb.disabled = true
-	# прячем контейнеры кнопок
-	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
-	if buttons1_node:
-		buttons1_node.hide()
-	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
-	if buttons2_node:
-		buttons2_node.hide()
+	# прячем контейнеры кнопок (не меняя layout)
+	if root.has_method("set_panel_section_active"):
+		root.set_panel_section_active(root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1"), false)
+		root.set_panel_section_active(root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2"), false)
 
 	if root.has_node("UI/Buttons2"):
 		root.get_node("UI/Buttons2").hide()
 
-	if root.has_node("UI/BottomLayout/Panel/Items/ForwardButton"):
-		root.get_node("UI/BottomLayout/Panel/Items/ForwardButton").disabled = false
-		root.get_node("UI/BottomLayout/Panel/Items/ForwardButton").show()
+	if root.has_method("set_forward_button_active"):
+		root.set_forward_button_active(false)
 
-	if root.forward_button_input:
-		root.forward_button_input.hide()
+	# ForwardButton should remain visible in layout; it is disabled via set_forward_button_active(false)
