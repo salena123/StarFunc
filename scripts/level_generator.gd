@@ -121,55 +121,27 @@ func load_saved_level(level_number: int) -> bool:
 		root.utils.setup_level_positions(expr)
 	
 	if saved_lvl_type == LevelType.INPUT_LINEAR:
-		for btn in root.option_buttons:
-			if btn and btn is CanvasItem:
-				(btn as CanvasItem).visible = true
-				(btn as CanvasItem).modulate.a = 0.0
-		_show_buttons(root.option_buttons2, false)
 		# Answers container stays in layout; section visibility is managed by root.apply_bottom_ui_for_level_type
 		if root.build_button:
 			root.build_button.disabled = false
-		if root.k_input:
-			root.k_input.visible = true
-		if root.b_input:
-			root.b_input.visible = true
-		if root.k_slider:
-			root.k_slider.visible = false
-		if root.b_slider:
-			root.b_slider.visible = false
-		if root.has_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider1"):
-			root.get_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider1").visible = false
-		if root.k_slider_label:
-			root.k_slider_label.visible = false
-		if root.b_slider_label:
-			root.b_slider_label.visible = false
 		if root.x_label:
-			root.x_label.visible = false
+			root.x_label.text = ""
 		if root.y_label:
-			root.y_label.visible = false
+			root.y_label.text = ""
 		if root.k_value_label:
-			root.k_value_label.visible = false
 			root.k_value_label.text = ""
 		if root.b_value_label:
-			root.b_value_label.visible = false
 			root.b_value_label.text = ""
-		root.input_panel.visible = true
 	elif saved_lvl_type == LevelType.INPUT_SLIDER:
 		if root.input_slider_module:
 			root.input_slider_module.setup_ui_with_function(current_correct_func)
 			# Section visibility is managed by root.apply_bottom_ui_for_level_type
-			if root.k_value_label:
-				root.k_value_label.visible = true
-			if root.b_value_label:
-				root.b_value_label.visible = true
 			if root.has_method("refresh_input_slider_value_labels"):
 				root.refresh_input_slider_value_labels()
 		else:
 			for cb in root.option_check_buttons:
 				if cb and cb is CanvasItem:
-					(cb as CanvasItem).visible = true
-					(cb as CanvasItem).modulate.a = 0.0
-				cb.disabled = true
+					cb.disabled = true
 			# Answers container stays in layout; section visibility is managed by root.apply_bottom_ui_for_level_type
 			if root.build_button:
 				root.build_button.disabled = false
@@ -179,32 +151,11 @@ func load_saved_level(level_number: int) -> bool:
 				root.b_slider.value = 0.0
 			if root.k_slider_label:
 				root.k_slider_label.text = "0.0"
-				root.k_slider_label.visible = true
 			if root.b_slider_label:
 				root.b_slider_label.text = "0.0"
-				root.b_slider_label.visible = true
-			if root.k_input:
-				root.k_input.visible = false
-			if root.b_input:
-				root.b_input.visible = false
-			if root.k_slider:
-				root.k_slider.visible = true
-			if root.b_slider:
-				root.b_slider.visible = true
-			if root.has_node("UI/BottomLayout/Items/Items/Answers/Slider"):
-				root.get_node("UI/BottomLayout/Items/Items/Answers/Slider").visible = true
-			if root.x_label:
-				root.x_label.visible = false
-			if root.y_label:
-				root.y_label.visible = false
-			if root.k_value_label:
-				root.k_value_label.visible = true
-			if root.b_value_label:
-				root.b_value_label.visible = true
 			if root.has_method("refresh_input_slider_value_labels"):
 				root.refresh_input_slider_value_labels()
-			root.input_panel.visible = true
-	elif saved_lvl_type == LevelType.DOUBLE_LINEAR:
+	if saved_lvl_type == LevelType.DOUBLE_LINEAR:
 		var double_module = root.double_linear_module
 		if double_module:
 			var state = double_module.prepare_from_saved(
@@ -229,41 +180,26 @@ func load_saved_level(level_number: int) -> bool:
 			push_warning("DOUBLE_LINEAR: module not initialized; cannot restore saved state")
 		return true
 	else:
-		if root.input_panel:
-			root.input_panel.visible = false
-		# Показать Buttons1 для обычных уровней
-		var buttons1_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1")
-		if buttons1_node:
-			buttons1_node.show()
-			if root.has_method("set_panel_section_active"):
-				root.set_panel_section_active(buttons1_node, true)
-			for cb in root.option_check_buttons:
-				if cb:
-					cb.disabled = false
-		# Скрыть Buttons2 для обычных уровней
-		var buttons2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2")
-		if buttons2_node:
-			if root.has_method("set_panel_section_active"):
-				root.set_panel_section_active(buttons2_node, false)
-		var button_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option0/FormulaLabel")
-		if button_node:
-			button_node.text = root.utils.format_function_from_string(options[0])
-		var button2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option1/FormulaLabel")
-		if button2_node:
-			button2_node.text = root.utils.format_function_from_string(options[1])
-		var button3_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option2/FormulaLabel")
-		if button3_node:
-			button3_node.text = root.utils.format_function_from_string(options[2])
+		# Обновляем тексты для вариантов
+		if options.size() > 0:
+			var button_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option0/FormulaLabel")
+			if button_node:
+				button_node.text = root.utils.format_function_from_string(options[0])
+		if options.size() > 1:
+			var button2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option1/FormulaLabel")
+			if button2_node:
+				button2_node.text = root.utils.format_function_from_string(options[1])
+		if options.size() > 2:
+			var button3_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option2/FormulaLabel")
+			if button3_node:
+				button3_node.text = root.utils.format_function_from_string(options[2])
 		# Answers container stays in layout; section visibility is managed by root.apply_bottom_ui_for_level_type
 	
 	return true
 
 
 func generate_new_level():
-	# Сначала скрыть все UI-элементы для чистого состояния
-	if root.has_method("answers_panel_reset_and_hide"):
-		root.answers_panel_reset_and_hide()
-	# Clear legacy UI state BEFORE applying per-level composition
+	# Очистить поля ввода и сбросить слайдеры
 	root.utils.clear_ui_before_level_load()
 	# Apply per-level UI composition (which section is active)
 	var lvl_type = get_level_type(root.level)
@@ -283,10 +219,8 @@ func generate_new_level():
 		root.b_slider.value = 0.0
 	
 	if root.k_value_label:
-		root.k_value_label.visible = false
 		root.k_value_label.text = ""
 	if root.b_value_label:
-		root.b_value_label.visible = false
 		root.b_value_label.text = ""
 	_reset_slider_ui()
 	
@@ -390,14 +324,6 @@ func generate_new_level():
 	if lvl_type == LevelType.DOUBLE_LINEAR:
 		var double_module = root.double_linear_module
 		if double_module:
-			# Ensure ButtonsRow is active so options are visible.
-			if buttons_row_node and root.has_method("set_panel_section_active"):
-				root.set_panel_section_active(buttons_row_node, true)
-			# Keep Buttons1 and Buttons2 containers active; DOUBLE_LINEAR UI manages Option visibility.
-			if buttons1_node and root.has_method("set_panel_section_active"):
-				root.set_panel_section_active(buttons1_node, true)
-			if buttons2_node and root.has_method("set_panel_section_active"):
-				root.set_panel_section_active(buttons2_node, true)
 			var state = double_module.prepare_new_level(valid_correct_func)
 			current_correct_func = state.primary
 			current_correct_func_b = state.secondary
@@ -415,22 +341,11 @@ func generate_new_level():
 		options = []
 		for cb in root.option_check_buttons:
 			if cb and cb is CanvasItem:
-				(cb as CanvasItem).visible = true
-				(cb as CanvasItem).modulate.a = 0.0
-			cb.disabled = true
-		# Hide Buttons1 and Buttons2 containers
-		if buttons1_node:
-			if root.has_method("set_panel_section_active"):
-				root.set_panel_section_active(buttons1_node, false)
-		if buttons2_node:
-			if root.has_method("set_panel_section_active"):
-				root.set_panel_section_active(buttons2_node, false)
-		if root.has_node("UI/BottomLayout/Items/Items/Answers"):
-			root.get_node("UI/BottomLayout/Items/Items/Answers").show()
+				cb.disabled = true
 		if root.build_button:
 			root.build_button.disabled = false
 
-		# INPUT_LINEAR: показываем новый InputPanel2, скрываем оба Slider контейнера
+		# INPUT_LINEAR: показываем новый InputPanel2
 		if root.k_input:
 			root.k_input.clear()
 		if root.b_input:
@@ -438,65 +353,19 @@ func generate_new_level():
 		var input_panel2_l = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/InputPanel2")
 		if input_panel2_l:
 			print("[INPUT_LINEAR] InputPanel2 found")
-			print("[INPUT_LINEAR] InputPanel2 visible: ", input_panel2_l.visible)
-			if root.has_method("set_panel_section_active"):
-				root.set_panel_section_active(input_panel2_l, true)
-			print("[INPUT_LINEAR] After show, InputPanel2 visible: ", input_panel2_l.visible)
 			
 			# Проверить видимость контейнеров K и B
 			var k_container = input_panel2_l.get_node_or_null("K")
 			var b_container = input_panel2_l.get_node_or_null("B")
-			
-			if k_container:
-				print("[INPUT_LINEAR] K container visible: ", k_container.visible)
-				k_container.show()
-				print("[INPUT_LINEAR] After show, K container visible: ", k_container.visible)
-			else:
-				print("[INPUT_LINEAR] K container not found!")
-				
-			if b_container:
-				print("[INPUT_LINEAR] B container visible: ", b_container.visible)
-				b_container.show()
-				print("[INPUT_LINEAR] After show, B container visible: ", b_container.visible)
-			else:
-				print("[INPUT_LINEAR] B container not found!")
-			
-			# Проверить видимость полей ввода
-			if root.k_input:
-				print("[INPUT_LINEAR] KLineEdit visible: ", root.k_input.visible)
-				root.k_input.show()
-				print("[INPUT_LINEAR] After show, KLineEdit visible: ", root.k_input.visible)
-			else:
-				print("[INPUT_LINEAR] KLineEdit not found!")
-				
-			if root.b_input:
-				print("[INPUT_LINEAR] BLineEdit visible: ", root.b_input.visible)
-				root.b_input.show()
-				print("[INPUT_LINEAR] After show, BLineEdit visible: ", root.b_input.visible)
-			else:
-				print("[INPUT_LINEAR] BLineEdit not found!")
 		else:
 			print("[INPUT_LINEAR] InputPanel2 node not found!")
-		# спрятать старый Slider и новый Slider2
-		if root.has_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider"):
-			if root.has_method("set_panel_section_active"):
-				root.set_panel_section_active(root.get_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider"), false)
-		var slider2_l = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider2")
-		if slider2_l and root.has_method("set_panel_section_active"):
-			root.set_panel_section_active(slider2_l, false)
-		if root.k_slider_label:
-			root.k_slider_label.visible = false
-		if root.b_slider_label:
-			root.b_slider_label.visible = false
 		if root.x_label:
-			root.x_label.visible = false
+			root.x_label.text = ""
 		if root.y_label:
-			root.y_label.visible = false
+			root.y_label.text = ""
 		if root.k_value_label:
-			root.k_value_label.visible = false
 			root.k_value_label.text = ""
 		if root.b_value_label:
-			root.b_value_label.visible = false
 			root.b_value_label.text = ""
 		var expr = Expression.new()
 		if expr.parse(current_correct_func, ["x"]) == OK:
@@ -507,30 +376,13 @@ func generate_new_level():
 		options = []
 		for cb in root.option_check_buttons:
 			if cb and cb is CanvasItem:
-				(cb as CanvasItem).visible = true
-				(cb as CanvasItem).modulate.a = 0.0
-			cb.disabled = true
-		# Hide Buttons1 and Buttons2 containers
-		if buttons1_node:
-			if root.has_method("set_panel_section_active"):
-				root.set_panel_section_active(buttons1_node, false)
-		if buttons2_node:
-			if root.has_method("set_panel_section_active"):
-				root.set_panel_section_active(buttons2_node, false)
-		if root.has_node("UI/BottomLayout/Items/Items/Answers"):
-			root.get_node("UI/BottomLayout/Items/Items/Answers").show()
-		if root.k_value_label:
-			root.k_value_label.visible = true
-		if root.b_value_label:
-			root.b_value_label.visible = true
+				cb.disabled = true
 		if root.input_slider_module:
 			print("[LevelGen] setup_level_positions using input-slider func:", current_correct_func)
 			root.input_slider_module.setup_ui_with_function(current_correct_func)
 			if root.has_method("refresh_input_slider_value_labels"):
 				root.refresh_input_slider_value_labels()
 		else:
-			for btn in root.option_buttons:
-				btn.hide()
 			if root.build_button:
 				root.build_button.disabled = false
 			if root.k_slider:
@@ -539,63 +391,19 @@ func generate_new_level():
 				root.b_slider.value = 0.0
 			if root.k_slider_label:
 				root.k_slider_label.text = "0.0"
-				root.k_slider_label.visible = true
 			if root.b_slider_label:
 				root.b_slider_label.text = "0.0"
-				root.b_slider_label.visible = true
-			if root.k_input:
-				root.k_input.visible = false
-			if root.b_input:
-				root.b_input.visible = false
-			if root.k_slider:
-				root.k_slider.visible = true
-			if root.b_slider:
-				root.b_slider.visible = true
-			if root.has_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider"):
-				root.get_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider").visible = true
-			if root.x_label:
-				root.x_label.visible = false
-			if root.y_label:
-				root.y_label.visible = false
 			if root.has_method("refresh_input_slider_value_labels"):
 				root.refresh_input_slider_value_labels()
-			root.input_panel.visible = true
 			var expr = Expression.new()
 			if expr.parse(current_correct_func, ["x"]) == OK:
 				root.utils.setup_level_positions(expr)
 		_save_current_level(lvl_type, level_seed)
 
 	else:
-		# Обычные уровни: скрываем инпуты и слайдеры, показываем варианты Buttons1
-		if root.input_panel:
-			root.input_panel.visible = false
-		if root.has_method("set_panel_section_active"):
-			root.set_panel_section_active(root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/InputPanel2"), false)
-			root.set_panel_section_active(root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider2"), false)
-			root.set_panel_section_active(root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider"), false)
+		# Обычные уровни: скрываем инпуты и слайдеры
 		if root.build_button:
 			root.build_button.disabled = false
-		# Ensure ButtonsRow and Buttons1 are active so options are visible.
-		if root.has_method("set_panel_section_active"):
-			root.set_panel_section_active(buttons_row_node, true)
-			root.set_panel_section_active(buttons1_node, true)
-		
-		# Показать Buttons1 для обычных уровней
-		if buttons1_node:
-			buttons1_node.show()
-			# Сначала скрыть все OptionX
-			for i in range(3):
-				var option_node = buttons1_node.get_node_or_null("Option" + str(i))
-				if option_node:
-					option_node.visible = true
-					if option_node is CanvasItem:
-						option_node.modulate.a = 0.0
-					var cb0 = option_node.get_node_or_null("CheckButton")
-					if cb0:
-						cb0.disabled = true
-		# Скрыть Buttons2 для обычных уровней
-		if buttons2_node and root.has_method("set_panel_section_active"):
-			root.set_panel_section_active(buttons2_node, false)
 
 		options = generate_options_for_type(lvl_type, valid_correct_func)
 		while options.size() < 3:
@@ -609,24 +417,16 @@ func generate_new_level():
 			print("[LevelGen] setup_level_positions using generated func:", valid_correct_func)
 			root.utils.setup_level_positions(expr)
 
-		# Показать только нужные варианты и обновить тексты
-		if buttons1_node:
-			for i in range(min(3, options.size())):
-				var option_node = buttons1_node.get_node_or_null("Option" + str(i))
-				if option_node:
-					option_node.visible = true
-					if option_node is CanvasItem:
-						option_node.modulate.a = 1.0
-					# Обновить текст и сбросить чекбокс
-					var label = option_node.get_node_or_null("FormulaLabel")
-					if label:
-						label.text = root.utils.format_function_from_string(options[i])
-					var cb = option_node.get_node_or_null("CheckButton")
-					if cb:
-						cb.button_pressed = false
-						cb.disabled = false
-		if root.has_node("UI/BottomLayout/Items/Items/Answers"):
-			root.get_node("UI/BottomLayout/Items/Items/Answers").show()
+		# Обновляем тексты для вариантов
+		var button_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option0/FormulaLabel")
+		if button_node:
+			button_node.text = root.utils.format_function_from_string(options[0])
+		var button2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option1/FormulaLabel")
+		if button2_node:
+			button2_node.text = root.utils.format_function_from_string(options[1])
+		var button3_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option2/FormulaLabel")
+		if button3_node:
+			button3_node.text = root.utils.format_function_from_string(options[2])
 
 		print("Сторона шара:", "RIGHT" if root.ball_side == Side.RIGHT else "LEFT")
 		print("Правильная функция:", current_correct_func)
@@ -638,17 +438,6 @@ func generate_new_level():
 		# ForwardButton must stay visible but become active only after user action (select/build)
 
 
-
-func _show_buttons(buttons: Array, visible: bool):
-	if buttons == null:
-		return
-	for btn in buttons:
-		if btn:
-			if visible:
-				btn.show()
-				btn.disabled = false
-			else:
-				btn.hide()
 
 func get_option_for_group(group: int, index: int) -> String:
 	var list = options if group == 0 else options_secondary
@@ -852,12 +641,6 @@ func reset_current_level():
 
 func _reset_slider_ui():
 	if root.k_slider:
-		root.k_slider.visible = false
+		root.k_slider.value = 0.0
 	if root.b_slider:
-		root.b_slider.visible = false
-	if root.k_slider_label:
-		root.k_slider_label.visible = false
-	if root.b_slider_label:
-		root.b_slider_label.visible = false
-	if root.has_node("UI/Slider"):
-		root.get_node("UI/Slider").visible = false
+		root.b_slider.value = 0.0

@@ -155,8 +155,6 @@ func _ready():
 	
 	set_process(true)
 	print_scene_info()
-	if has_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider"):
-		get_node("UI/BottomLayout/Items/Items/Answers/Panel/Slider").visible = false
 	# Стартовое состояние панели — развернутое: задаём минимальную высоту под контент
 	var start_panel = get_node_or_null("UI/BottomLayout/Items")
 	#var start_items = get_node_or_null("UI/BottomLayout/Panel/Items")
@@ -194,8 +192,7 @@ func _ready():
 			cb.disabled = true
 	_suppress_check_signal = false
 	# Скрыть все контейнеры кнопок при старте (без влияния на layout)
-	set_panel_section_active(answers_buttons1, false)
-	set_panel_section_active(answers_buttons2, false)
+	# Управление видимостью теперь только в apply_bottom_ui_for_level_type
 	
 	level_gen.generate_new_level()
 	_refresh_bottom_layout_height_late()
@@ -356,22 +353,6 @@ func bottom_layout_end_update():
 			(bottom_layout as Control).mouse_filter = Control.MOUSE_FILTER_STOP
 
 
-func answers_panel_reset_and_hide():
-	# BottomLayout itself stays; we hide all dynamic panel parts.
-	set_panel_section_active(answers_buttons_row, false)
-	set_panel_section_active(answers_buttons1, false)
-	set_panel_section_active(answers_buttons2, false)
-
-	set_panel_section_active(answers_input_panel2, false)
-	set_panel_section_active(answers_slider2, false)
-	set_forward_button_active(false)
-	# Reset checkboxes
-	_suppress_check_signal = true
-	for cb in option_check_buttons:
-		if cb:
-			cb.button_pressed = false
-			cb.disabled = true
-	_suppress_check_signal = false
 
 
 func apply_bottom_ui_for_level_type(lvl_type: int):
@@ -423,8 +404,8 @@ func set_panel_section_active(n: Node, active: bool):
 		return
 	if n is CanvasItem:
 		var ci := n as CanvasItem
-		ci.visible = true
-		ci.modulate.a = 1.0 if active else 0.0
+		ci.visible = active
+		ci.modulate.a = 1.0
 		if n is Control:
 			(n as Control).mouse_filter = Control.MOUSE_FILTER_STOP if active else Control.MOUSE_FILTER_IGNORE
 	for child in n.get_children():

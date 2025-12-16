@@ -29,47 +29,12 @@ func apply_ui(options_a: Array, options_b: Array):
 	if root.build_button:
 		root.build_button.disabled = false
 	
-	# Сначала скрыть все OptionX в обоих столбцах
-	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1")
-	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2")
-	
-	# Скрыть все в Buttons1
-	if buttons1_node:
-		buttons1_node.show()
-		for i in range(3):
-			var option_node = buttons1_node.get_node_or_null("Option" + str(i))
-			if option_node:
-				if root and root.has_method("set_panel_section_active"):
-					root.set_panel_section_active(option_node, false)
-				else:
-					option_node.visible = false
-	
-	# Скрыть все в Buttons2
-	if buttons2_node:
-		buttons2_node.show()
-		for i in range(3):
-			var option_node = buttons2_node.get_node_or_null("Option" + str(i))
-			if option_node:
-				if root and root.has_method("set_panel_section_active"):
-					root.set_panel_section_active(option_node, false)
-				else:
-					option_node.visible = false
-	
 	# Показать только нужные варианты в Buttons1
+	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1")
 	if buttons1_node:
 		for i in range(min(3, options_a.size())):
 			var option_node = buttons1_node.get_node_or_null("Option" + str(i))
 			if option_node:
-				if option_node is Control:
-					(option_node as Control).mouse_filter = Control.MOUSE_FILTER_PASS
-				if root and root.has_method("set_panel_section_active"):
-					root.set_panel_section_active(option_node, true)
-				else:
-					option_node.visible = true
-				# Показать дочерние элементы
-				for child in option_node.get_children():
-					if child is CanvasItem:
-						child.visible = true
 				# Обновить текст и сбросить чекбокс
 				var label = option_node.get_node_or_null("FormulaLabel")
 				if label:
@@ -77,29 +42,14 @@ func apply_ui(options_a: Array, options_b: Array):
 				var cb = option_node.get_node_or_null("CheckButton")
 				if cb:
 					cb.button_pressed = false
-					if cb is CanvasItem:
-						(cb as CanvasItem).visible = true
-						(cb as CanvasItem).modulate.a = 1.0
-					if cb is Control:
-						(cb as Control).mouse_filter = Control.MOUSE_FILTER_STOP
-						(cb as Control).focus_mode = Control.FOCUS_ALL
 					cb.disabled = false
 	
 	# Показать только нужные варианты в Buttons2
+	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2")
 	if buttons2_node:
 		for i in range(min(3, options_b.size())):
 			var option_node = buttons2_node.get_node_or_null("Option" + str(i))
 			if option_node:
-				if option_node is Control:
-					(option_node as Control).mouse_filter = Control.MOUSE_FILTER_PASS
-				if root and root.has_method("set_panel_section_active"):
-					root.set_panel_section_active(option_node, true)
-				else:
-					option_node.visible = true
-				# Показать дочерние элементы
-				for child in option_node.get_children():
-					if child is CanvasItem:
-						child.visible = true
 				# Обновить текст и сбросить чекбокс
 				var label = option_node.get_node_or_null("FormulaLabel")
 				if label:
@@ -107,12 +57,6 @@ func apply_ui(options_a: Array, options_b: Array):
 				var cb = option_node.get_node_or_null("CheckButton")
 				if cb:
 					cb.button_pressed = false
-					if cb is CanvasItem:
-						(cb as CanvasItem).visible = true
-						(cb as CanvasItem).modulate.a = 1.0
-					if cb is Control:
-						(cb as Control).mouse_filter = Control.MOUSE_FILTER_STOP
-						(cb as Control).focus_mode = Control.FOCUS_ALL
 					cb.disabled = false
 	
 	# Answers container stays in layout; section visibility is managed by root.apply_bottom_ui_for_level_type

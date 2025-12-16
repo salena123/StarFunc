@@ -520,40 +520,16 @@ func _build_function(root, func_str: String, track_drawer, track, forward_button
 		
 func clear_ui_before_level_load():
 
-	if root.k_slider:
-		root.k_slider.visible = false
-	if root.b_slider:
-		root.b_slider.visible = false
-	if root.k_slider_label:
-		root.k_slider_label.visible = false
-	if root.b_slider_label:
-		root.b_slider_label.visible = false
 	if root.k_value_label:
-		root.k_value_label.visible = false
 		root.k_value_label.text = ""
 	if root.b_value_label:
-		root.b_value_label.visible = false
 		root.b_value_label.text = ""
-	if root.k_input:
-		root.k_input.visible = false
-	if root.b_input:
-		root.b_input.visible = false
-
-	if root.has_node("UI/Slider"):
-		root.get_node("UI/Slider").visible = false
 
 	# прячем/сбрасываем чекбоксы
 	for cb in root.option_check_buttons:
 		if cb:
 			cb.button_pressed = false
 			cb.disabled = true
-	# прячем контейнеры кнопок (не меняя layout)
-	if root.has_method("set_panel_section_active"):
-		root.set_panel_section_active(root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1"), false)
-		root.set_panel_section_active(root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2"), false)
-
-	if root.has_node("UI/Buttons2"):
-		root.get_node("UI/Buttons2").hide()
 
 	if root.has_method("set_forward_button_active"):
 		root.set_forward_button_active(false)

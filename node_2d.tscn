@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=3 uid="uid://c2cdbk2ehc4o3"]
+[gd_scene load_steps=58 format=3 uid="uid://c2cdbk2ehc4o3"]
 
 [ext_resource type="Script" uid="uid://c7qx3hdq3vnhc" path="res://scripts/main.gd" id="1_kdubu"]
 [ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="1_wtcfe"]
@@ -144,11 +144,25 @@ shadow_offset = Vector2(0, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_d2bti"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ta5nu"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_flf07"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.6392157, 0.6392157, 0.6392157, 1)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
+shadow_size = 1
+shadow_offset = Vector2(0, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_flf07"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k73cj"]
 
 [sub_resource type="SystemFont" id="SystemFont_kdubu"]
 
@@ -479,12 +493,19 @@ size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_hqns4")
 
 [node name="ButtonsRow" type="HBoxContainer" parent="UI/BottomLayout/Items/Items/Answers/Panel"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 20
 
 [node name="Buttons1" type="VBoxContainer" parent="UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow"]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Option0" type="HBoxContainer" parent="UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1"]
 layout_mode = 2
@@ -586,6 +607,7 @@ theme_override_icons/unchecked = ExtResource("13_d2bti")
 
 [node name="Buttons2" type="VBoxContainer" parent="UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow"]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Option0" type="HBoxContainer" parent="UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2"]
 layout_mode = 2
@@ -686,10 +708,15 @@ theme_override_icons/checked = ExtResource("12_nr8wp")
 theme_override_icons/unchecked = ExtResource("13_d2bti")
 
 [node name="InputPanel2" type="VBoxContainer" parent="UI/BottomLayout/Items/Items/Answers/Panel"]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_right = 128.0
-offset_bottom = 74.0
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -30.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="K" type="HBoxContainer" parent="UI/BottomLayout/Items/Items/Answers/Panel/InputPanel2"]
@@ -752,10 +779,15 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_ebxd8")
 placeholder_text = "ввод"
 
 [node name="Slider2" type="VBoxContainer" parent="UI/BottomLayout/Items/Items/Answers/Panel"]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -30.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="K" type="HBoxContainer" parent="UI/BottomLayout/Items/Items/Answers/Panel/Slider2"]
@@ -834,22 +866,21 @@ step = 0.1
 custom_minimum_size = Vector2(200, 35)
 layout_mode = 2
 size_flags_horizontal = 4
-mouse_filter = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
 theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_pressed_color = Color(0, 0, 0, 1)
 theme_override_colors/font_disabled_color = Color(0, 0, 0, 0.5019608)
-theme_override_colors/icon_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_normal_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("9_hqns4")
 theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("StyleBoxFlat_forward_button")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_d2bti")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_ta5nu")
+theme_override_styles/hover = SubResource("StyleBoxFlat_flf07")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_flf07")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_k73cj")
 disabled = true
+action_mode = 0
 text = "Проверить"
 
 [node name="Grid" type="Node2D" parent="."]
