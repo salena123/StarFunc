@@ -421,8 +421,11 @@ func _refresh_bottom_layout_height():
 	if not bottom_layout or not bottom_layout_items:
 		return
 	var h := bottom_layout_items.get_combined_minimum_size().y
+	print("[DEBUG] BottomLayout height: ", h, "px (combined_minimum_size)")
 	if h > 1.0:
 		_bottom_layout_last_height = max(h + 8.0, 60.0)
+	print("[DEBUG] BottomLayout last_height: ", _bottom_layout_last_height, "px")
+	print("[DEBUG] BottomLayout offset_top: ", bottom_layout.offset_top, "px")
 	bottom_layout.offset_top = -_bottom_layout_last_height
 
 func setup_sliders():

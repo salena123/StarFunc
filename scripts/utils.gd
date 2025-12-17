@@ -2,10 +2,10 @@ extends Node
 
 var root
 var top_margin = 50
-var bottom_margin = 50
+var bottom_margin = 0
 var vertical_offset_pixels = 15
 
-var _bottom_margin_effective: float = 50.0
+var _bottom_margin_effective: float = 0.0
 
 var x_min: float = -10.0
 var x_max: float = 10.0
@@ -44,11 +44,20 @@ func calc_base_unit():
 	# Adjust available play height so the graph is centered above BottomLayout.
 	var ui_top := _get_bottom_layout_top_y()
 	_bottom_margin_effective = float(bottom_margin)
+	print("[DEBUG] UI top position: ", ui_top, "px")
+	print("[DEBUG] Screen height: ", screen_h, "px")
+	print("[DEBUG] Initial bottom_margin: ", bottom_margin, "px")
 	if ui_top != INF:
 		# Reserve everything below BottomLayout top as UI space (+ small safety padding).
 		var reserved_px: float = max(0.0, screen_h - float(ui_top))
-		_bottom_margin_effective = max(_bottom_margin_effective, reserved_px + 10.0)
+		print("[DEBUG] Reserved pixels: ", reserved_px, "px")
+		# Ограничим reserved_pixels до высоты BottomLayout + небольшой запас
+		reserved_px = min(reserved_px, 380.0)  # Ограничение до 380px
+		print("[DEBUG] Limited reserved pixels: ", reserved_px, "px")
+		_bottom_margin_effective = max(_bottom_margin_effective, reserved_px)
+	print("[DEBUG] Effective bottom_margin: ", _bottom_margin_effective, "px")
 	var vertical_span = screen_h - float(top_margin) - _bottom_margin_effective
+	print("[DEBUG] Vertical span: ", vertical_span, "px")
 	if vertical_span <= 0.0:
 		vertical_span = 100.0
 
