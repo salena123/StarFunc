@@ -1,1 +1,1 @@
-[{"ball_side":1,"correct_func":"0.5*x + 1.7","correct_func_b":"","double_intersection_x":3.99999999999999,"level_number":1,"level_type":7,"level_type_name":"DOUBLE_LINEAR","options":["1.0*x + -4.0","1.4*x + 3.5","0.3*x + 2.5"],"options_b":["-1.0*x + 0.0","0.5*x + 1.7","0.8*x + 2.7"],"star_seed":3992874658}]
+[{"ball_side":1,"correct_func":"0.5*x + -2.8","correct_func_b":"","double_intersection_x":null,"level_number":1,"level_type":0,"level_type_name":"SIMPLE","options":["0.5*x + -2.8","2.0*x + -2.7","0.9*x + -4.9"],"options_b":[],"star_seed":3447724858}]

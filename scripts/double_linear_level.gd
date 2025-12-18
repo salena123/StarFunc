@@ -24,31 +24,44 @@ func prepare_from_saved(primary_func: String, secondary_func: String, options_a:
 
 func apply_ui(options_a: Array, options_b: Array):
 	print("[DOUBLE_LINEAR] apply_ui: options_a.size() = ", options_a.size(), ", options_b.size() = ", options_b.size())
+	print("[DOUBLE_LINEAR] options_a: ", options_a)
+	print("[DOUBLE_LINEAR] options_b: ", options_b)
+	
 	if root.build_button:
 		root.build_button.disabled = false
 	
 	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1")
+	print("[DOUBLE_LINEAR] buttons1_node: ", buttons1_node)
 	if buttons1_node:
 		for i in range(min(3, options_a.size())):
 			var option_node = buttons1_node.get_node_or_null("Option" + str(i))
+			print("[DOUBLE_LINEAR] buttons1 option_node ", i, ": ", option_node)
 			if option_node:
 				var label = option_node.get_node_or_null("FormulaLabel")
+				print("[DOUBLE_LINEAR] buttons1 label ", i, ": ", label)
 				if label:
 					label.text = root.utils.format_function_from_string(options_a[i])
+					print("[DOUBLE_LINEAR] buttons1 set label ", i, " to: ", label.text)
 				var cb = option_node.get_node_or_null("CheckButton")
+				print("[DOUBLE_LINEAR] buttons1 cb ", i, ": ", cb)
 				if cb:
 					cb.button_pressed = false
 					cb.disabled = false
 	
 	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2")
+	print("[DOUBLE_LINEAR] buttons2_node: ", buttons2_node)
 	if buttons2_node:
 		for i in range(min(3, options_b.size())):
 			var option_node = buttons2_node.get_node_or_null("Option" + str(i))
+			print("[DOUBLE_LINEAR] buttons2 option_node ", i, ": ", option_node)
 			if option_node:
 				var label = option_node.get_node_or_null("FormulaLabel")
+				print("[DOUBLE_LINEAR] buttons2 label ", i, ": ", label)
 				if label:
 					label.text = root.utils.format_function_from_string(options_b[i])
+					print("[DOUBLE_LINEAR] buttons2 set label ", i, " to: ", label.text)
 				var cb = option_node.get_node_or_null("CheckButton")
+				print("[DOUBLE_LINEAR] buttons2 cb ", i, ": ", cb)
 				if cb:
 					cb.button_pressed = false
 					cb.disabled = false

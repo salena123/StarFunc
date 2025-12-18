@@ -61,7 +61,7 @@ func init(r):
 
 func get_level_type(level: int) -> LevelType:
 	if level <= 3: 
-		return LevelType.DOUBLE_LINEAR
+		return LevelType.SIMPLE
 	elif level <= 6: 
 		return LevelType.VARY_B
 	elif level <= 9:
@@ -82,14 +82,12 @@ func get_level_type(level: int) -> LevelType:
 
 func load_saved_level(level_number: int) -> bool:
 	if not root.level_saver:
-		print("level_saver не инициализирован")
 		is_level_loaded_from_save = false
 		return false
 	root.utils.clear_ui_before_level_load()
 	var LevelSaver = root.level_saver
 	var level_data = LevelSaver.load_level(level_number)
 	if level_data == null:
-		print("Уровень ", level_number, " не найден в levels.json")
 		is_level_loaded_from_save = false
 		return false
 	var saved_type_str := ""
@@ -97,7 +95,6 @@ func load_saved_level(level_number: int) -> bool:
 		saved_type_str = str(level_data.level_type_name)
 	else:
 		saved_type_str = level_type_to_name(int(level_data.level_type))
-	print("Найден сохранённый уровень ", level_number, " (тип: ", saved_type_str, ")")
 	
 	is_level_loaded_from_save = true
 	current_correct_func = level_data.correct_func
@@ -119,7 +116,6 @@ func load_saved_level(level_number: int) -> bool:
 	_apply_task_text_for_level_type(int(saved_lvl_type))
 	var expr = Expression.new()
 	if saved_lvl_type != LevelType.DOUBLE_LINEAR and expr.parse(current_correct_func, ["x"]) == OK:
-		print("[LevelGen] setup_level_positions using saved func:", current_correct_func)
 		root.utils.clear_ui_before_level_load()
 		root.utils.setup_level_positions(expr)
 	
@@ -178,12 +174,11 @@ func load_saved_level(level_number: int) -> bool:
 			double_module.set_intersection(double_intersection_x)
 			double_module.apply_ui(options, options_secondary)
 			double_module.draw_tracks(current_correct_func, current_correct_func_b)
+			root.utils.enable_option_buttons(root)
 			
 			var expr_a = Expression.new()
 			var expr_b = Expression.new()
 			if expr_a.parse(current_correct_func, ["x"]) == OK and expr_b.parse(current_correct_func_b, ["x"]) == OK:
-				print("[LevelGen] setup_double_level_positions using saved funcs")
-				root.utils.clear_ui_before_level_load()
 				root.utils.setup_double_level_positions(expr_a, expr_b)
 		else:
 			push_warning("DOUBLE_LINEAR: module not initialized; cannot restore saved state")
@@ -209,7 +204,6 @@ func generate_new_level():
 	root.utils.clear_ui_before_level_load()
 	var lvl_type = get_level_type(root.level)
 	current_level_type = lvl_type 
-	print(level_type_to_name(lvl_type))
 	_apply_task_text_for_level_type(int(lvl_type))
 	root.apply_bottom_ui_for_level_type(lvl_type)
 		
@@ -238,7 +232,6 @@ func generate_new_level():
 	if root.level_saver:
 		var saved = load_saved_level(root.level)
 		if saved:
-			print("Загружен сохранённый уровень ", root.level)
 			root.restart.disabled = false
 			root.utils.enable_option_buttons(root)
 			root.track.visible = false
@@ -252,8 +245,6 @@ func generate_new_level():
 			if root.timer_label:
 				root.timer_label.text = "Таймер: --"
 			return
-		else:
-			print("Уровень ", root.level, " не найден в сохранениях, генерирую новый...")
 	
 	is_level_loaded_from_save = false
 	root.restart.disabled = false
@@ -281,7 +272,6 @@ func generate_new_level():
 	seed(level_seed)
 	root.ball_side = Side.RIGHT if randi() % 2 == 0 else Side.LEFT
 
-	print("Тип уровня:", level_type_to_name(lvl_type))
 	
 
 	var valid_correct_func = ""
@@ -324,7 +314,7 @@ func generate_new_level():
 		if double_module:
 			var state = double_module.prepare_new_level(valid_correct_func)
 			current_correct_func = state.primary
-			current_correct_func = state.secondary
+			current_correct_func_b = state.secondary
 			options = state.options_primary
 			options_secondary = state.options_secondary
 			double_intersection_x = state.intersection
@@ -335,7 +325,6 @@ func generate_new_level():
 			var expr_a = Expression.new()
 			var expr_b = Expression.new()
 			if expr_a.parse(current_correct_func, ["x"]) == OK and expr_b.parse(current_correct_func_b, ["x"]) == OK:
-				print("[LevelGen] setup_double_level_positions for new DOUBLE_LINEAR level")
 				root.utils.clear_ui_before_level_load()
 				root.utils.setup_double_level_positions(expr_a, expr_b)
 			
@@ -355,14 +344,6 @@ func generate_new_level():
 			root.k_input.clear()
 		if root.b_input:
 			root.b_input.clear()
-		var input_panel2_l = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/InputPanel2")
-		if input_panel2_l:
-			print("[INPUT_LINEAR] InputPanel2 found")
-			
-			var k_container = input_panel2_l.get_node_or_null("K")
-			var b_container = input_panel2_l.get_node_or_null("B")
-		else:
-			print("[INPUT_LINEAR] InputPanel2 node not found!")
 		if root.x_label:
 			root.x_label.text = ""
 		if root.y_label:
@@ -373,7 +354,6 @@ func generate_new_level():
 			root.b_value_label.text = ""
 		var expr = Expression.new()
 		if expr.parse(current_correct_func, ["x"]) == OK:
-			print("[LevelGen] setup_level_positions using input-linear func:", current_correct_func)
 			root.utils.setup_level_positions(expr)
 			_save_current_level(lvl_type, level_seed)
 	elif lvl_type == LevelType.INPUT_SLIDER:
@@ -382,7 +362,6 @@ func generate_new_level():
 			if cb and cb is CanvasItem:
 				cb.disabled = true
 		if root.input_slider_module:
-			print("[LevelGen] setup_level_positions using input-slider func:", current_correct_func)
 			root.input_slider_module.setup_ui_with_function(current_correct_func)
 			if root.has_method("refresh_input_slider_value_labels"):
 				root.refresh_input_slider_value_labels()
@@ -417,7 +396,6 @@ func generate_new_level():
 
 		var expr = Expression.new()
 		if expr.parse(valid_correct_func, ["x"]) == OK:
-			print("[LevelGen] setup_level_positions using generated func:", valid_correct_func)
 			root.utils.setup_level_positions(expr)
 
 		var button_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option0/FormulaLabel")
@@ -447,11 +425,9 @@ func get_option_for_group(group: int, index: int) -> String:
 
 func _save_current_level(lvl_type: int, level_seed: int = 0):
 	if not root.level_saver:
-		print("level_saver не инициализирован, сохранение невозможно")
 		return
 
 	if is_level_loaded_from_save:
-		print("Уровень ", root.level, " был загружен из сохранения, пропускаю пересохранение")
 		return
 	var LevelSaver = root.level_saver
 	var level_data = LevelSaver.LevelData.new()
@@ -467,11 +443,8 @@ func _save_current_level(lvl_type: int, level_seed: int = 0):
 	level_data.star_seed = level_seed if level_seed != 0 else randi()
 	level_data.double_intersection_x = double_intersection_x
 	var saved = LevelSaver.save_level(level_data)
-	if saved:
-		print("✓ Уровень ", root.level, " сохранён в levels.json")
-		is_level_loaded_from_save = true  
-	else:
-		print("✗ Ошибка сохранения уровня ", root.level)
+	is_level_loaded_from_save = true  
+
 
 
 func generate_options_for_type(lvl_type: int, base_func: String) -> Array:
@@ -537,8 +510,8 @@ func random_function(allowed_types: Array = []) -> String:
 			var a = round(randf_range(0, 1) * 10) / 10.0
 			if a == 0.0:
 				a = 0.05
-			var b2 = round(randf_range(-0.8, 0.8) * 10) / 10.0
-			var c = round(randf_range(-4.0, 4.0) * 10) / 10.0
+			var b2 = round(randf_range(-5, 5) * 10) / 10.0
+			var c = round(randf_range(-10.0, 10.0) * 10) / 10.0
 			func_str = str(a) + "*x*x + " + str(b2) + "*x + " + str(c)
 		FuncType.SIN:
 			var A = round(randf_range(1.0, 2.0) * 10) / 10.0

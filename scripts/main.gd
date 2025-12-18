@@ -152,9 +152,7 @@ func _ready():
 			utils.on_forward_pressed(self, forward_button, option_check_buttons))
 	set_forward_button_active(false)
 	
-	print("[DEBUG] build_button node: ", build_button)
 	if build_button and not build_button.pressed.is_connected(_on_build_button_pressed):
-		print("[DEBUG] Connecting build_button signal")
 		build_button.pressed.connect(_on_build_button_pressed)
 	elif not build_button:
 		print("[DEBUG] ERROR: build_button not found!")
@@ -210,7 +208,6 @@ func select_option(index: int, group: int = 0):
 
 		if timer_container:
 			timer_container.modulate = Color.WHITE
-		print("Таймер запущен, выбрана функция:", func_str)
 
 func _on_timer_timeout():
 	if timer_label:
@@ -249,7 +246,6 @@ func _debug_dump_bottom_ui_state():
 
 	for _i in range(2):
 		await get_tree().process_frame
-	print("[UI-DBG] bottom_layout:", bottom_layout, " items:", bottom_layout_items)
 	_debug_dump_node("bottom_layout", bottom_layout)
 	_debug_dump_node("answers_panel", answers_panel)
 	_debug_dump_node("answers_buttons_row", answers_buttons_row)
@@ -261,7 +257,6 @@ func _debug_dump_bottom_ui_state():
 
 func _debug_dump_node(tag: String, n: Node):
 	if n == null:
-		print("[UI-DBG] ", tag, " = null")
 		return
 	var vis := "n/a"
 	var alpha := "n/a"
@@ -272,7 +267,6 @@ func _debug_dump_node(tag: String, n: Node):
 		alpha = str(ci.modulate.a)
 	if n is Control:
 		mf = str((n as Control).mouse_filter)
-	print("[UI-DBG] ", tag, " path=", n.get_path(), " vis=", vis, " a=", alpha, " mf=", mf)
 
 func _setup_bottom_layout_autosize():
 	if not bottom_layout or not bottom_layout_items:
@@ -339,13 +333,14 @@ func bottom_layout_end_update():
 
 
 func apply_bottom_ui_for_level_type(lvl_type: int):
-	print("[DEBUG] apply_bottom_ui_for_level_type: lvl_type=", lvl_type)
 	if lvl_type == level_gen.LevelType.INPUT_LINEAR or lvl_type == level_gen.LevelType.INPUT_SLIDER:
-		print("[DEBUG] Deactivating button for INPUT level")
 		set_forward_button_active(false)
 	else:
 		print("[DEBUG] Activating button for non-INPUT level")
 		set_forward_button_active(true)
+
+	print("  answers_buttons2: ", answers_buttons2)
+	print("  answers_buttons1: ", answers_buttons1)
 
 	match lvl_type:
 		level_gen.LevelType.DOUBLE_LINEAR:
@@ -385,7 +380,6 @@ func set_forward_button_active(active: bool):
 	forward_button.visible = true
 	forward_button.disabled = not active
 	forward_button.mouse_filter = Control.MOUSE_FILTER_STOP
-	print("[DEBUG] set_forward_button_active called with active=", active, " disabled=", forward_button.disabled)
 
 
 func set_panel_section_active(n: Node, active: bool):
@@ -410,11 +404,8 @@ func _refresh_bottom_layout_height():
 	if not bottom_layout or not bottom_layout_items:
 		return
 	var h := bottom_layout_items.get_combined_minimum_size().y
-	print("[DEBUG] BottomLayout height: ", h, "px (combined_minimum_size)")
 	if h > 1.0:
 		_bottom_layout_last_height = max(h + 8.0, 60.0)
-	print("[DEBUG] BottomLayout last_height: ", _bottom_layout_last_height, "px")
-	print("[DEBUG] BottomLayout offset_top: ", bottom_layout.offset_top, "px")
 	bottom_layout.offset_top = -_bottom_layout_last_height
 
 func setup_sliders():
@@ -512,7 +503,6 @@ func redraw_input_graph():
 		
 		var lvl_type = level_gen.get_level_type(level)
 		if lvl_type == level_gen.LevelType.INPUT_LINEAR or lvl_type == level_gen.LevelType.INPUT_SLIDER:
-			print("[DEBUG] Activating button in redraw_input_graph for INPUT level")
 			set_forward_button_active(true)
 	else:
 		print("Ошибка парсинга функции из полей ввода: ", func_str)
@@ -586,7 +576,6 @@ func _on_forward_button_pressed():
 	utils.on_forward_pressed(self, forward_button, option_check_buttons)
 
 func _on_build_button_pressed():
-	print("[DEBUG] _on_build_button_pressed called!")
 	utils.on_build_button_pressed(self, k_input, b_input, track_drawer, track, forward_button_input, level_gen)
 
 func setup_check_buttons():
