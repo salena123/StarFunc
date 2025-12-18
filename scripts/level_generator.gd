@@ -7,6 +7,7 @@ var current_correct_func = ""
 var current_correct_func_b = ""
 var double_intersection_x: float = NAN
 var is_level_loaded_from_save: bool = false
+var current_level_type: LevelType = LevelType.SIMPLE
 
 enum FuncType { LINEAR, QUADRATIC, SIN, COS }
 enum Side { LEFT, RIGHT }
@@ -60,7 +61,7 @@ func init(r):
 
 func get_level_type(level: int) -> LevelType:
 	if level <= 3: 
-		return LevelType.SIMPLE
+		return LevelType.DOUBLE_LINEAR
 	elif level <= 6: 
 		return LevelType.VARY_B
 	elif level <= 9:
@@ -105,6 +106,7 @@ func load_saved_level(level_number: int) -> bool:
 	options_secondary = level_data.options_b.duplicate() if level_data.options_b is Array else []
 	root.ball_side = level_data.ball_side
 	double_intersection_x = level_data.double_intersection_x
+	current_level_type = level_data.level_type if "level_type" in level_data else get_level_type(level_number)
 	
 	seed(level_data.star_seed)
 	
@@ -118,10 +120,14 @@ func load_saved_level(level_number: int) -> bool:
 	var expr = Expression.new()
 	if saved_lvl_type != LevelType.DOUBLE_LINEAR and expr.parse(current_correct_func, ["x"]) == OK:
 		print("[LevelGen] setup_level_positions using saved func:", current_correct_func)
+		root.utils.clear_ui_before_level_load()
 		root.utils.setup_level_positions(expr)
 	
+	if root.ui:
+		root.ui.update_stars_count_label()
+	
 	if saved_lvl_type == LevelType.INPUT_LINEAR:
-		# Answers container stays in layout; section visibility is managed by root.apply_bottom_ui_for_level_type
+		
 		if root.build_button:
 			root.build_button.disabled = false
 		if root.x_label:
@@ -135,14 +141,13 @@ func load_saved_level(level_number: int) -> bool:
 	elif saved_lvl_type == LevelType.INPUT_SLIDER:
 		if root.input_slider_module:
 			root.input_slider_module.setup_ui_with_function(current_correct_func)
-			# Section visibility is managed by root.apply_bottom_ui_for_level_type
+			
 			if root.has_method("refresh_input_slider_value_labels"):
 				root.refresh_input_slider_value_labels()
 		else:
 			for cb in root.option_check_buttons:
 				if cb and cb is CanvasItem:
 					cb.disabled = true
-			# Answers container stays in layout; section visibility is managed by root.apply_bottom_ui_for_level_type
 			if root.build_button:
 				root.build_button.disabled = false
 			if root.k_slider:
@@ -173,14 +178,17 @@ func load_saved_level(level_number: int) -> bool:
 			double_module.set_intersection(double_intersection_x)
 			double_module.apply_ui(options, options_secondary)
 			double_module.draw_tracks(current_correct_func, current_correct_func_b)
-			double_module.set_intersection(double_intersection_x)
-			double_module.apply_ui(options, options_secondary)
-			double_module.draw_tracks(current_correct_func, current_correct_func_b)
+			
+			var expr_a = Expression.new()
+			var expr_b = Expression.new()
+			if expr_a.parse(current_correct_func, ["x"]) == OK and expr_b.parse(current_correct_func_b, ["x"]) == OK:
+				print("[LevelGen] setup_double_level_positions using saved funcs")
+				root.utils.clear_ui_before_level_load()
+				root.utils.setup_double_level_positions(expr_a, expr_b)
 		else:
 			push_warning("DOUBLE_LINEAR: module not initialized; cannot restore saved state")
 		return true
 	else:
-		# Обновляем тексты для вариантов
 		if options.size() > 0:
 			var button_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option0/FormulaLabel")
 			if button_node:
@@ -193,22 +201,19 @@ func load_saved_level(level_number: int) -> bool:
 			var button3_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option2/FormulaLabel")
 			if button3_node:
 				button3_node.text = root.utils.format_function_from_string(options[2])
-		# Answers container stays in layout; section visibility is managed by root.apply_bottom_ui_for_level_type
 	
 	return true
 
 
 func generate_new_level():
-	# Очистить поля ввода и сбросить слайдеры
 	root.utils.clear_ui_before_level_load()
-	# Apply per-level UI composition (which section is active)
 	var lvl_type = get_level_type(root.level)
+	current_level_type = lvl_type 
 	print(level_type_to_name(lvl_type))
 	_apply_task_text_for_level_type(int(lvl_type))
 	root.apply_bottom_ui_for_level_type(lvl_type)
 		
 	
-	# Очистить поля ввода и сбросить слайдеры
 	if root.k_input:
 		root.k_input.clear()
 	if root.b_input:
@@ -224,7 +229,6 @@ func generate_new_level():
 		root.b_value_label.text = ""
 	_reset_slider_ui()
 	
-	# Сброс таймера в начале нового уровня
 	if root.timer:
 		root.timer.stop()
 		root.timer.paused = false
@@ -251,7 +255,6 @@ func generate_new_level():
 		else:
 			print("Уровень ", root.level, " не найден в сохранениях, генерирую новый...")
 	
-	# Генерация нового уровня
 	is_level_loaded_from_save = false
 	root.restart.disabled = false
 	root.utils.enable_option_buttons(root)
@@ -278,13 +281,8 @@ func generate_new_level():
 	seed(level_seed)
 	root.ball_side = Side.RIGHT if randi() % 2 == 0 else Side.LEFT
 
-	# lvl_type already computed above
 	print("Тип уровня:", level_type_to_name(lvl_type))
 	
-	# Объявить переменные для кнопок один раз
-	var buttons_row_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow")
-	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1")
-	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2")
 
 	var valid_correct_func = ""
 	var used_slider_generator = false
@@ -326,13 +324,21 @@ func generate_new_level():
 		if double_module:
 			var state = double_module.prepare_new_level(valid_correct_func)
 			current_correct_func = state.primary
-			current_correct_func_b = state.secondary
+			current_correct_func = state.secondary
 			options = state.options_primary
 			options_secondary = state.options_secondary
 			double_intersection_x = state.intersection
 			double_module.set_intersection(double_intersection_x)
 			double_module.apply_ui(options, options_secondary)
 			double_module.draw_tracks(current_correct_func, current_correct_func_b)
+			
+			var expr_a = Expression.new()
+			var expr_b = Expression.new()
+			if expr_a.parse(current_correct_func, ["x"]) == OK and expr_b.parse(current_correct_func_b, ["x"]) == OK:
+				print("[LevelGen] setup_double_level_positions for new DOUBLE_LINEAR level")
+				root.utils.clear_ui_before_level_load()
+				root.utils.setup_double_level_positions(expr_a, expr_b)
+			
 			_save_current_level(LevelType.DOUBLE_LINEAR, level_seed)
 		else:
 			push_warning("DOUBLE_LINEAR: module not initialized; skipping level generation")
@@ -345,7 +351,6 @@ func generate_new_level():
 		if root.build_button:
 			root.build_button.disabled = false
 
-		# INPUT_LINEAR: показываем новый InputPanel2
 		if root.k_input:
 			root.k_input.clear()
 		if root.b_input:
@@ -354,7 +359,6 @@ func generate_new_level():
 		if input_panel2_l:
 			print("[INPUT_LINEAR] InputPanel2 found")
 			
-			# Проверить видимость контейнеров K и B
 			var k_container = input_panel2_l.get_node_or_null("K")
 			var b_container = input_panel2_l.get_node_or_null("B")
 		else:
@@ -401,7 +405,6 @@ func generate_new_level():
 		_save_current_level(lvl_type, level_seed)
 
 	else:
-		# Обычные уровни: скрываем инпуты и слайдеры
 		if root.build_button:
 			root.build_button.disabled = false
 
@@ -417,7 +420,6 @@ func generate_new_level():
 			print("[LevelGen] setup_level_positions using generated func:", valid_correct_func)
 			root.utils.setup_level_positions(expr)
 
-		# Обновляем тексты для вариантов
 		var button_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option0/FormulaLabel")
 		if button_node:
 			button_node.text = root.utils.format_function_from_string(options[0])
@@ -435,9 +437,6 @@ func generate_new_level():
 			print("  [", i, "] ", options[i])
 		
 		_save_current_level(lvl_type, level_seed)
-		# ForwardButton must stay visible but become active only after user action (select/build)
-
-
 
 func get_option_for_group(group: int, index: int) -> String:
 	var list = options if group == 0 else options_secondary
@@ -535,7 +534,7 @@ func random_function(allowed_types: Array = []) -> String:
 			var b = round(randf_range(-5.0, 5.0) * 10) / 10.0
 			func_str = str(k) + "*x + " + str(b)
 		FuncType.QUADRATIC:
-			var a = round(randf_range(-0.1, 0.1) * 10) / 10.0
+			var a = round(randf_range(0, 1) * 10) / 10.0
 			if a == 0.0:
 				a = 0.05
 			var b2 = round(randf_range(-0.8, 0.8) * 10) / 10.0
@@ -554,19 +553,18 @@ func random_function(allowed_types: Array = []) -> String:
 func reset_current_level():
 	root.restart.disabled = false
 	root.utils.enable_option_buttons(root)
-	# Снять все галочки с CheckButton при перезапуске уровня
+	
 	if root.option_check_buttons:
 		for cb in root.option_check_buttons:
 			if cb:
 				cb.button_pressed = false
-	# Снять все галочки с CheckButton в Buttons2 при перезапуске уровня
 	if root.option_buttons2:
 		for cb in root.option_buttons2:
 			if cb:
 				cb.button_pressed = false
-	# ForwardButton should be visible but inactive at the start of the level/reset
 	if root.has_method("set_forward_button_active"):
 		root.set_forward_button_active(false)
+	
 	for child in root.track.get_children():
 		if child is CollisionShape2D:
 			child.queue_free()
@@ -575,28 +573,25 @@ func reset_current_level():
 			if child is CollisionShape2D:
 				child.queue_free()
 	
-	# Сброс таймера при перезапуске уровня
 	if root.timer:
 		root.timer.stop()
 		root.timer.paused = false
+		root.timer.wait_time = root.timer_duration
 	if root.timer_label:
 		root.timer_label.text = root.format_time(root.timer_duration)
 	
-	var lvl_type = get_level_type(root.level)
-	if lvl_type == LevelType.INPUT_LINEAR:
-		# Очистить поля InputPanel2
+	var current_lvl_type = get_level_type(root.level)
+	if current_lvl_type == LevelType.INPUT_LINEAR:
 		if root.k_input:
 			root.k_input.clear()
 		if root.b_input:
 			root.b_input.clear()
-	elif lvl_type == LevelType.INPUT_SLIDER:
-		# Сбросить слайдеры Slider2
+	elif current_lvl_type == LevelType.INPUT_SLIDER:
 		if root.k_slider:
 			root.k_slider.value = 0.0
 		if root.b_slider:
 			root.b_slider.value = 0.0
 	
-	# Всегда очищать поля InputPanel2 и Slider2 при сбросе уровня
 	if root.k_input:
 		root.k_input.clear()
 	if root.b_input:
@@ -618,24 +613,32 @@ func reset_current_level():
 	root.ui.update_score_label()
 	root.first_selection_done = false
 	
-	if lvl_type == LevelType.INPUT_LINEAR or lvl_type == LevelType.INPUT_SLIDER:
+	for s in root.stars:
+		s.visible = true
+	
+	if current_lvl_type == LevelType.INPUT_LINEAR or current_lvl_type == LevelType.INPUT_SLIDER:
 		if root.build_button:
 			root.build_button.disabled = false
+	
+	if current_lvl_type == LevelType.INPUT_LINEAR or current_lvl_type == LevelType.INPUT_SLIDER:
+		if root.has_method("set_forward_button_active"):
+			root.set_forward_button_active(false)
 
 	root.ball.freeze = false
 	root.ball.linear_velocity = Vector2.ZERO
 	root.ball.angular_velocity = 0
+	
 	var expr = Expression.new()
 	if expr.parse(current_correct_func, ["x"]) == OK:
-		print("[LevelGen] reset_current_level placing stars for func:", current_correct_func)
-		if lvl_type == LevelType.DOUBLE_LINEAR:
+		if current_lvl_type == LevelType.DOUBLE_LINEAR:
 			if root.double_linear_module:
 				root.double_linear_module.set_intersection(double_intersection_x)
 				root.double_linear_module.draw_tracks(current_correct_func, current_correct_func_b)
 		else:
-			# Используем правильную функцию только для расстановки звёзд,
-			# НЕ рисуем по ней физический трек, чтобы шарик не контактировал с невидимым графиком
 			root.utils.setup_level_positions(expr)
+		if root.ui:
+			root.ui.update_stars_count_label()
+	
 	root.ball.freeze = true
 
 

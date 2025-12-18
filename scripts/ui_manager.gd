@@ -47,6 +47,11 @@ func update_score_label():
 	if score_label:
 		score_label.text = "Звёзды: " + str(root.score)
 
+func update_stars_count_label():
+	if score_label:
+		var stars_count = 5 if root.level_gen.current_level_type == root.level_gen.LevelType.QUADRATIC else 3
+		score_label.text = "Звёзды: " + str(stars_count)
+
 func show_level_complete():
 	root.ball.freeze = true
 	root.restart.disabled = true

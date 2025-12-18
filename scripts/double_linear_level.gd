@@ -24,18 +24,14 @@ func prepare_from_saved(primary_func: String, secondary_func: String, options_a:
 
 func apply_ui(options_a: Array, options_b: Array):
 	print("[DOUBLE_LINEAR] apply_ui: options_a.size() = ", options_a.size(), ", options_b.size() = ", options_b.size())
-	# if root.input_panel:
-	#	root.input_panel.visible = false
 	if root.build_button:
 		root.build_button.disabled = false
 	
-	# Показать только нужные варианты в Buttons1
 	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1")
 	if buttons1_node:
 		for i in range(min(3, options_a.size())):
 			var option_node = buttons1_node.get_node_or_null("Option" + str(i))
 			if option_node:
-				# Обновить текст и сбросить чекбокс
 				var label = option_node.get_node_or_null("FormulaLabel")
 				if label:
 					label.text = root.utils.format_function_from_string(options_a[i])
@@ -44,13 +40,11 @@ func apply_ui(options_a: Array, options_b: Array):
 					cb.button_pressed = false
 					cb.disabled = false
 	
-	# Показать только нужные варианты в Buttons2
 	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2")
 	if buttons2_node:
 		for i in range(min(3, options_b.size())):
 			var option_node = buttons2_node.get_node_or_null("Option" + str(i))
 			if option_node:
-				# Обновить текст и сбросить чекбокс
 				var label = option_node.get_node_or_null("FormulaLabel")
 				if label:
 					label.text = root.utils.format_function_from_string(options_b[i])
@@ -59,7 +53,6 @@ func apply_ui(options_a: Array, options_b: Array):
 					cb.button_pressed = false
 					cb.disabled = false
 	
-	# Answers container stays in layout; section visibility is managed by root.apply_bottom_ui_for_level_type
 
 
 func draw_tracks(primary_func: String, secondary_func: String):
@@ -301,12 +294,10 @@ func _set_button_texts(buttons: Array, values: Array):
 		return
 	for i in range(min(buttons.size(), values.size())):
 		if buttons[i]:
-			# Determine path based on which group we're setting
 			var path = ""
-			var parent_name = buttons[i].get_parent().name  # Option0, Option1, Option2
 			var grandparent_name = ""
 			if buttons[i].get_parent() and buttons[i].get_parent().get_parent():
-				grandparent_name = buttons[i].get_parent().get_parent().name  # Buttons1 or Buttons2
+				grandparent_name = buttons[i].get_parent().get_parent().name 
 			if grandparent_name == "Buttons1":
 				path = "UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option" + str(i) + "/FormulaLabel"
 			else:

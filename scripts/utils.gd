@@ -196,7 +196,24 @@ func setup_level_positions(expr: Expression):
 		push_warning("Cannot setup level positions without coordinate bounds")
 		return
 
+	# Сначала полностью очищаем все звезды
+	for star in root.stars:
+		if star:
+			star.visible = false
+			star.position = Vector2.ZERO
+
 	var num_stars = root.stars.size()
+	
+	# Для уровней типа QUADRATIC показываем 5 звезд, для остальных - 3
+	if root.level_gen and root.level_gen.current_level_type == root.level_gen.LevelType.QUADRATIC:
+		num_stars = 5
+	else:
+		num_stars = 3
+	
+	# Обновляем метку количества звезд
+	if root.ui:
+		root.ui.update_stars_count_label()
+	
 	var margin_px = 40.0
 	var min_star_spacing_px = 60.0
 
@@ -212,8 +229,11 @@ func setup_level_positions(expr: Expression):
 	else:
 		ball_x = fx_start
 
-	ball_x = lerp(ball_x, 0.0, 0.35)
-	root.ball.position = Vector2(fx_to_screen(ball_x), float(top_margin) + float(vertical_offset_pixels))
+	# Двигаем шарик ближе к краю (уменьшаем интерполяцию к центру с 0.35 до 0.15)
+	ball_x = lerp(ball_x, 0.0, 0.15)
+	# Смещаем шарик ниже (добавляем 30 пикселей к вертикальной позиции)
+	var ball_y = float(top_margin) + float(vertical_offset_pixels) + 30.0
+	root.ball.position = Vector2(fx_to_screen(ball_x), ball_y)
 
 	var star_positions = []
 	var step_px = (x_end_screen - x_start_screen) / float(num_stars + 1)
@@ -246,6 +266,10 @@ func setup_level_positions(expr: Expression):
 			# Keep stars above BottomLayout.
 			y_screen = min(y_screen, float(ui_top) - 8.0)
 		root.stars[i].position = Vector2(x_screen, y_screen)
+	
+	# Скрываем лишние звезды, которые не нужны для текущего уровня
+	for i in range(num_stars, root.stars.size()):
+		root.stars[i].visible = false
 
 func setup_double_level_positions(expr_a: Expression, expr_b: Expression):
 	if root == null:
@@ -254,7 +278,25 @@ func setup_double_level_positions(expr_a: Expression, expr_b: Expression):
 	if not ensure_coordinate_bounds():
 		push_warning("Cannot setup double level positions without coordinate bounds")
 		return
+	
+	# Сначала полностью очищаем все звезды
+	for star in root.stars:
+		if star:
+			star.visible = false
+			star.position = Vector2.ZERO
+	
 	var num_stars = root.stars.size()
+	
+	# Для уровней типа QUADRATIC показываем 5 звезд, для остальных - 3
+	if root.level_gen and root.level_gen.current_level_type == root.level_gen.LevelType.QUADRATIC:
+		num_stars = 5
+	else:
+		num_stars = 3
+	
+	# Обновляем метку количества звезд
+	if root.ui:
+		root.ui.update_stars_count_label()
+		
 	if num_stars == 0:
 		return
 	if num_stars == 1:
@@ -267,9 +309,11 @@ func setup_double_level_positions(expr_a: Expression, expr_b: Expression):
 	var fx_start = (x_start_screen - root.screen_center.x) / root.base_unit
 	var fx_end = (x_end_screen - root.screen_center.x) / root.base_unit
 	var ball_x: float = fx_end if root.ball_side == root.level_gen.Side.RIGHT else fx_start
-	# Move ball closer to the center only along X (keep original Y).
-	ball_x = lerp(ball_x, 0.0, 0.35)
-	root.ball.position = Vector2(fx_to_screen(ball_x), float(top_margin) + float(vertical_offset_pixels))
+	# Двигаем шарик ближе к краю (уменьшаем интерполяцию к центру с 0.35 до 0.15)
+	ball_x = lerp(ball_x, 0.0, 0.15)
+	# Смещаем шарик ниже (добавляем 30 пикселей к вертикальной позиции)
+	var ball_y = float(top_margin) + float(vertical_offset_pixels) + 30.0
+	root.ball.position = Vector2(fx_to_screen(ball_x), ball_y)
 	if root.double_linear_module == null:
 		setup_level_positions(expr_a)
 		return
@@ -285,6 +329,11 @@ func setup_double_level_positions(expr_a: Expression, expr_b: Expression):
 	star_index = result_b["index"]
 	prev_x = result_b["prev_x"]
 	while star_index < num_stars:
+		root.stars[star_index].visible = false
+		star_index += 1
+	
+	# Скрываем оставшиеся лишние звезды (если общее количество звезд в сцене больше num_stars)
+	while star_index < root.stars.size():
 		root.stars[star_index].visible = false
 		star_index += 1
 
@@ -348,14 +397,39 @@ func _place_segment_stars(expr: Expression, count: int, fx_start: float, fx_end:
 func on_forward_pressed(root, forward_button, option_buttons):
 	if root.first_selection_done:
 		return
+	
+	# Проверяем, есть ли активный график
+	if not _has_active_track(root):
+		print("[Utils] Нет активного графика! Нажмите кнопку 'вперед' после выбора графика.")
+		return
+	
 	root.first_selection_done = true
 	root.ball.freeze = false
 	root.ball.apply_impulse(Vector2.ZERO, Vector2(0, 50))
+	
+	# Делаем кнопку неактивной визуально после нажатия
+	if root.has_method("set_forward_button_active"):
+		root.set_forward_button_active(false)
 
 	var lvl_type = root.level_gen.get_level_type(root.level)
 	if lvl_type == root.level_gen.LevelType.INPUT_LINEAR or lvl_type == root.level_gen.LevelType.INPUT_SLIDER:
 		if root.build_button:
 			root.build_button.disabled = true
+
+func _has_active_track(root) -> bool:
+	# Проверяем, есть ли на треке коллизии (активный график)
+	if root.track and root.track.visible:
+		for child in root.track.get_children():
+			if child is CollisionShape2D:
+				return true
+	
+	# Проверяем второй трек для двойных уровней
+	if root.track2 and root.track2.visible:
+		for child in root.track2.get_children():
+			if child is CollisionShape2D:
+				return true
+	
+	return false
 
 func enable_option_buttons(root):
 	# Включить CheckButton для обычных уровней
@@ -511,8 +585,19 @@ func _build_function(root, func_str: String, track_drawer, track, forward_button
 	if expr.parse(func_str, ["x"]) == OK:
 		track_drawer.draw_track(func_str)
 		track.visible = true
-		if root.has_method("set_forward_button_active"):
-			root.set_forward_button_active(true)
+		
+		# Для INPUT_LINEAR и INPUT_SLIDER оставляем кнопку активной после построения
+		var lvl_type = root.level_gen.get_level_type(root.level)
+		print("[DEBUG] _build_function: lvl_type=", lvl_type, " INPUT_LINEAR=", root.level_gen.LevelType.INPUT_LINEAR, " INPUT_SLIDER=", root.level_gen.LevelType.INPUT_SLIDER)
+		if lvl_type == root.level_gen.LevelType.INPUT_LINEAR or lvl_type == root.level_gen.LevelType.INPUT_SLIDER:
+			print("[DEBUG] Activating button for INPUT level")
+			if root.has_method("set_forward_button_active"):
+				root.set_forward_button_active(true)
+		else:
+			# Для остальных типов - стандартная логика
+			print("[DEBUG] Activating button for other level type")
+			if root.has_method("set_forward_button_active"):
+				root.set_forward_button_active(true)
 		
 		if not root.first_selection_done:
 			if root.timer and root.timer.is_stopped():
@@ -528,6 +613,33 @@ func _build_function(root, func_str: String, track_drawer, track, forward_button
 		
 		
 func clear_ui_before_level_load():
+	# Полностью очищаем все звезды перед загрузкой нового уровня
+	for star in root.stars:
+		if star:
+			star.visible = false
+			# Сбрасываем позицию звезды в начальное состояние
+			star.position = Vector2.ZERO
+			# Сбрасываем состояние Area2D если есть
+			if star.has_method("set_monitoring"):
+				star.set_monitoring(false)
+				star.set_monitoring(true)
+	
+	# Очищаем все треки (графики) перед загрузкой нового уровня
+	if root.track:
+		root.track.visible = false
+		if root.line2d:
+			root.line2d.points = PackedVector2Array()
+		for child in root.track.get_children():
+			if child is CollisionShape2D:
+				child.queue_free()
+	
+	if root.track2:
+		root.track2.visible = false
+		if root.line2d2:
+			root.line2d2.points = PackedVector2Array()
+		for child in root.track2.get_children():
+			if child is CollisionShape2D:
+				child.queue_free()
 
 	if root.k_value_label:
 		root.k_value_label.text = ""

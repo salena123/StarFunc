@@ -1,4 +1,4 @@
-[gd_scene load_steps=58 format=3 uid="uid://c2cdbk2ehc4o3"]
+[gd_scene load_steps=59 format=3 uid="uid://c2cdbk2ehc4o3"]
 
 [ext_resource type="Script" uid="uid://c7qx3hdq3vnhc" path="res://scripts/main.gd" id="1_kdubu"]
 [ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="1_wtcfe"]
@@ -166,6 +166,8 @@ shadow_offset = Vector2(0, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_flf07"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k73cj"]
+
 [sub_resource type="SystemFont" id="SystemFont_kdubu"]
 
 [node name="level1" type="Node2D"]
@@ -263,6 +265,30 @@ scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_epypp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="stars/star3"]
+position = Vector2(-1, 1)
+scale = Vector2(0.5, 0.5)
+shape = SubResource("CircleShape2D_q6r6c")
+
+[node name="star4" type="Area2D" parent="stars"]
+position = Vector2(300, 300)
+
+[node name="Sprite2D" type="Sprite2D" parent="stars/star4"]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_epypp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="stars/star4"]
+position = Vector2(-1, 1)
+scale = Vector2(0.5, 0.5)
+shape = SubResource("CircleShape2D_q6r6c")
+
+[node name="star5" type="Area2D" parent="stars"]
+position = Vector2(500, 350)
+
+[node name="Sprite2D" type="Sprite2D" parent="stars/star5"]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_epypp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="stars/star5"]
 position = Vector2(-1, 1)
 scale = Vector2(0.5, 0.5)
 shape = SubResource("CircleShape2D_q6r6c")
@@ -925,6 +951,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_forward_button")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_d2bti")
 theme_override_styles/hover = SubResource("StyleBoxFlat_flf07")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_flf07")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_k73cj")
 disabled = true
 action_mode = 0
 text = "Проверить"
