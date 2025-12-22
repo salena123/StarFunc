@@ -16,8 +16,8 @@ func init(r):
 	score_label = root.get_node("UI/ScoreLabel")
 	level_complete_popup = root.get_node("UI/LevelCompletePopup")
 	retry_button = root.get_node("UI/LevelCompletePopup/RetryButton")
-	next_button = root.get_node("UI/LevelCompletePopup/NextButton")
-	level_label = root.get_node("UI/LevelCompletePopup/Label")
+	next_button = root.get_node("UI/LevelCompletePopup/Card/VBoxContainer/NextButton")
+	level_label = root.get_node("UI/LevelCompletePopup/Card/VBoxContainer/BannerControl/Medial/LevelLabel")
 	fail_popup = root.get_node("UI/FailPopup")
 	fail_retry_button = root.get_node("UI/FailPopup/RetryButton")
 	restart = root.get_node("UI/Restart")
@@ -55,7 +55,7 @@ func update_stars_count_label():
 func show_level_complete():
 	root.ball.freeze = true
 	root.restart.disabled = true
-	level_label.text = "Уровень " + str(root.level) + " пройден!"
+	level_label.text = str(root.level)
 	level_complete_popup.show()
 	if root.timer:
 		root.timer.paused = true

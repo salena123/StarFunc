@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cs4hibj5o6kk0"
-path="res://.godot/imported/Group 1000007242.svg-0563fc16213cccc40f964bcdf41dfdab.ctex"
+uid="uid://da1ggn7yvvs0b"
+path="res://.godot/imported/gray_star_small.svg-c7144762df56e3770653919bed573a57.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Group 1000007242.svg"
-dest_files=["res://.godot/imported/Group 1000007242.svg-0563fc16213cccc40f964bcdf41dfdab.ctex"]
+source_file="res://gray_star_small.svg"
+dest_files=["res://.godot/imported/gray_star_small.svg-c7144762df56e3770653919bed573a57.ctex"]
 
 [params]
 

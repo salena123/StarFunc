@@ -1,21 +1,29 @@
-[gd_scene load_steps=59 format=3 uid="uid://c2cdbk2ehc4o3"]
+[gd_scene load_steps=73 format=3 uid="uid://c2cdbk2ehc4o3"]
 
 [ext_resource type="Script" uid="uid://c7qx3hdq3vnhc" path="res://scripts/main.gd" id="1_kdubu"]
-[ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="1_wtcfe"]
+[ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://ball.png" id="1_wtcfe"]
 [ext_resource type="Texture2D" uid="uid://b57q1eub2wvc5" path="res://Group 1000007244.png" id="2_epypp"]
 [ext_resource type="Texture2D" uid="uid://bpdan0od4twig" path="res://earth.png" id="3_0hol4"]
 [ext_resource type="LabelSettings" uid="uid://u2by8jd7hk8g" path="res://ScoreText.tres" id="5_q6r6c"]
 [ext_resource type="Texture2D" uid="uid://du8swh2slpfph" path="res://BackgrondSprite.png" id="6_4d7sh"]
 [ext_resource type="Script" uid="uid://c8g543guoxhdl" path="res://grid.gd" id="6_kdubu"]
 [ext_resource type="Script" uid="uid://d5jhcclg2few" path="res://background.gd" id="6_rj586"]
-[ext_resource type="Texture2D" uid="uid://cs4hibj5o6kk0" path="res://Group 1000007242.svg" id="7_flf07"]
+[ext_resource type="Texture2D" uid="uid://cs4hibj5o6kk0" path="res://restart.svg" id="7_flf07"]
 [ext_resource type="Texture2D" uid="uid://dsphoe8vgna25" path="res://Group (3).png" id="8_4d7sh"]
+[ext_resource type="Texture2D" uid="uid://d8d562pega5o" path="res://orange_ribbon.svg" id="9_e8dv2"]
 [ext_resource type="FontFile" uid="uid://bsi23ifa7ri5i" path="res://BlushesRegular.ttf" id="9_hqns4"]
 [ext_resource type="Texture2D" uid="uid://b5fglmbnou05n" path="res://chevrons-down.svg" id="9_ir8iy"]
+[ext_resource type="Texture2D" uid="uid://chpf7g60dcyoo" path="res://Group 1000007236.svg" id="9_k73cj"]
+[ext_resource type="Texture2D" uid="uid://cwwqhoxn8avkr" path="res://light_star_small.svg" id="10_2nhjh"]
+[ext_resource type="Texture2D" uid="uid://bwfihjdf72d5f" path="res://light_start_big.svg" id="11_bjha6"]
 [ext_resource type="LabelSettings" uid="uid://bfdnoy5qkyfsp" path="res://OptionsText.tres" id="11_x0ka3"]
-[ext_resource type="Texture2D" uid="uid://cqlibuf564iea" path="res://Group 12562.png" id="12_nr8wp"]
-[ext_resource type="Texture2D" uid="uid://wg18bk1t7w55" path="res://Group 12562 (1).png" id="13_d2bti"]
+[ext_resource type="Texture2D" uid="uid://da1ggn7yvvs0b" path="res://gray_star_small.svg" id="12_gt76g"]
+[ext_resource type="Texture2D" uid="uid://cqlibuf564iea" path="res://checkbox_on.png" id="12_nr8wp"]
+[ext_resource type="Texture2D" uid="uid://1agh0j88mf1e" path="res://gray_star_big.svg" id="13_1fr6y"]
+[ext_resource type="Texture2D" uid="uid://wg18bk1t7w55" path="res://checkbox_off.png" id="13_d2bti"]
+[ext_resource type="Texture2D" uid="uid://bda67iymjjdqc" path="res://medial.svg" id="14_bjha6"]
 [ext_resource type="Texture2D" uid="uid://c4gstxpusfq5t" path="res://Group 12560.png" id="14_d2bti"]
+[ext_resource type="Texture2D" uid="uid://b7b133gas4t5f" path="res://coin.svg" id="15_gt76g"]
 [ext_resource type="Texture2D" uid="uid://dyfqjabuibjth" path="res://Ellipse 653.png" id="15_ta5nu"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_y32ns"]
@@ -42,6 +50,42 @@ radius = 50.039986
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mryly"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kq1c5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k73cj"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+shadow_color = Color(0, 0, 0, 0.5137255)
+shadow_size = 9
+shadow_offset = Vector2(0, 5)
+
+[sub_resource type="LabelSettings" id="LabelSettings_bjha6"]
+font = ExtResource("9_hqns4")
+font_size = 29
+outline_size = 2
+
+[sub_resource type="LabelSettings" id="LabelSettings_gt76g"]
+font = ExtResource("9_hqns4")
+font_size = 26
+outline_size = 2
+
+[sub_resource type="LabelSettings" id="LabelSettings_1fr6y"]
+font = ExtResource("9_hqns4")
+font_size = 24
+font_color = Color(0.6392157, 0.6392157, 0.6392157, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_2hxjc"]
+font = ExtResource("9_hqns4")
+font_size = 24
+font_color = Color(0.9607843, 0.50980395, 0.24313726, 1)
+outline_size = 9
+
+[sub_resource type="LabelSettings" id="LabelSettings_rjqkl"]
+font = ExtResource("9_hqns4")
+font_size = 24
+outline_size = 3
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rj586"]
 bg_color = Color(1, 1, 1, 1)
@@ -326,50 +370,213 @@ label_settings = ExtResource("5_q6r6c")
 
 [node name="LevelCompletePopup" type="Control" parent="UI"]
 layout_mode = 3
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimmer" type="ColorRect" parent="UI/LevelCompletePopup"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(7.549019, 3.873584)
+color = Color(0, 0, 1, 1)
+
+[node name="Card" type="PanelContainer" parent="UI/LevelCompletePopup"]
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = -113.0
+offset_top = -113.0
+offset_right = 113.0
+offset_bottom = 113.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_k73cj")
 
-[node name="ColorRect" type="ColorRect" parent="UI/LevelCompletePopup"]
-layout_mode = 0
-offset_left = -118.0
-offset_top = -67.99999
-offset_right = -78.0
-offset_bottom = -27.999992
-scale = Vector2(7.549019, 3.873584)
-color = Color(0, 0, 0, 1)
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/LevelCompletePopup/Card"]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
 
-[node name="Label" type="Label" parent="UI/LevelCompletePopup"]
-layout_mode = 0
-offset_left = -30.0
-offset_top = -38.0
-offset_right = 118.0
-offset_bottom = -15.0
+[node name="BannerControl" type="Control" parent="UI/LevelCompletePopup/Card/VBoxContainer"]
+layout_mode = 2
+
+[node name="Ribbon" type="TextureRect" parent="UI/LevelCompletePopup/Card/VBoxContainer/BannerControl"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -182.0
+offset_top = -92.0
+offset_right = 182.0
+offset_bottom = 47.0
+grow_horizontal = 2
+texture = ExtResource("9_e8dv2")
+
+[node name="TitleLabel" type="Label" parent="UI/LevelCompletePopup/Card/VBoxContainer/BannerControl"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -86.0
+offset_top = -68.0
+offset_right = 87.0
+offset_bottom = -26.0
+grow_horizontal = 2
+text = "Превосходно!"
+label_settings = SubResource("LabelSettings_bjha6")
+
+[node name="StarsContainer" type="HBoxContainer" parent="UI/LevelCompletePopup/Card/VBoxContainer/BannerControl"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -104.0
+offset_top = -146.0
+offset_right = 104.0
+offset_bottom = -66.0
+grow_horizontal = 2
+
+[node name="Star1" type="TextureRect" parent="UI/LevelCompletePopup/Card/VBoxContainer/BannerControl/StarsContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+texture = ExtResource("10_2nhjh")
+stretch_mode = 2
+
+[node name="Star4" type="TextureRect" parent="UI/LevelCompletePopup/Card/VBoxContainer/BannerControl/StarsContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 8
+texture = ExtResource("12_gt76g")
+stretch_mode = 2
+
+[node name="Star2" type="TextureRect" parent="UI/LevelCompletePopup/Card/VBoxContainer/BannerControl/StarsContainer"]
+layout_mode = 2
+texture = ExtResource("11_bjha6")
+stretch_mode = 2
+
+[node name="Star5" type="TextureRect" parent="UI/LevelCompletePopup/Card/VBoxContainer/BannerControl/StarsContainer"]
+visible = false
+layout_mode = 2
+texture = ExtResource("13_1fr6y")
+stretch_mode = 2
+
+[node name="Star3" type="TextureRect" parent="UI/LevelCompletePopup/Card/VBoxContainer/BannerControl/StarsContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+texture = ExtResource("10_2nhjh")
+stretch_mode = 2
+
+[node name="Star6" type="TextureRect" parent="UI/LevelCompletePopup/Card/VBoxContainer/BannerControl/StarsContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 8
+texture = ExtResource("12_gt76g")
+stretch_mode = 2
+
+[node name="Medial" type="TextureRect" parent="UI/LevelCompletePopup/Card/VBoxContainer/BannerControl"]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 74.0
+offset_top = -24.0
+offset_right = 145.0
+offset_bottom = 50.0
+texture = ExtResource("14_bjha6")
+
+[node name="LevelLabel" type="Label" parent="UI/LevelCompletePopup/Card/VBoxContainer/BannerControl/Medial"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -4.5
+offset_top = -19.0
+offset_right = 4.5
+offset_bottom = 19.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "1"
+label_settings = SubResource("LabelSettings_gt76g")
+
+[node name="Control" type="Control" parent="UI/LevelCompletePopup/Card/VBoxContainer"]
+layout_mode = 2
+
+[node name="Control2" type="Control" parent="UI/LevelCompletePopup/Card/VBoxContainer"]
+layout_mode = 2
+
+[node name="RevardTitle" type="Label" parent="UI/LevelCompletePopup/Card/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "НАГРАДА"
+label_settings = SubResource("LabelSettings_1fr6y")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/LevelCompletePopup/Card/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="CoinIcon" type="TextureRect" parent="UI/LevelCompletePopup/Card/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 6
+texture = ExtResource("15_gt76g")
+
+[node name="RevardValue" type="Label" parent="UI/LevelCompletePopup/Card/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 6
+text = "10"
+label_settings = SubResource("LabelSettings_2hxjc")
+
+[node name="NextButton" type="Button" parent="UI/LevelCompletePopup/Card/VBoxContainer"]
+layout_mode = 2
+icon = ExtResource("9_k73cj")
+flat = true
+clip_text = true
+icon_alignment = 1
+
+[node name="Label" type="Label" parent="UI/LevelCompletePopup/Card/VBoxContainer/NextButton"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -34.0
+offset_top = -25.0
+offset_right = 34.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Далее"
+label_settings = SubResource("LabelSettings_rjqkl")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label" type="Label" parent="UI/LevelCompletePopup/Card"]
+visible = false
+layout_mode = 2
 text = "Уровень пройден!"
 
 [node name="RetryButton" type="Button" parent="UI/LevelCompletePopup"]
+visible = false
 layout_mode = 0
 offset_left = 56.0
 offset_right = 149.0
 offset_bottom = 31.0
 text = "Заново"
 
-[node name="NextButton" type="Button" parent="UI/LevelCompletePopup"]
-layout_mode = 0
-offset_left = -97.0
-offset_right = 31.0
-offset_bottom = 31.0
-text = "Следующий"
-
 [node name="FailPopup" type="Control" parent="UI"]
+visible = false
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
