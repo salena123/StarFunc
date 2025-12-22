@@ -1,4 +1,4 @@
-[gd_scene load_steps=74 format=3 uid="uid://c2cdbk2ehc4o3"]
+[gd_scene load_steps=93 format=3 uid="uid://c2cdbk2ehc4o3"]
 
 [ext_resource type="Script" uid="uid://c7qx3hdq3vnhc" path="res://scripts/main.gd" id="1_kdubu"]
 [ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://ball.png" id="1_wtcfe"]
@@ -14,6 +14,7 @@
 [ext_resource type="FontFile" uid="uid://bsi23ifa7ri5i" path="res://BlushesRegular.ttf" id="9_hqns4"]
 [ext_resource type="Texture2D" uid="uid://b5fglmbnou05n" path="res://chevrons-down.svg" id="9_ir8iy"]
 [ext_resource type="Texture2D" uid="uid://chpf7g60dcyoo" path="res://Group 1000007236.svg" id="9_k73cj"]
+[ext_resource type="Texture2D" uid="uid://e6h8gu1uebo6" path="res://help-question-circle--Streamline-Freehand.svg" id="10_1fr6y"]
 [ext_resource type="Texture2D" uid="uid://cwwqhoxn8avkr" path="res://light_star_small.svg" id="10_2nhjh"]
 [ext_resource type="Texture2D" uid="uid://bwfihjdf72d5f" path="res://light_start_big.svg" id="11_bjha6"]
 [ext_resource type="LabelSettings" uid="uid://bfdnoy5qkyfsp" path="res://OptionsText.tres" id="11_x0ka3"]
@@ -26,6 +27,9 @@
 [ext_resource type="Texture2D" uid="uid://b7b133gas4t5f" path="res://coin.svg" id="15_gt76g"]
 [ext_resource type="Texture2D" uid="uid://mqkhmwlssauf" path="res://red_ribbon.svg" id="25_1fr6y"]
 [ext_resource type="Texture2D" uid="uid://c8xy4luswbib4" path="res://grey_medial.svg" id="26_2hxjc"]
+[ext_resource type="Texture2D" uid="uid://dh1ybslfpmts0" path="res://right.svg" id="27_2hxjc"]
+[ext_resource type="Texture2D" uid="uid://6k5lm1fns5ok" path="res://left.svg" id="28_2u7jv"]
+[ext_resource type="Script" uid="uid://qbglf1m73nh5" path="res://scripts/help_pager.gd" id="28_help_pager"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_y32ns"]
 
@@ -69,6 +73,16 @@ shadow_offset = Vector2(0, 3)
 bg_color = Color(1, 1, 1, 1)
 corner_radius_top_left = 15
 corner_radius_top_right = 15
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fbwgr"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7mj2a"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fshgd"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lbrxf"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xjt7e"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_x0ka3"]
 font = ExtResource("9_hqns4")
@@ -227,10 +241,30 @@ font_size = 24
 font_color = Color(0.9607843, 0.50980395, 0.24313726, 1)
 outline_size = 9
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_540hr"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6ip5v"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q5dlx"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_c4wnb"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7plk7"]
+
 [sub_resource type="LabelSettings" id="LabelSettings_rjqkl"]
 font = ExtResource("9_hqns4")
 font_size = 24
 outline_size = 3
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0xo8l"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xfyss"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ngjr"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qilgh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4qosj"]
 
 [sub_resource type="SystemFont" id="SystemFont_kdubu"]
 
@@ -298,6 +332,7 @@ shape = SubResource("SegmentShape2D_kdubu")
 [node name="stars" type="Node" parent="."]
 
 [node name="star1" type="Area2D" parent="stars"]
+visible = false
 position = Vector2(165, 196)
 
 [node name="Sprite2D" type="Sprite2D" parent="stars/star1"]
@@ -310,6 +345,7 @@ scale = Vector2(0.5, 0.5)
 shape = SubResource("CircleShape2D_q6r6c")
 
 [node name="star2" type="Area2D" parent="stars"]
+visible = false
 position = Vector2(429, 317)
 
 [node name="Sprite2D" type="Sprite2D" parent="stars/star2"]
@@ -322,6 +358,7 @@ scale = Vector2(0.5, 0.5)
 shape = SubResource("CircleShape2D_q6r6c")
 
 [node name="star3" type="Area2D" parent="stars"]
+visible = false
 position = Vector2(643, 406)
 
 [node name="Sprite2D" type="Sprite2D" parent="stars/star3"]
@@ -334,6 +371,7 @@ scale = Vector2(0.5, 0.5)
 shape = SubResource("CircleShape2D_q6r6c")
 
 [node name="star4" type="Area2D" parent="stars"]
+visible = false
 position = Vector2(300, 300)
 
 [node name="Sprite2D" type="Sprite2D" parent="stars/star4"]
@@ -346,6 +384,7 @@ scale = Vector2(0.5, 0.5)
 shape = SubResource("CircleShape2D_q6r6c")
 
 [node name="star5" type="Area2D" parent="stars"]
+visible = false
 position = Vector2(500, 350)
 
 [node name="Sprite2D" type="Sprite2D" parent="stars/star5"]
@@ -449,7 +488,17 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
 [node name="LeftSpacer" type="Control" parent="UI/BottomLayout/Items/Items/HBoxContainer"]
+custom_minimum_size = Vector2(15, 0)
 layout_mode = 2
+
+[node name="Help" type="Button" parent="UI/BottomLayout/Items/Items/HBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_fbwgr")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_7mj2a")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_fshgd")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_lbrxf")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_xjt7e")
+icon = ExtResource("10_1fr6y")
 
 [node name="Label" type="Label" parent="UI/BottomLayout/Items/Items/HBoxContainer"]
 custom_minimum_size = Vector2(260, 0)
@@ -459,6 +508,10 @@ text = "Испльзуйте функцию....Испльзуйте функци
 label_settings = SubResource("LabelSettings_x0ka3")
 horizontal_alignment = 1
 autowrap_mode = 2
+
+[node name="LeftSpacer2" type="Control" parent="UI/BottomLayout/Items/Items/HBoxContainer"]
+custom_minimum_size = Vector2(15, 0)
+layout_mode = 2
 
 [node name="RollButton" type="Button" parent="UI/BottomLayout/Items/Items/HBoxContainer"]
 visible = false
@@ -508,7 +561,6 @@ size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_hqns4")
 
 [node name="ButtonsRow" type="HBoxContainer" parent="UI/BottomLayout/Items/Items/Answers/Panel"]
-visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -835,6 +887,7 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_ebxd8")
 placeholder_text = "ввод"
 
 [node name="Slider2" type="VBoxContainer" parent="UI/BottomLayout/Items/Items/Answers/Panel"]
+visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1141,6 +1194,11 @@ label_settings = SubResource("LabelSettings_2hxjc")
 
 [node name="NextButton" type="Button" parent="UI/LevelCompletePopup/Card/VBoxContainer"]
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_540hr")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_6ip5v")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_q5dlx")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_c4wnb")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_7plk7")
 icon = ExtResource("9_k73cj")
 flat = true
 clip_text = true
@@ -1339,6 +1397,128 @@ text = "Повторить"
 label_settings = SubResource("LabelSettings_rjqkl")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Help" type="Control" parent="UI"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("28_help_pager")
+
+[node name="Dimmer" type="ColorRect" parent="UI/Help"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(7.549019, 3.873584)
+color = Color(0, 0, 0, 0.27058825)
+
+[node name="Card" type="PanelContainer" parent="UI/Help"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -152.0
+offset_top = -181.0
+offset_right = 168.0
+offset_bottom = 143.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_k73cj")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Help/Card"]
+layout_mode = 2
+theme_override_constants/separation = -196
+alignment = 1
+
+[node name="BannerControl" type="Control" parent="UI/Help/Card/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 2
+
+[node name="Ribbon" type="TextureRect" parent="UI/Help/Card/VBoxContainer/BannerControl"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -183.0
+offset_top = -78.0
+offset_right = 181.0
+offset_bottom = 61.0
+grow_horizontal = 2
+texture = ExtResource("9_e8dv2")
+
+[node name="TitleLabel" type="Label" parent="UI/Help/Card/VBoxContainer/BannerControl"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -85.0
+offset_top = -51.0
+offset_right = 88.0
+offset_bottom = -9.0
+grow_horizontal = 2
+text = "Как играть"
+label_settings = SubResource("LabelSettings_bjha6")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/Help/Card/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Control2" type="Control" parent="UI/Help/Card/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Control3" type="Control" parent="UI/Help/Card/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Button2" type="Button" parent="UI/Help/Card/VBoxContainer/HBoxContainer/Control3"]
+layout_mode = 0
+offset_right = 21.0
+offset_bottom = 27.0
+rotation = -6.2831855
+theme_override_styles/normal = SubResource("StyleBoxEmpty_0xo8l")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_xfyss")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_3ngjr")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_qilgh")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_4qosj")
+icon = ExtResource("28_2u7jv")
+
+[node name="RevardTitle" type="Label" parent="UI/Help/Card/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_fonts/font = ExtResource("9_hqns4")
+text = "как играть "
+label_settings = SubResource("LabelSettings_1fr6y")
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Control" type="Control" parent="UI/Help/Card/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Button" type="Button" parent="UI/Help/Card/VBoxContainer/HBoxContainer/Control"]
+layout_mode = 0
+offset_right = 21.0
+offset_bottom = 27.0
+theme_override_styles/normal = SubResource("StyleBoxEmpty_0xo8l")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_xfyss")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_3ngjr")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_qilgh")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_4qosj")
+icon = ExtResource("27_2hxjc")
 
 [node name="Grid" type="Node2D" parent="."]
 script = ExtResource("6_kdubu")

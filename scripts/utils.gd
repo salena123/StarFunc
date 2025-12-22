@@ -218,13 +218,24 @@ func setup_level_positions(expr: Expression):
 	var ball_y = float(top_margin) + float(vertical_offset_pixels) + 30.0
 	root.ball.position = Vector2(fx_to_screen(ball_x), ball_y)
 
+
+	var star_x_start_screen = x_start_screen
+	var star_x_end_screen = x_end_screen
+	if root.ball_side == root.level_gen.Side.LEFT:
+		star_x_start_screen = max(star_x_start_screen, root.ball.position.x + min_star_spacing_px)
+	else:
+		star_x_end_screen = min(star_x_end_screen, root.ball.position.x - min_star_spacing_px)
+	if star_x_end_screen - star_x_start_screen < min_star_spacing_px:
+		star_x_start_screen = x_start_screen
+		star_x_end_screen = x_end_screen
+
 	var star_positions = []
-	var step_px = (x_end_screen - x_start_screen) / float(num_stars + 1)
+	var step_px = (star_x_end_screen - star_x_start_screen) / float(num_stars + 1)
 
 	for i in range(num_stars):
-		var base_px = x_start_screen + (i + 1) * step_px
+		var base_px = star_x_start_screen + (i + 1) * step_px
 		var offset_px = randf_range(-step_px * 0.3, step_px * 0.3)
-		var x_screen = clamp(base_px + offset_px, x_start_screen, x_end_screen)
+		var x_screen = clamp(base_px + offset_px, star_x_start_screen, star_x_end_screen)
 
 		if i > 0 and abs(x_screen - star_positions[-1]) < min_star_spacing_px:
 			x_screen = star_positions[-1] + min_star_spacing_px
@@ -340,6 +351,14 @@ func _place_segment_stars(expr: Expression, count: int, fx_start: float, fx_end:
 		var base_px = screen_start + (i + 1) * step_px
 		var offset_px = randf_range(-step_px * 0.3, step_px * 0.3)
 		var x_screen = clamp(base_px + offset_px, screen_start + margin_px * 0.1, screen_end - margin_px * 0.1)
+		if root.ball_side == root.level_gen.Side.LEFT:
+			var min_star_x = root.ball.position.x + min_star_spacing_px
+			if x_screen < min_star_x:
+				x_screen = min_star_x
+		else:
+			var max_star_x = root.ball.position.x - min_star_spacing_px
+			if x_screen > max_star_x:
+				x_screen = max_star_x
 		if last_x != null and abs(x_screen - last_x) < min_star_spacing_px:
 			if x_screen >= last_x:
 				x_screen = last_x + min_star_spacing_px
@@ -381,8 +400,12 @@ func on_forward_pressed(root, forward_button, option_buttons):
 	if lvl_type == root.level_gen.LevelType.INPUT_LINEAR or lvl_type == root.level_gen.LevelType.INPUT_SLIDER:
 		if root.build_button:
 			root.build_button.disabled = true
+		if lvl_type == root.level_gen.LevelType.INPUT_SLIDER:
+			if root.k_slider:
+				root.k_slider.editable = false
+			if root.b_slider:
+				root.b_slider.editable = false
 	else:
-		# Для уровней с вариантами-чекирами запрещаем менять ответ после нажатия "Проверить"
 		if root.option_check_buttons:
 			for cb in root.option_check_buttons:
 				if cb:

@@ -1,5 +1,7 @@
 extends Node
 
+const Consts = preload("res://scripts/consts.gd")
+
 var root
 var options = []
 var options_secondary = []
@@ -29,16 +31,6 @@ func level_type_to_name(lvl_type: int) -> String:
 			return str(k)
 	return str(lvl_type)
 
-var TaskText = {
-	"SIMPLE": "задание для увроня SIMPLE",
-	"VARY_B": "задание для увроня VARY_B",
-	"VARY_K": "задание для увроня VARY_K",
-	"INPUT_LINEAR": "задание для увроня INPUT_LINEAR",
-	"INPUT_SLIDER": "задание для увроня INPUT_SLIDER",
-	"DOUBLE_LINEAR": "задание для увроня DOUBLE_LINEAR",
-	"QUADRATIC": "задание для увроня QUADRATIC",
-	"TRIG": "задание для увроня TRIG",
-}
 
 func _apply_task_text_for_level_type(lvl_type: int) -> void:
 	if root == null:
@@ -48,8 +40,8 @@ func _apply_task_text_for_level_type(lvl_type: int) -> void:
 		return
 	var key := level_type_to_name(int(lvl_type))
 	var text_val := ""
-	if TaskText.has(key):
-		text_val = str(TaskText[key])
+	if Consts.TaskText.has(key):
+		text_val = str(Consts.TaskText[key])
 	else:
 		text_val = str(key)
 	label.text = text_val
@@ -61,7 +53,7 @@ func init(r):
 
 func get_level_type(level: int) -> LevelType:
 	if level <= 3: 
-		return LevelType.INPUT_SLIDER
+		return LevelType.SIMPLE
 	elif level <= 6: 
 		return LevelType.VARY_B
 	elif level <= 9:
@@ -148,8 +140,10 @@ func load_saved_level(level_number: int) -> bool:
 				root.build_button.disabled = false
 			if root.k_slider:
 				root.k_slider.value = 0.0
+				root.k_slider.editable = true
 			if root.b_slider:
 				root.b_slider.value = 0.0
+				root.b_slider.editable = true
 			if root.k_slider_label:
 				root.k_slider_label.text = "0.0"
 			if root.b_slider_label:
@@ -214,8 +208,10 @@ func generate_new_level():
 		root.b_input.clear()
 	if root.k_slider:
 		root.k_slider.value = 0.0
+		root.k_slider.editable = true
 	if root.b_slider:
 		root.b_slider.value = 0.0
+		root.b_slider.editable = true
 	
 	if root.k_value_label:
 		root.k_value_label.text = ""
