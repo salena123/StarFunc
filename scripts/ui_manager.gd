@@ -4,31 +4,33 @@ var root
 
 @onready var score_label
 @onready var level_complete_popup
-@onready var retry_button
+#@onready var retry_button
 @onready var next_button
 @onready var level_label
 @onready var fail_popup
 @onready var fail_retry_button
 @onready var restart
+@onready var fail_label_level
 
 func init(r):
 	root = r
 	score_label = root.get_node("UI/ScoreLabel")
 	level_complete_popup = root.get_node("UI/LevelCompletePopup")
-	retry_button = root.get_node("UI/LevelCompletePopup/RetryButton")
+	#retry_button = root.get_node("UI/LevelCompletePopup/RetryButton")
 	next_button = root.get_node("UI/LevelCompletePopup/Card/VBoxContainer/NextButton")
 	level_label = root.get_node("UI/LevelCompletePopup/Card/VBoxContainer/BannerControl/Medial/LevelLabel")
 	fail_popup = root.get_node("UI/FailPopup")
-	fail_retry_button = root.get_node("UI/FailPopup/RetryButton")
+	fail_retry_button = root.get_node("UI/FailPopup/Card/VBoxContainer/RetryButton")
 	restart = root.get_node("UI/Restart")
+	fail_label_level = root.get_node("UI/FailPopup/Card/VBoxContainer/BannerControl/Medial/LevelLabel")
 
 	level_complete_popup.hide()
 	fail_popup.hide()
 
-	retry_button.pressed.connect(func():
-		level_complete_popup.hide()
-		root.level_gen.reset_current_level()
-	)
+	#retry_button.pressed.connect(func():
+		#level_complete_popup.hide()
+		#root.level_gen.reset_current_level()
+	#)
 	next_button.pressed.connect(func():
 		level_complete_popup.hide()
 		root.level += 1
@@ -63,6 +65,7 @@ func show_level_complete():
 func show_fail():
 	root.restart.disabled = true
 	root.ball.freeze = true
+	fail_label_level.text = str(root.level)
 	fail_popup.show()
 	if root.timer:
 		root.timer.paused = true

@@ -69,9 +69,9 @@ var _suppress_check_signal := false
 @onready var x_label = get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider/XLabel")
 @onready var y_label = get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider/YLabel")
 
-@onready var k_slider = get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider2/K/KSlider")
+@onready var k_slider = get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider2/K//Control/KSlider")
 @onready var k_slider_label = get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider2/K/KLabelValue")
-@onready var b_slider = get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider2/B/BSlider")
+@onready var b_slider = get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider2/B/Control2/BSlider")
 @onready var b_slider_label = get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/Slider2/B/BLabelValue")
 
 @onready var k_input = get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/InputPanel2/K/KLineEdit")
@@ -506,6 +506,17 @@ func redraw_input_graph():
 			set_forward_button_active(true)
 	else:
 		print("Ошибка парсинга функции из полей ввода: ", func_str)
+
+
+func refresh_input_slider_value_labels():
+	if k_slider and k_slider_label:
+		k_slider_label.text = utils.format_number(k_slider.value)
+	if b_slider and b_slider_label:
+		b_slider_label.text = utils.format_number(b_slider.value)
+	if k_value_label:
+		k_value_label.text = utils.format_number(k_slider.value) if k_slider else ""
+	if b_value_label:
+		b_value_label.text = utils.format_number(b_slider.value) if b_slider else ""
 
 func setup_ui_buttons():
 	setup_check_buttons()

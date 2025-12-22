@@ -61,7 +61,7 @@ func init(r):
 
 func get_level_type(level: int) -> LevelType:
 	if level <= 3: 
-		return LevelType.SIMPLE
+		return LevelType.INPUT_SLIDER
 	elif level <= 6: 
 		return LevelType.VARY_B
 	elif level <= 9:
