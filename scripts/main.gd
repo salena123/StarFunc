@@ -47,6 +47,7 @@ var level_saver
 @onready var forward_button_input = get_node_or_null("UI/BottomLayout/Items/Items/ForwardButton")
 
 @onready var restart = $UI/Restart
+@onready var home_button = $UI/Home
 @onready var timer_label: Label = $UI/TimerContainer/ContentHBox/Label
 @onready var timer_container: PanelContainer = $UI/TimerContainer
 
@@ -581,6 +582,9 @@ func setup_ui_buttons():
 
 	if forward_button and not forward_button.pressed.is_connected(_on_forward_button_pressed):
 		forward_button.pressed.connect(_on_forward_button_pressed)
+	
+	if home_button and not home_button.pressed.is_connected(_on_home_button_pressed):
+		home_button.pressed.connect(_on_home_button_pressed)
 
 
 func _on_forward_button_pressed():
@@ -588,6 +592,9 @@ func _on_forward_button_pressed():
 
 func _on_build_button_pressed():
 	utils.on_build_button_pressed(self, k_input, b_input, track_drawer, track, forward_button_input, level_gen)
+
+func _on_home_button_pressed():
+	get_tree().change_scene_to_file("res://ui/LevelSelect.tscn")
 
 func setup_check_buttons():
 	for i in range(option_check_buttons.size()):

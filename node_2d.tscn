@@ -1,4 +1,4 @@
-[gd_scene load_steps=93 format=3 uid="uid://c2cdbk2ehc4o3"]
+[gd_scene load_steps=99 format=3 uid="uid://c2cdbk2ehc4o3"]
 
 [ext_resource type="Script" uid="uid://c7qx3hdq3vnhc" path="res://scripts/main.gd" id="1_kdubu"]
 [ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://ball.png" id="1_wtcfe"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://d5jhcclg2few" path="res://background.gd" id="6_rj586"]
 [ext_resource type="Texture2D" uid="uid://cs4hibj5o6kk0" path="res://restart.svg" id="7_flf07"]
 [ext_resource type="Texture2D" uid="uid://dsphoe8vgna25" path="res://Group (3).png" id="8_4d7sh"]
+[ext_resource type="Texture2D" uid="uid://d0qxegvsm3e7k" path="res://Home.svg" id="8_24dk6"]
 [ext_resource type="Texture2D" uid="uid://d8d562pega5o" path="res://orange_ribbon.svg" id="9_e8dv2"]
 [ext_resource type="FontFile" uid="uid://bsi23ifa7ri5i" path="res://BlushesRegular.ttf" id="9_hqns4"]
 [ext_resource type="Texture2D" uid="uid://b5fglmbnou05n" path="res://chevrons-down.svg" id="9_ir8iy"]
@@ -29,7 +30,7 @@
 [ext_resource type="Texture2D" uid="uid://c8xy4luswbib4" path="res://grey_medial.svg" id="26_2hxjc"]
 [ext_resource type="Texture2D" uid="uid://dh1ybslfpmts0" path="res://right.svg" id="27_2hxjc"]
 [ext_resource type="Texture2D" uid="uid://6k5lm1fns5ok" path="res://left.svg" id="28_2u7jv"]
-[ext_resource type="Script" uid="uid://qbglf1m73nh5" path="res://scripts/help_pager.gd" id="28_help_pager"]
+[ext_resource type="Script" path="res://scripts/help_pager.gd" id="28_help_pager"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_y32ns"]
 
@@ -55,6 +56,16 @@ radius = 50.039986
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mryly"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kq1c5"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_cjlbh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kfelt"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ytlpd"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2v765"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_b8fb0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rj586"]
 bg_color = Color(1, 1, 1, 1)
@@ -420,6 +431,18 @@ theme_override_styles/disabled = SubResource("StyleBoxEmpty_mryly")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_kq1c5")
 text = "                     "
 icon = ExtResource("7_flf07")
+
+[node name="Home" type="Button" parent="UI"]
+offset_left = 1.0
+offset_top = 103.0
+offset_right = 49.0
+offset_bottom = 151.0
+theme_override_styles/normal = SubResource("StyleBoxEmpty_cjlbh")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_kfelt")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_ytlpd")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_2v765")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_b8fb0")
+icon = ExtResource("8_24dk6")
 
 [node name="ScoreLabel" type="Label" parent="UI"]
 offset_right = 40.0

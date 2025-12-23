@@ -26,6 +26,12 @@ var _pending_level: int = -1
 func _ready() -> void:
 	popup.confirmed.connect(_on_popup_confirmed)
 	popup.canceled.connect(_on_popup_canceled)
+	
+	if layout_scene == null:
+		layout_scene = preload("res://ui/maps/Chapters.tscn")
+	if mode == null:
+		mode = MapMode.CHAPTERS
+	
 	_load_layout()
 	await get_tree().process_frame
 	_collect_icons()
@@ -404,10 +410,15 @@ func _open_chapters():
 		old_scene.queue_free() 
 
 func _start_level(chosen_level: int): 
-	var level_scene := preload("res://Node_2D.tscn").instantiate() 
+	var old_scene = get_tree().current_scene
+	var level_scene := preload("res://node_2d.tscn").instantiate() 
 	level_scene.level = chosen_level 
-	get_tree().get_root().add_child(level_scene) 
-	get_tree().current_scene.queue_free() 
+	
+	get_tree().root.add_child(level_scene) 
+	get_tree().current_scene = level_scene
+	
+	if old_scene:
+		old_scene.queue_free() 
 
 func _scroll_to_bottom():
 	await get_tree().process_frame
