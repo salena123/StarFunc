@@ -1,16 +1,16 @@
 [gd_scene load_steps=17 format=3 uid="uid://cxhoiefppvdor"]
 
-[ext_resource type="Script" uid="uid://cl02wlv6cd3uh" path="res://scripts/ui/main_menu.gd" id="1_fy5us"]
-[ext_resource type="Texture2D" uid="uid://d1dgyyrgvmgbr" path="res://main menu/фон.svg" id="1_wut1r"]
-[ext_resource type="Texture2D" uid="uid://2curnyiogkg3" path="res://main menu/Title.svg" id="2_wc2lj"]
-[ext_resource type="Texture2D" uid="uid://blbyw7qyyd3k1" path="res://main menu/button.svg" id="3_wked4"]
-[ext_resource type="Texture2D" uid="uid://ctkg625xlub0y" path="res://main menu/MainName.svg" id="4_0ei6b"]
-[ext_resource type="Texture2D" uid="uid://bvv1vdriw0o15" path="res://main menu/buttonPressed.svg" id="4_wked4"]
-[ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="6_c3jr6"]
-[ext_resource type="FontFile" uid="uid://c2c6tvuqa22ne" path="res://main menu/KleeOne-Regular.ttf" id="7_fy5us"]
-[ext_resource type="FontFile" uid="uid://cff6wwsmyyo52" path="res://main menu/KleeOne-SemiBold.ttf" id="8_o0ref"]
-[ext_resource type="Texture2D" uid="uid://bd0iam6ugaond" path="res://main menu/Group 1000007240.svg" id="9_o0ref"]
-[ext_resource type="Texture2D" uid="uid://cb6cer1nlmw6j" path="res://main menu/Group 1000007236.svg" id="11_qyr6b"]
+[ext_resource type="Script" uid="uid://cl02wlv6cd3uh" path="res://scripts/ui/main_menu.gd" id="1_l1utg"]
+[ext_resource type="Texture2D" uid="uid://d1dgyyrgvmgbr" path="res://main menu/фон.svg" id="2_x2p5i"]
+[ext_resource type="Texture2D" uid="uid://2curnyiogkg3" path="res://main menu/Title.svg" id="3_veswn"]
+[ext_resource type="Texture2D" uid="uid://ctkg625xlub0y" path="res://main menu/MainName.svg" id="4_c1q6l"]
+[ext_resource type="Texture2D" uid="uid://blbyw7qyyd3k1" path="res://main menu/button.svg" id="5_c7k3y"]
+[ext_resource type="Texture2D" uid="uid://bvv1vdriw0o15" path="res://main menu/buttonPressed.svg" id="6_qdod0"]
+[ext_resource type="FontFile" uid="uid://c2c6tvuqa22ne" path="res://main menu/KleeOne-Regular.ttf" id="7_jo2le"]
+[ext_resource type="FontFile" uid="uid://cff6wwsmyyo52" path="res://main menu/KleeOne-SemiBold.ttf" id="8_mx8v2"]
+[ext_resource type="Texture2D" uid="uid://bd0iam6ugaond" path="res://main menu/Group 1000007240.svg" id="9_isuus"]
+[ext_resource type="Texture2D" uid="uid://bxmtukicbddqc" path="res://Group 1000007217 (1).png" id="10_0rqwi"]
+[ext_resource type="Texture2D" uid="uid://cb6cer1nlmw6j" path="res://main menu/Group 1000007236.svg" id="11_7ukhu"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_83s16"]
 
@@ -31,7 +31,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("1_fy5us")
+script = ExtResource("1_l1utg")
 
 [node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
@@ -50,7 +50,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("1_wut1r")
+texture = ExtResource("2_x2p5i")
 expand_mode = 1
 stretch_mode = 6
 
@@ -93,7 +93,7 @@ offset_right = 233.19376
 offset_bottom = 84.017876
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_wc2lj")
+texture = ExtResource("3_veswn")
 expand_mode = 5
 stretch_mode = 5
 
@@ -110,7 +110,7 @@ offset_right = 157.0
 offset_bottom = 25.147064
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("4_0ei6b")
+texture = ExtResource("4_c1q6l")
 expand_mode = 5
 stretch_mode = 5
 
@@ -138,8 +138,8 @@ offset_right = 195.11249
 offset_bottom = 49.34999
 grow_horizontal = 2
 grow_vertical = 2
-texture_normal = ExtResource("3_wked4")
-texture_pressed = ExtResource("4_wked4")
+texture_normal = ExtResource("5_c7k3y")
+texture_pressed = ExtResource("6_qdod0")
 stretch_mode = 5
 
 [node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer/VBoxContainer/Panel/PlayButton"]
@@ -153,8 +153,8 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 10
-theme_override_fonts/normal_font = ExtResource("7_fy5us")
-theme_override_fonts/bold_font = ExtResource("8_o0ref")
+theme_override_fonts/normal_font = ExtResource("7_jo2le")
+theme_override_fonts/bold_font = ExtResource("8_mx8v2")
 theme_override_font_sizes/normal_font_size = 70
 theme_override_font_sizes/bold_font_size = 50
 bbcode_enabled = true
@@ -182,8 +182,8 @@ offset_right = 195.11249
 offset_bottom = 48.34999
 grow_horizontal = 2
 grow_vertical = 2
-texture_normal = ExtResource("3_wked4")
-texture_pressed = ExtResource("4_wked4")
+texture_normal = ExtResource("5_c7k3y")
+texture_pressed = ExtResource("6_qdod0")
 stretch_mode = 5
 
 [node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer/VBoxContainer/Panel2/xButton"]
@@ -197,8 +197,8 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 10
-theme_override_fonts/normal_font = ExtResource("7_fy5us")
-theme_override_fonts/bold_font = ExtResource("8_o0ref")
+theme_override_fonts/normal_font = ExtResource("7_jo2le")
+theme_override_fonts/bold_font = ExtResource("8_mx8v2")
 theme_override_font_sizes/normal_font_size = 70
 theme_override_font_sizes/bold_font_size = 50
 bbcode_enabled = true
@@ -241,8 +241,8 @@ offset_bottom = 105.0
 grow_horizontal = 0
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 4.6
-texture_normal = ExtResource("9_o0ref")
-texture_pressed = ExtResource("6_c3jr6")
+texture_normal = ExtResource("9_isuus")
+texture_pressed = ExtResource("10_0rqwi")
 stretch_mode = 5
 
 [node name="Panel4" type="Panel" parent="MarginContainer/VBoxContainer/Panel2/HBoxContainer"]
@@ -256,8 +256,8 @@ offset_right = 100.850006
 offset_bottom = 105.0
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 4.6
-texture_normal = ExtResource("11_qyr6b")
-texture_pressed = ExtResource("6_c3jr6")
+texture_normal = ExtResource("11_7ukhu")
+texture_pressed = ExtResource("10_0rqwi")
 stretch_mode = 5
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/VBoxContainer/Panel/PlayButton" to="." method="_on_play_button_pressed"]

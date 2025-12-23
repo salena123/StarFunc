@@ -1,0 +1,73 @@
+[gd_scene load_steps=6 format=3 uid="uid://c7bt6yswvj5gp"]
+
+[ext_resource type="Script" uid="uid://8cm2tc7a11xe" path="res://scripts/ui/level_select.gd" id="1_q3t17"]
+[ext_resource type="Texture2D" uid="uid://vwakpg785skp" path="res://main menu/Group 1000007242.svg" id="2_0bmyu"]
+[ext_resource type="Texture2D" uid="uid://b2lkxgb4vt8qp" path="res://main menu/карта.svg" id="2_jfs68"]
+[ext_resource type="Script" uid="uid://d4nf2tjhgyt0a" path="res://scripts/ui/path_drawer.gd" id="2_nb57j"]
+[ext_resource type="Theme" uid="uid://coixn7h0g6j5m" path="res://main menu/popup.tres" id="4_0bmyu"]
+
+[node name="LevelSelect" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_q3t17")
+
+[node name="MapScroll" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -3.0
+offset_bottom = 184.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="MapScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="MapContainer" type="Node2D" parent="MapScroll/Control"]
+
+[node name="BackgroundLayer" type="Node2D" parent="MapScroll/Control/MapContainer"]
+
+[node name="TextureRect" type="TextureRect" parent="MapScroll/Control/MapContainer/BackgroundLayer"]
+offset_right = 422.0
+offset_bottom = 1566.1116
+texture = ExtResource("2_jfs68")
+expand_mode = 5
+
+[node name="PathDrawer" type="Node2D" parent="MapScroll/Control/MapContainer"]
+script = ExtResource("2_nb57j")
+smoothness_per_segment = 100
+
+[node name="IconsLayer" type="Node2D" parent="MapScroll/Control/MapContainer"]
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.03
+anchor_top = 0.03
+anchor_right = 0.97
+anchor_bottom = 0.97
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BackButton" type="TextureButton" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+texture_normal = ExtResource("2_0bmyu")
+stretch_mode = 5
+
+[node name="PopupDialog" type="ConfirmationDialog" parent="."]
+oversampling_override = 1.0
+position = Vector2i(0, 36)
+theme = ExtResource("4_0bmyu")
+
+[connection signal="pressed" from="MarginContainer/BackButton" to="." method="_on_back_button_pressed"]

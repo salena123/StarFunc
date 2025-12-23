@@ -14,7 +14,7 @@ signal level_selected(level_number)
 @onready var button: TextureButton = $LevelIcon1
 @onready var label: RichTextLabel = $LevelIcon1/LevelNumber
 @onready var star_box: HBoxContainer = $LevelIcon1/StarBox
-@onready var lock_icon: TextureRect = $LevelIcon1/Lock
+#@onready var lock_icon: TextureRect = $LevelIcon1/Lock
 
 var stars_count := 0
 var locked := false

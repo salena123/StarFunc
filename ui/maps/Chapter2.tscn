@@ -1,0 +1,51 @@
+[gd_scene load_steps=3 format=3 uid="uid://d2xkupihuwgmg"]
+
+[ext_resource type="Texture2D" uid="uid://b2lkxgb4vt8qp" path="res://main menu/карта.svg" id="1_r6bj6"]
+[ext_resource type="PackedScene" uid="uid://d4cymg4ywawnr" path="res://ui/LevelIcon.tscn" id="2_70uob"]
+
+[node name="MapContainer" type="Node2D"]
+
+[node name="Background" type="Node2D" parent="."]
+
+[node name="TextureRect" type="TextureRect" parent="Background"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -14.699493
+offset_right = 551.69946
+offset_bottom = 2102.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_r6bj6")
+expand_mode = 3
+stretch_mode = 6
+
+[node name="IconsLayer" type="Node2D" parent="."]
+
+[node name="LevelIcon" parent="IconsLayer" groups=["level_icon"] instance=ExtResource("2_70uob")]
+position = Vector2(275, 2008)
+level_number = 9
+
+[node name="LevelIcon2" parent="IconsLayer" groups=["level_icon"] instance=ExtResource("2_70uob")]
+position = Vector2(456, 1867)
+level_number = 10
+
+[node name="LevelIcon3" parent="IconsLayer" groups=["level_icon"] instance=ExtResource("2_70uob")]
+position = Vector2(105, 1710)
+level_number = 11
+
+[node name="LevelIcon4" parent="IconsLayer" groups=["level_icon"] instance=ExtResource("2_70uob")]
+position = Vector2(411, 1682)
+level_number = 12
+
+[node name="LevelIcon5" parent="IconsLayer" groups=["level_icon"] instance=ExtResource("2_70uob")]
+position = Vector2(395, 1501)
+level_number = 13
+
+[node name="LevelIcon6" parent="IconsLayer" groups=["level_icon"] instance=ExtResource("2_70uob")]
+position = Vector2(111, 1448)
+level_number = 14
+
+[node name="LevelIcon7" parent="IconsLayer" groups=["level_icon"] instance=ExtResource("2_70uob")]
+position = Vector2(287, 1282)
+level_number = 15

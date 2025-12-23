@@ -1,0 +1,73 @@
+[gd_scene load_steps=6 format=3 uid="uid://de27xgt60dy6i"]
+
+[ext_resource type="Script" uid="uid://obcy1bswmu7q" path="res://ui/chapter_icon.gd" id="1_hcy64"]
+[ext_resource type="Texture2D" uid="uid://cstsshs2k40ki" path="res://main menu/Vector.svg" id="3_q8hbn"]
+[ext_resource type="Texture2D" uid="uid://btn0q05vk47b4" path="res://main menu/Group 1000007203 (2).svg" id="4_jb1lc"]
+[ext_resource type="FontFile" uid="uid://c2c6tvuqa22ne" path="res://main menu/KleeOne-Regular.ttf" id="7_hbfri"]
+[ext_resource type="FontFile" uid="uid://cff6wwsmyyo52" path="res://main menu/KleeOne-SemiBold.ttf" id="8_e8o4m"]
+
+[node name="ChapterIcon" type="Node2D"]
+script = ExtResource("1_hcy64")
+
+[node name="ChapterIcon1" type="TextureButton" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -42.0
+offset_top = -42.0
+offset_right = 42.0
+offset_bottom = 42.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("4_jb1lc")
+stretch_mode = 5
+
+[node name="ChapterNumber" type="RichTextLabel" parent="ChapterIcon1"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.50600004
+anchor_top = 0.36900002
+anchor_right = 0.50600004
+anchor_bottom = 0.36900002
+offset_left = -28.004005
+offset_top = -23.496002
+offset_right = 25.495995
+offset_bottom = 26.503998
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("7_hbfri")
+theme_override_fonts/bold_font = ExtResource("8_e8o4m")
+theme_override_font_sizes/normal_font_size = 38
+theme_override_font_sizes/bold_font_size = 35
+bbcode_enabled = true
+text = "[b]1"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StarBox" type="HBoxContainer" parent="ChapterIcon1"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.82100004
+anchor_right = 0.5
+anchor_bottom = 0.82100004
+offset_left = -28.5
+offset_top = -16.964005
+offset_right = 28.5
+offset_bottom = 0.035995483
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="star_1" type="TextureRect" parent="ChapterIcon1/StarBox"]
+layout_mode = 2
+texture = ExtResource("3_q8hbn")
+
+[node name="star_2" type="TextureRect" parent="ChapterIcon1/StarBox"]
+layout_mode = 2
+texture = ExtResource("3_q8hbn")
+
+[node name="star_3" type="TextureRect" parent="ChapterIcon1/StarBox"]
+layout_mode = 2
+texture = ExtResource("3_q8hbn")
