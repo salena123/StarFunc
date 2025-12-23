@@ -1,11 +1,12 @@
 extends Node
 
-const LEVELS_FILE = "user://levels.json"
-const PROGRESS_FILE = "user://progress.json"
+const LEVELS_FILE = "res://levels.json"
+const PROGRESS_FILE = "res://progress.json"
 
 class LevelData:
 	var level_number: int
 	var level_type: int
+	var level_type_name: String = ""
 	var correct_func: String
 	var correct_func_b: String
 	var options: Array
@@ -18,6 +19,7 @@ class LevelData:
 		return {
 			"level_number": level_number,
 			"level_type": level_type,
+			"level_type_name": level_type_name,
 			"correct_func": correct_func,
 			"correct_func_b": correct_func_b,
 			"options": options,
@@ -31,6 +33,7 @@ class LevelData:
 		var level = LevelData.new()
 		level.level_number = dict.get("level_number", 1)
 		level.level_type = dict.get("level_type", 0)
+		level.level_type_name = str(dict.get("level_type_name", ""))
 		level.correct_func = dict.get("correct_func", "")
 		level.correct_func_b = dict.get("correct_func_b", "")
 		var opts = dict.get("options", [])

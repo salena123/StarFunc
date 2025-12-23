@@ -24,71 +24,48 @@ func prepare_from_saved(primary_func: String, secondary_func: String, options_a:
 
 func apply_ui(options_a: Array, options_b: Array):
 	print("[DOUBLE_LINEAR] apply_ui: options_a.size() = ", options_a.size(), ", options_b.size() = ", options_b.size())
-	# if root.input_panel:
-	#	root.input_panel.visible = false
+	print("[DOUBLE_LINEAR] options_a: ", options_a)
+	print("[DOUBLE_LINEAR] options_b: ", options_b)
+	
 	if root.build_button:
 		root.build_button.disabled = false
 	
-	# Сначала скрыть все OptionX в обоих столбцах
-	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1")
-	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2")
-	
-	# Скрыть все в Buttons1
-	if buttons1_node:
-		buttons1_node.show()
-		for i in range(3):
-			var option_node = buttons1_node.get_node_or_null("Option" + str(i))
-			if option_node:
-				option_node.visible = false
-	
-	# Скрыть все в Buttons2
-	if buttons2_node:
-		buttons2_node.show()
-		for i in range(3):
-			var option_node = buttons2_node.get_node_or_null("Option" + str(i))
-			if option_node:
-				option_node.visible = false
-	
-	# Показать только нужные варианты в Buttons1
+	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1")
+	print("[DOUBLE_LINEAR] buttons1_node: ", buttons1_node)
 	if buttons1_node:
 		for i in range(min(3, options_a.size())):
 			var option_node = buttons1_node.get_node_or_null("Option" + str(i))
+			print("[DOUBLE_LINEAR] buttons1 option_node ", i, ": ", option_node)
 			if option_node:
-				option_node.visible = true
-				# Показать дочерние элементы
-				for child in option_node.get_children():
-					if child is CanvasItem:
-						child.visible = true
-				# Обновить текст и сбросить чекбокс
 				var label = option_node.get_node_or_null("FormulaLabel")
+				print("[DOUBLE_LINEAR] buttons1 label ", i, ": ", label)
 				if label:
 					label.text = root.utils.format_function_from_string(options_a[i])
+					print("[DOUBLE_LINEAR] buttons1 set label ", i, " to: ", label.text)
 				var cb = option_node.get_node_or_null("CheckButton")
+				print("[DOUBLE_LINEAR] buttons1 cb ", i, ": ", cb)
 				if cb:
 					cb.button_pressed = false
 					cb.disabled = false
 	
-	# Показать только нужные варианты в Buttons2
+	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2")
+	print("[DOUBLE_LINEAR] buttons2_node: ", buttons2_node)
 	if buttons2_node:
 		for i in range(min(3, options_b.size())):
 			var option_node = buttons2_node.get_node_or_null("Option" + str(i))
+			print("[DOUBLE_LINEAR] buttons2 option_node ", i, ": ", option_node)
 			if option_node:
-				option_node.visible = true
-				# Показать дочерние элементы
-				for child in option_node.get_children():
-					if child is CanvasItem:
-						child.visible = true
-				# Обновить текст и сбросить чекбокс
 				var label = option_node.get_node_or_null("FormulaLabel")
+				print("[DOUBLE_LINEAR] buttons2 label ", i, ": ", label)
 				if label:
 					label.text = root.utils.format_function_from_string(options_b[i])
+					print("[DOUBLE_LINEAR] buttons2 set label ", i, " to: ", label.text)
 				var cb = option_node.get_node_or_null("CheckButton")
+				print("[DOUBLE_LINEAR] buttons2 cb ", i, ": ", cb)
 				if cb:
 					cb.button_pressed = false
 					cb.disabled = false
 	
-	if root.has_node("UI/BottomLayout/Panel/Items/Answers"):
-		root.get_node("UI/BottomLayout/Panel/Items/Answers").show()
 
 
 func draw_tracks(primary_func: String, secondary_func: String):
@@ -330,16 +307,14 @@ func _set_button_texts(buttons: Array, values: Array):
 		return
 	for i in range(min(buttons.size(), values.size())):
 		if buttons[i]:
-			# Determine path based on which group we're setting
 			var path = ""
-			var parent_name = buttons[i].get_parent().name  # Option0, Option1, Option2
 			var grandparent_name = ""
 			if buttons[i].get_parent() and buttons[i].get_parent().get_parent():
-				grandparent_name = buttons[i].get_parent().get_parent().name  # Buttons1 or Buttons2
+				grandparent_name = buttons[i].get_parent().get_parent().name 
 			if grandparent_name == "Buttons1":
-				path = "UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons1/Option" + str(i) + "/FormulaLabel"
+				path = "UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons1/Option" + str(i) + "/FormulaLabel"
 			else:
-				path = "UI/BottomLayout/Panel/Items/Answers/Panel/ButtonsRow/Buttons2/Option" + str(i) + "/FormulaLabel"
+				path = "UI/BottomLayout/Items/Items/Answers/Panel/ButtonsRow/Buttons2/Option" + str(i) + "/FormulaLabel"
 			var label = root.get_node_or_null(path)
 			if label:
 				label.text = root.utils.format_function_from_string(values[i])

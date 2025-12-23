@@ -2,8 +2,10 @@ extends Node
 
 var root
 var top_margin = 50
-var bottom_margin = 50
+var bottom_margin = 0
 var vertical_offset_pixels = 15
+
+var _bottom_margin_effective: float = 0.0
 
 var x_min: float = -10.0
 var x_max: float = 10.0
@@ -39,7 +41,13 @@ func calc_base_unit():
 	x_min = -10.0
 	x_max = 10.0
 
-	var vertical_span = screen_h - top_margin - bottom_margin
+	var ui_top := _get_bottom_layout_top_y()
+	_bottom_margin_effective = float(bottom_margin)
+	if ui_top != INF:
+		var reserved_px: float = max(0.0, screen_h - float(ui_top))
+		reserved_px = min(reserved_px, 380.0)  
+		_bottom_margin_effective = max(_bottom_margin_effective, reserved_px)
+	var vertical_span = screen_h - float(top_margin) - _bottom_margin_effective
 	if vertical_span <= 0.0:
 		vertical_span = 100.0
 
@@ -65,9 +73,18 @@ func fx_to_screen(x):
 func fy_to_screen(y):
 	if not ensure_coordinate_bounds():
 		return 0.0
-	var track_height = root.screen_size.y - top_margin - bottom_margin
+	var track_height = root.screen_size.y - float(top_margin) - _bottom_margin_effective
 	var t = (y - y_min) / (y_max - y_min)
-	return root.screen_size.y - bottom_margin - t * track_height
+	return root.screen_size.y - _bottom_margin_effective - t * track_height
+
+
+func _get_bottom_layout_top_y() -> float:
+	if root == null:
+		return INF
+	var bl = root.get_node_or_null("UI/BottomLayout")
+	if bl and bl is Control:
+		return (bl as Control).global_position.y
+	return INF
 
 func fy_to_screen_track(y):
 	return fy_to_screen(y)
@@ -149,8 +166,6 @@ func is_level_valid_for_edges(func_str: String, desired_side: int) -> bool:
 			ball_radius_px = col_shape.shape.radius
 
 	var safe_gap_px = ball_radius_px
-	print("ball_radius_px =", ball_radius_px)
-	print("safe_gap_px =", safe_gap_px)
 	if desired_side == Side.RIGHT:
 		if y_right_px < ball_spawn_y_px + safe_gap_px:
 			return false
@@ -169,7 +184,21 @@ func setup_level_positions(expr: Expression):
 		push_warning("Cannot setup level positions without coordinate bounds")
 		return
 
+	for star in root.stars:
+		if star:
+			star.visible = false
+			star.position = Vector2.ZERO
+
 	var num_stars = root.stars.size()
+	
+	if root.level_gen and root.level_gen.current_level_type == root.level_gen.LevelType.QUADRATIC:
+		num_stars = 5
+	else:
+		num_stars = 3
+	
+	if root.ui:
+		root.ui.update_stars_count_label()
+	
 	var margin_px = 40.0
 	var min_star_spacing_px = 60.0
 
@@ -185,15 +214,28 @@ func setup_level_positions(expr: Expression):
 	else:
 		ball_x = fx_start
 
-	root.ball.position = Vector2(fx_to_screen(ball_x), top_margin + vertical_offset_pixels)
+	ball_x = lerp(ball_x, 0.0, 0.15)
+	var ball_y = float(top_margin) + float(vertical_offset_pixels) + 30.0
+	root.ball.position = Vector2(fx_to_screen(ball_x), ball_y)
+
+
+	var star_x_start_screen = x_start_screen
+	var star_x_end_screen = x_end_screen
+	if root.ball_side == root.level_gen.Side.LEFT:
+		star_x_start_screen = max(star_x_start_screen, root.ball.position.x + min_star_spacing_px)
+	else:
+		star_x_end_screen = min(star_x_end_screen, root.ball.position.x - min_star_spacing_px)
+	if star_x_end_screen - star_x_start_screen < min_star_spacing_px:
+		star_x_start_screen = x_start_screen
+		star_x_end_screen = x_end_screen
 
 	var star_positions = []
-	var step_px = (x_end_screen - x_start_screen) / float(num_stars + 1)
+	var step_px = (star_x_end_screen - star_x_start_screen) / float(num_stars + 1)
 
 	for i in range(num_stars):
-		var base_px = x_start_screen + (i + 1) * step_px
+		var base_px = star_x_start_screen + (i + 1) * step_px
 		var offset_px = randf_range(-step_px * 0.3, step_px * 0.3)
-		var x_screen = clamp(base_px + offset_px, x_start_screen, x_end_screen)
+		var x_screen = clamp(base_px + offset_px, star_x_start_screen, star_x_end_screen)
 
 		if i > 0 and abs(x_screen - star_positions[-1]) < min_star_spacing_px:
 			x_screen = star_positions[-1] + min_star_spacing_px
@@ -204,15 +246,19 @@ func setup_level_positions(expr: Expression):
 		var fy_val: float
 		var fy_type = typeof(fy_raw)
 		if fy_type == TYPE_FLOAT:
-			fy_val = clamp(fy_raw, y_min, y_max)
+			fy_val = fy_raw
 		elif fy_type == TYPE_INT:
-			fy_val = clamp(float(fy_raw), y_min, y_max)
+			fy_val = float(fy_raw)
 		else:
 			push_warning("Expression evaluation returned unsupported type (%s); falling back to center line for star %s" % [fy_type, i])
 			fy_val = 0.0
 
 		root.stars[i].visible = true
-		root.stars[i].position = Vector2(x_screen, fy_to_screen(fy_val) - vertical_offset_pixels)
+		var y_screen: float = float(fy_to_screen(fy_val)) - 10.0
+		root.stars[i].position = Vector2(x_screen, y_screen)
+	
+	for i in range(num_stars, root.stars.size()):
+		root.stars[i].visible = false
 
 func setup_double_level_positions(expr_a: Expression, expr_b: Expression):
 	if root == null:
@@ -221,7 +267,22 @@ func setup_double_level_positions(expr_a: Expression, expr_b: Expression):
 	if not ensure_coordinate_bounds():
 		push_warning("Cannot setup double level positions without coordinate bounds")
 		return
+	
+	for star in root.stars:
+		if star:
+			star.visible = false
+			star.position = Vector2.ZERO
+	
 	var num_stars = root.stars.size()
+	
+	if root.level_gen and root.level_gen.current_level_type == root.level_gen.LevelType.QUADRATIC:
+		num_stars = 5
+	else:
+		num_stars = 3
+	
+	if root.ui:
+		root.ui.update_stars_count_label()
+		
 	if num_stars == 0:
 		return
 	if num_stars == 1:
@@ -234,7 +295,9 @@ func setup_double_level_positions(expr_a: Expression, expr_b: Expression):
 	var fx_start = (x_start_screen - root.screen_center.x) / root.base_unit
 	var fx_end = (x_end_screen - root.screen_center.x) / root.base_unit
 	var ball_x: float = fx_end if root.ball_side == root.level_gen.Side.RIGHT else fx_start
-	root.ball.position = Vector2(fx_to_screen(ball_x), top_margin + vertical_offset_pixels)
+	ball_x = lerp(ball_x, 0.0, 0.15)
+	var ball_y = float(top_margin) + float(vertical_offset_pixels) + 30.0
+	root.ball.position = Vector2(fx_to_screen(ball_x), ball_y)
 	if root.double_linear_module == null:
 		setup_level_positions(expr_a)
 		return
@@ -250,6 +313,10 @@ func setup_double_level_positions(expr_a: Expression, expr_b: Expression):
 	star_index = result_b["index"]
 	prev_x = result_b["prev_x"]
 	while star_index < num_stars:
+		root.stars[star_index].visible = false
+		star_index += 1
+	
+	while star_index < root.stars.size():
 		root.stars[star_index].visible = false
 		star_index += 1
 
@@ -284,6 +351,14 @@ func _place_segment_stars(expr: Expression, count: int, fx_start: float, fx_end:
 		var base_px = screen_start + (i + 1) * step_px
 		var offset_px = randf_range(-step_px * 0.3, step_px * 0.3)
 		var x_screen = clamp(base_px + offset_px, screen_start + margin_px * 0.1, screen_end - margin_px * 0.1)
+		if root.ball_side == root.level_gen.Side.LEFT:
+			var min_star_x = root.ball.position.x + min_star_spacing_px
+			if x_screen < min_star_x:
+				x_screen = min_star_x
+		else:
+			var max_star_x = root.ball.position.x - min_star_spacing_px
+			if x_screen > max_star_x:
+				x_screen = max_star_x
 		if last_x != null and abs(x_screen - last_x) < min_star_spacing_px:
 			if x_screen >= last_x:
 				x_screen = last_x + min_star_spacing_px
@@ -296,34 +371,71 @@ func _place_segment_stars(expr: Expression, count: int, fx_start: float, fx_end:
 		var fy_val: float = 0.0
 		var fy_type = typeof(fy_raw)
 		if fy_type == TYPE_FLOAT:
-			fy_val = clamp(fy_raw, y_min, y_max)
+			fy_val = fy_raw
 		elif fy_type == TYPE_INT:
-			fy_val = clamp(float(fy_raw), y_min, y_max)
+			fy_val = float(fy_raw)
 		else:
 			fy_val = 0.0
 		root.stars[current_index].visible = true
-		root.stars[current_index].position = Vector2(x_screen, fy_to_screen(fy_val) - vertical_offset_pixels)
+		var y_screen: float = float(fy_to_screen(fy_val)) - 10.0
+		root.stars[current_index].position = Vector2(x_screen, y_screen)
 		current_index += 1
 	return {"index": current_index, "prev_x": last_x}
 
 func on_forward_pressed(root, forward_button, option_buttons):
 	if root.first_selection_done:
 		return
+	
+	if not _has_active_track(root):
+		return
+	
 	root.first_selection_done = true
 	root.ball.freeze = false
 	root.ball.apply_impulse(Vector2.ZERO, Vector2(0, 50))
+	
+	if root.has_method("set_forward_button_active"):
+		root.set_forward_button_active(false)
 
 	var lvl_type = root.level_gen.get_level_type(root.level)
 	if lvl_type == root.level_gen.LevelType.INPUT_LINEAR or lvl_type == root.level_gen.LevelType.INPUT_SLIDER:
 		if root.build_button:
 			root.build_button.disabled = true
+		if lvl_type == root.level_gen.LevelType.INPUT_SLIDER:
+			if root.k_slider:
+				root.k_slider.editable = false
+			if root.b_slider:
+				root.b_slider.editable = false
+	else:
+		if root.option_check_buttons:
+			for cb in root.option_check_buttons:
+				if cb:
+					cb.disabled = true
+		if root.option_buttons:
+			for btn in root.option_buttons:
+				if btn:
+					btn.disabled = true
+		if root.option_buttons2:
+			for btn2 in root.option_buttons2:
+				if btn2:
+					btn2.disabled = true
+
+func _has_active_track(root) -> bool:
+	if root.track and root.track.visible:
+		for child in root.track.get_children():
+			if child is CollisionShape2D:
+				return true
+	
+	if root.track2 and root.track2.visible:
+		for child in root.track2.get_children():
+			if child is CollisionShape2D:
+				return true
+	
+	return false
 
 func enable_option_buttons(root):
-	# Включить CheckButton для обычных уровней
 	for cb in root.option_check_buttons:
 		if cb:
 			cb.disabled = false
-	# Включить старые кнопки для DOUBLE_LINEAR
 	for btn in root.option_buttons:
 		if btn:
 			btn.disabled = false
@@ -455,7 +567,6 @@ func on_build_button_pressed(root, k_input, b_input, track_drawer, track, forwar
 			if root.error_label:
 				root.error_label.text = "Введите значения k и b"
 				root.error_label.show()
-			print("Введите значения k и b")
 			return
 
 		var k_val_input = float(k_text)
@@ -464,7 +575,6 @@ func on_build_button_pressed(root, k_input, b_input, track_drawer, track, forwar
 		_build_function(root, func_str, track_drawer, track, forward_button_input)
 
 func _build_function(root, func_str: String, track_drawer, track, forward_button_input):
-	print("Построена функция:", func_str)
 	if root.error_label:
 		root.error_label.hide()
 	
@@ -472,7 +582,14 @@ func _build_function(root, func_str: String, track_drawer, track, forward_button
 	if expr.parse(func_str, ["x"]) == OK:
 		track_drawer.draw_track(func_str)
 		track.visible = true
-		forward_button_input.show()
+		
+		var lvl_type = root.level_gen.get_level_type(root.level)
+		if lvl_type == root.level_gen.LevelType.INPUT_LINEAR or lvl_type == root.level_gen.LevelType.INPUT_SLIDER:
+			if root.has_method("set_forward_button_active"):
+				root.set_forward_button_active(true)
+		else:
+			if root.has_method("set_forward_button_active"):
+				root.set_forward_button_active(true)
 		
 		if not root.first_selection_done:
 			if root.timer and root.timer.is_stopped():
@@ -484,52 +601,41 @@ func _build_function(root, func_str: String, track_drawer, track, forward_button
 		if root.error_label:
 			root.error_label.text = "Ошибка: не удалось разобрать выражение"
 			root.error_label.show()
-		print("Ошибка: не удалось разобрать выражение")
 		
 		
 func clear_ui_before_level_load():
+	for star in root.stars:
+		if star:
+			star.visible = false
+			star.position = Vector2.ZERO
+			if star.has_method("set_monitoring"):
+				star.set_monitoring(false)
+				star.set_monitoring(true)
+	
+	if root.track:
+		root.track.visible = false
+		if root.line2d:
+			root.line2d.points = PackedVector2Array()
+		for child in root.track.get_children():
+			if child is CollisionShape2D:
+				child.queue_free()
+	
+	if root.track2:
+		root.track2.visible = false
+		if root.line2d2:
+			root.line2d2.points = PackedVector2Array()
+		for child in root.track2.get_children():
+			if child is CollisionShape2D:
+				child.queue_free()
 
-	if root.k_slider:
-		root.k_slider.visible = false
-	if root.b_slider:
-		root.b_slider.visible = false
-	if root.k_slider_label:
-		root.k_slider_label.visible = false
-	if root.b_slider_label:
-		root.b_slider_label.visible = false
 	if root.k_value_label:
-		root.k_value_label.visible = false
 		root.k_value_label.text = ""
 	if root.b_value_label:
-		root.b_value_label.visible = false
 		root.b_value_label.text = ""
-	if root.k_input:
-		root.k_input.visible = false
-	if root.b_input:
-		root.b_input.visible = false
 
-	if root.has_node("UI/Slider"):
-		root.get_node("UI/Slider").visible = false
-
-	# прячем/сбрасываем чекбоксы
 	for cb in root.option_check_buttons:
 		if cb:
 			cb.button_pressed = false
-			cb.disabled = true
-	# прячем контейнеры кнопок
-	var buttons1_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons1")
-	if buttons1_node:
-		buttons1_node.hide()
-	var buttons2_node = root.get_node_or_null("UI/BottomLayout/Panel/Items/Answers/Panel/Buttons2")
-	if buttons2_node:
-		buttons2_node.hide()
 
-	if root.has_node("UI/Buttons2"):
-		root.get_node("UI/Buttons2").hide()
-
-	if root.has_node("UI/BottomLayout/Panel/Items/ForwardButton"):
-		root.get_node("UI/BottomLayout/Panel/Items/ForwardButton").disabled = false
-		root.get_node("UI/BottomLayout/Panel/Items/ForwardButton").show()
-
-	if root.forward_button_input:
-		root.forward_button_input.hide()
+	if root.has_method("set_forward_button_active"):
+		root.set_forward_button_active(false)

@@ -29,37 +29,26 @@ func _prepare_ui():
 	if root == null:
 		return
 	for btn in root.option_buttons:
-		btn.hide()
+		if btn == null:
+			continue
+		if btn is CanvasItem:
+			(btn as CanvasItem).visible = true
+		if btn is BaseButton:
+			(btn as BaseButton).disabled = true
 	if root.build_button:
 		root.build_button.disabled = false
 	if root.k_slider:
-		root.k_slider.visible = true
 		root.k_slider.value = 0.0
 	if root.b_slider:
-		root.b_slider.visible = true
 		root.b_slider.value = 0.0
 	if root.k_slider_label:
-		root.k_slider_label.visible = true
 		root.k_slider_label.text = "0.0"
 	if root.b_slider_label:
-		root.b_slider_label.visible = true
 		root.b_slider_label.text = "0.0"
-	if root.has_node("UI/Slider"):
-		root.get_node("UI/Slider").visible = true
-	if root.k_input:
-		root.k_input.visible = false
-	if root.b_input:
-		root.b_input.visible = false
 	if root.b_value_label:
-		root.b_value_label.visible = true
+		root.b_value_label.text = ""
 	if root.has_method("refresh_input_slider_value_labels"):
 		root.refresh_input_slider_value_labels()
-	if root.x_label:
-		root.x_label.visible = false
-	if root.y_label:
-		root.y_label.visible = false
-	if root.input_panel:
-		root.input_panel.visible = true
 
 
 func _draw_function(func_str: String):

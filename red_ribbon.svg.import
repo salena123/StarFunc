@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://wg18bk1t7w55"
-path="res://.godot/imported/Group 12562 (1).png-ecd31ccbf64af2759845508337640b68.ctex"
+uid="uid://mqkhmwlssauf"
+path="res://.godot/imported/red_ribbon.svg-a915a88cd9e87cfa0c52de83cae46112.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Group 12562 (1).png"
-dest_files=["res://.godot/imported/Group 12562 (1).png-ecd31ccbf64af2759845508337640b68.ctex"]
+source_file="res://red_ribbon.svg"
+dest_files=["res://.godot/imported/red_ribbon.svg-a915a88cd9e87cfa0c52de83cae46112.ctex"]
 
 [params]
 
@@ -38,3 +38,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false
