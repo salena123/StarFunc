@@ -435,7 +435,11 @@ func _has_active_track(root) -> bool:
 func enable_option_buttons(root):
 	for cb in root.option_check_buttons:
 		if cb:
-			cb.disabled = false
+			cb.disabled = false		
+	if root.k_slider:
+		root.k_slider.editable = true
+	if root.b_slider:
+		root.b_slider.editable = true
 	for btn in root.option_buttons:
 		if btn:
 			btn.disabled = false
